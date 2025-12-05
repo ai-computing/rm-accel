@@ -2,6 +2,22 @@
 Backend Abstract Base Class
 
 Defines the interface that all device backends (GPU, NPU, CPU) must implement.
+
+Backend vs ServingEngine:
+------------------------
+- Backend: Hardware abstraction for running inference on specific devices
+  - Manages device initialization and cleanup
+  - Prepares models (compilation, optimization)
+  - Executes inference requests
+  - Used by DeviceFlowController for transparent device switching
+
+- ServingEngine: Serving infrastructure abstraction
+  - Manages server lifecycle (start, stop, health check)
+  - Provides HTTP/gRPC API
+  - Handles batching, scheduling
+  - See rm_abstract/serving/ for ServingEngine implementations
+
+See rm_abstract/ARCHITECTURE.md for detailed explanation.
 """
 
 from abc import ABC, abstractmethod

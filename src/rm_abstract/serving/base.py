@@ -2,6 +2,29 @@
 Serving Engine Base Classes
 
 Abstract base class for all serving engines (vLLM, Triton, TorchServe, etc.)
+
+Backend vs ServingEngine:
+------------------------
+- Backend (rm_abstract/backends/): Hardware abstraction
+  - Runs inference on specific devices (GPU, CPU, NPU)
+  - Used with rm_abstract.init() for transparent device switching
+  - Best for: local development, Jupyter notebooks, device experiments
+
+- ServingEngine (this module): Serving infrastructure abstraction
+  - Manages server lifecycle (start, stop, health check)
+  - Provides HTTP/gRPC API for production deployment
+  - Supports: vLLM, Triton Inference Server, TorchServe
+  - Best for: production deployment, REST API serving
+
+See rm_abstract/ARCHITECTURE.md for detailed explanation.
+
+Example:
+    from rm_abstract.serving import create_serving_engine, ServingConfig, ServingEngineType
+    
+    config = ServingConfig(engine=ServingEngineType.VLLM, port=8000)
+    with create_serving_engine(config) as engine:
+        engine.load_model("gpt2")
+        output = engine.infer("Hello, I am")
 """
 
 from abc import ABC, abstractmethod
