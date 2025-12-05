@@ -69,7 +69,7 @@ def check_health(url: str, timeout: float = 2.0) -> bool:
     """
     try:
         with urlopen(url, timeout=timeout) as response:
-            return response.status == 200
+            return bool(response.status == 200)
     except:
         return False
 
@@ -211,10 +211,10 @@ def docker_stop_container(name: str, timeout: int = 10) -> bool:
 def docker_run(
     image: str,
     name: str,
-    ports: dict = None,
-    volumes: dict = None,
-    gpus: str = None,
-    command: list = None,
+    ports: Optional[dict] = None,
+    volumes: Optional[dict] = None,
+    gpus: Optional[str] = None,
+    command: Optional[list] = None,
     detach: bool = True,
     remove: bool = True,
 ) -> Optional[str]:
@@ -264,7 +264,7 @@ def docker_run(
     try:
         result = run_command(cmd, timeout=60)
         if result.returncode == 0:
-            container_id = result.stdout.strip()
+            container_id: str = result.stdout.strip()
             logger.info(f"Container started: {container_id[:12]}")
             return container_id
         else:

@@ -209,7 +209,7 @@ def get_resource_manager() -> Optional[ResourceManager]:
     return _global_resource_manager
 
 
-def list_plugins(available_only: bool = True) -> List[Dict[str, Any]]:
+def list_plugins(available_only: bool = True) -> Dict[str, Any]:
     """
     List all available plugins.
     
@@ -220,7 +220,7 @@ def list_plugins(available_only: bool = True) -> List[Dict[str, Any]]:
         available_only: Only show available plugins
 
     Returns:
-        List of plugin information dictionaries
+        Dictionary of plugin information
     """
     warnings.warn(
         "list_plugins() is deprecated. Use get_available_backends() instead.",

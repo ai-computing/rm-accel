@@ -4,6 +4,8 @@ RM Abstract Layer - Custom Exceptions
 Provides clear, actionable error messages for common failure scenarios.
 """
 
+from typing import Optional, List
+
 
 class RMAbstractError(Exception):
     """Base exception for all RM Abstract Layer errors"""
@@ -22,7 +24,7 @@ class InitializationError(RMAbstractError):
 class NotInitializedError(RMAbstractError):
     """RM Abstract Layer not initialized"""
     
-    def __init__(self, message: str = None):
+    def __init__(self, message: Optional[str] = None):
         super().__init__(
             message or "RM Abstract Layer not initialized. Call rm_abstract.init() first."
         )
@@ -40,7 +42,7 @@ class BackendError(RMAbstractError):
 class BackendNotAvailableError(BackendError):
     """Requested backend is not available"""
     
-    def __init__(self, backend_name: str, reason: str = None, install_hint: str = None):
+    def __init__(self, backend_name: str, reason: Optional[str] = None, install_hint: Optional[str] = None):
         self.backend_name = backend_name
         self.reason = reason
         self.install_hint = install_hint
@@ -62,7 +64,7 @@ class BackendInitError(BackendError):
 class DeviceNotFoundError(BackendError):
     """Specified device not found"""
     
-    def __init__(self, device: str, available_devices: list = None):
+    def __init__(self, device: str, available_devices: Optional[List[str]] = None):
         self.device = device
         self.available_devices = available_devices
         
@@ -85,7 +87,7 @@ class ModelError(RMAbstractError):
 class ModelLoadError(ModelError):
     """Failed to load model"""
     
-    def __init__(self, model_name: str, reason: str = None):
+    def __init__(self, model_name: str, reason: Optional[str] = None):
         self.model_name = model_name
         self.reason = reason
         
@@ -99,7 +101,7 @@ class ModelLoadError(ModelError):
 class ModelNotLoadedError(ModelError):
     """Model not loaded"""
     
-    def __init__(self, message: str = None):
+    def __init__(self, message: Optional[str] = None):
         super().__init__(
             message or "Model not loaded. Call load_model() first."
         )
@@ -122,7 +124,7 @@ class ServingError(RMAbstractError):
 class ServerStartError(ServingError):
     """Failed to start server"""
     
-    def __init__(self, engine_name: str, reason: str = None):
+    def __init__(self, engine_name: str, reason: Optional[str] = None):
         self.engine_name = engine_name
         self.reason = reason
         
@@ -136,7 +138,7 @@ class ServerStartError(ServingError):
 class ServerNotRunningError(ServingError):
     """Server is not running"""
     
-    def __init__(self, engine_name: str = None):
+    def __init__(self, engine_name: Optional[str] = None):
         message = "Server is not running"
         if engine_name:
             message = f"{engine_name} server is not running"
@@ -148,7 +150,7 @@ class ServerNotRunningError(ServingError):
 class ServerConnectionError(ServingError):
     """Cannot connect to server"""
     
-    def __init__(self, url: str, reason: str = None):
+    def __init__(self, url: str, reason: Optional[str] = None):
         self.url = url
         self.reason = reason
         
@@ -171,7 +173,7 @@ class ConfigurationError(RMAbstractError):
 class InvalidDeviceError(ConfigurationError):
     """Invalid device specification"""
     
-    def __init__(self, device: str, valid_formats: list = None):
+    def __init__(self, device: str, valid_formats: Optional[List[str]] = None):
         self.device = device
         
         message = f"Invalid device specification: '{device}'"
@@ -195,7 +197,7 @@ class DockerError(RMAbstractError):
 class DockerNotAvailableError(DockerError):
     """Docker is not available"""
     
-    def __init__(self, reason: str = None):
+    def __init__(self, reason: Optional[str] = None):
         message = "Docker is not available"
         if reason:
             message += f": {reason}"
@@ -208,7 +210,7 @@ class DockerNotAvailableError(DockerError):
 class DockerImageNotFoundError(DockerError):
     """Docker image not found"""
     
-    def __init__(self, image: str, build_hint: str = None):
+    def __init__(self, image: str, build_hint: Optional[str] = None):
         self.image = image
         
         message = f"Docker image '{image}' not found"
@@ -230,7 +232,7 @@ class DependencyError(RMAbstractError):
 class PackageNotInstalledError(DependencyError):
     """Required package not installed"""
     
-    def __init__(self, package: str, install_cmd: str = None):
+    def __init__(self, package: str, install_cmd: Optional[str] = None):
         self.package = package
         self.install_cmd = install_cmd
         
