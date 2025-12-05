@@ -236,8 +236,10 @@ python examples/serving_engines_demo.py --engine torchserve
 
 ## 🧪 테스트
 
+**97개 테스트** (unit, integration, API)
+
 ```bash
-# 전체 테스트
+# 전체 테스트 (97개)
 pytest tests/ -v
 
 # 코어 테스트만
@@ -245,6 +247,32 @@ pytest tests/test_core.py -v
 
 # API 테스트만
 pytest tests/test_api.py -v
+
+# 타입 체크
+mypy src/rm_abstract/ --ignore-missing-imports
+```
+
+---
+
+## 🛡️ 에러 처리
+
+RM Abstract Layer는 명확한 예외 계층을 제공합니다:
+
+```python
+from rm_abstract.exceptions import (
+    RMAbstractError,        # 모든 예외의 기본 클래스
+    NotInitializedError,    # 초기화 안됨
+    BackendNotAvailableError,  # 백엔드 사용 불가
+    ModelNotLoadedError,    # 모델 미로드
+    ServerStartError,       # 서버 시작 실패
+    DockerNotAvailableError,  # Docker 사용 불가
+)
+
+try:
+    rm_abstract.init(device="gpu:0")
+except BackendNotAvailableError as e:
+    print(f"GPU 사용 불가: {e}")
+    rm_abstract.init(device="cpu")  # CPU로 폴백
 ```
 
 ---
