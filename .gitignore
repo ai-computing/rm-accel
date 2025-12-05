@@ -100,3 +100,9 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db
+
+# TorchServe logs
+logs/
+*.log
+key_file.json
+
