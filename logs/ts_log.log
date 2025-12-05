@@ -1,0 +1,1014 @@
+2025-12-05T08:04:14,743 [DEBUG] main org.pytorch.serve.util.ConfigManager - xpu-smi not available or failed: Cannot run program "xpu-smi": error=2, No such file or directory
+2025-12-05T08:04:14,743 [DEBUG] main org.pytorch.serve.util.ConfigManager - xpu-smi not available or failed: Cannot run program "xpu-smi": error=2, No such file or directory
+2025-12-05T08:04:14,747 [WARN ] main org.pytorch.serve.util.ConfigManager - Your torchserve instance can access any URL to load models. When deploying to production, make sure to limit the set of allowed_urls in config.properties
+2025-12-05T08:04:14,747 [WARN ] main org.pytorch.serve.util.ConfigManager - Your torchserve instance can access any URL to load models. When deploying to production, make sure to limit the set of allowed_urls in config.properties
+2025-12-05T08:04:14,780 [INFO ] main org.pytorch.serve.util.TokenAuthorization - 
+######
+TorchServe now enforces token authorization by default.
+This requires the correct token to be provided when calling an API.
+Key file located at /home/user/rm_abstract_layer/key_file.json
+Check token authorization documenation for information: https://github.com/pytorch/serve/blob/master/docs/token_authorization_api.md 
+######
+
+2025-12-05T08:04:14,780 [INFO ] main org.pytorch.serve.util.TokenAuthorization - 
+######
+TorchServe now enforces token authorization by default.
+This requires the correct token to be provided when calling an API.
+Key file located at /home/user/rm_abstract_layer/key_file.json
+Check token authorization documenation for information: https://github.com/pytorch/serve/blob/master/docs/token_authorization_api.md 
+######
+
+2025-12-05T08:04:14,780 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager - Initializing plugins manager...
+2025-12-05T08:04:14,780 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager - Initializing plugins manager...
+2025-12-05T08:04:14,833 [INFO ] main org.pytorch.serve.metrics.configuration.MetricConfiguration - Successfully loaded metrics configuration from /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+2025-12-05T08:04:14,833 [INFO ] main org.pytorch.serve.metrics.configuration.MetricConfiguration - Successfully loaded metrics configuration from /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+2025-12-05T08:04:14,933 [INFO ] main org.pytorch.serve.ModelServer - 
+Torchserve version: 0.12.0
+TS Home: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages
+Current directory: /home/user/rm_abstract_layer
+Temp directory: /tmp
+Metrics config path: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+Number of GPUs: 1
+Number of CPUs: 32
+Max heap size: 30688 M
+Python executable: /home/user/rm_abstract_layer/.venv/bin/python3
+Config file: /home/user/.rm_abstract/torchserve_models/config.properties
+Inference address: http://0.0.0.0:8080
+Management address: http://0.0.0.0:8081
+Metrics address: http://0.0.0.0:8082
+Model Store: /home/user/.rm_abstract/torchserve_models
+Initial Models: all
+Log dir: /home/user/rm_abstract_layer/logs
+Metrics dir: /home/user/rm_abstract_layer/logs
+Netty threads: 0
+Netty client threads: 0
+Default workers per model: 1
+Blacklist Regex: N/A
+Maximum Response Size: 6553500
+Maximum Request Size: 6553500
+Limit Maximum Image Pixels: true
+Prefer direct buffer: false
+Allowed Urls: [file://.*|http(s)?://.*]
+Custom python dependency for model allowed: false
+Enable metrics API: true
+Metrics mode: LOG
+Disable system metrics: false
+Workflow Store: /home/user/.rm_abstract/torchserve_models
+CPP log config: N/A
+Model config: N/A
+System metrics command: default
+Model API enabled: false
+2025-12-05T08:04:14,933 [INFO ] main org.pytorch.serve.ModelServer - 
+Torchserve version: 0.12.0
+TS Home: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages
+Current directory: /home/user/rm_abstract_layer
+Temp directory: /tmp
+Metrics config path: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+Number of GPUs: 1
+Number of CPUs: 32
+Max heap size: 30688 M
+Python executable: /home/user/rm_abstract_layer/.venv/bin/python3
+Config file: /home/user/.rm_abstract/torchserve_models/config.properties
+Inference address: http://0.0.0.0:8080
+Management address: http://0.0.0.0:8081
+Metrics address: http://0.0.0.0:8082
+Model Store: /home/user/.rm_abstract/torchserve_models
+Initial Models: all
+Log dir: /home/user/rm_abstract_layer/logs
+Metrics dir: /home/user/rm_abstract_layer/logs
+Netty threads: 0
+Netty client threads: 0
+Default workers per model: 1
+Blacklist Regex: N/A
+Maximum Response Size: 6553500
+Maximum Request Size: 6553500
+Limit Maximum Image Pixels: true
+Prefer direct buffer: false
+Allowed Urls: [file://.*|http(s)?://.*]
+Custom python dependency for model allowed: false
+Enable metrics API: true
+Metrics mode: LOG
+Disable system metrics: false
+Workflow Store: /home/user/.rm_abstract/torchserve_models
+CPP log config: N/A
+Model config: N/A
+System metrics command: default
+Model API enabled: false
+2025-12-05T08:04:14,942 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager -  Loading snapshot serializer plugin...
+2025-12-05T08:04:14,942 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager -  Loading snapshot serializer plugin...
+2025-12-05T08:04:14,944 [DEBUG] main org.pytorch.serve.ModelServer - Loading models from model store: gpt2_model.mar
+2025-12-05T08:04:14,944 [DEBUG] main org.pytorch.serve.ModelServer - Loading models from model store: gpt2_model.mar
+2025-12-05T08:04:14,963 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Adding new version 1.0 for model gpt2_model
+2025-12-05T08:04:14,963 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Adding new version 1.0 for model gpt2_model
+2025-12-05T08:04:14,963 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Setting default version to 1.0 for model gpt2_model
+2025-12-05T08:04:14,963 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Setting default version to 1.0 for model gpt2_model
+2025-12-05T08:04:14,963 [INFO ] main org.pytorch.serve.wlm.ModelManager - Model gpt2_model loaded.
+2025-12-05T08:04:14,963 [INFO ] main org.pytorch.serve.wlm.ModelManager - Model gpt2_model loaded.
+2025-12-05T08:04:14,964 [DEBUG] main org.pytorch.serve.wlm.ModelManager - updateModel: gpt2_model, count: 1
+2025-12-05T08:04:14,964 [DEBUG] main org.pytorch.serve.wlm.ModelManager - updateModel: gpt2_model, count: 1
+2025-12-05T08:04:14,972 [INFO ] main org.pytorch.serve.ModelServer - Initialize Inference server with: EpollServerSocketChannel.
+2025-12-05T08:04:14,972 [INFO ] main org.pytorch.serve.ModelServer - Initialize Inference server with: EpollServerSocketChannel.
+2025-12-05T08:04:14,973 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9000, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:04:14,973 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9000, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:04:15,028 [INFO ] main org.pytorch.serve.ModelServer - Inference API bind to: http://0.0.0.0:8080
+2025-12-05T08:04:15,028 [INFO ] main org.pytorch.serve.ModelServer - Inference API bind to: http://0.0.0.0:8080
+2025-12-05T08:04:15,028 [INFO ] main org.pytorch.serve.ModelServer - Initialize Management server with: EpollServerSocketChannel.
+2025-12-05T08:04:15,028 [INFO ] main org.pytorch.serve.ModelServer - Initialize Management server with: EpollServerSocketChannel.
+2025-12-05T08:04:15,029 [INFO ] main org.pytorch.serve.ModelServer - Management API bind to: http://0.0.0.0:8081
+2025-12-05T08:04:15,029 [INFO ] main org.pytorch.serve.ModelServer - Management API bind to: http://0.0.0.0:8081
+2025-12-05T08:04:15,029 [INFO ] main org.pytorch.serve.ModelServer - Initialize Metrics server with: EpollServerSocketChannel.
+2025-12-05T08:04:15,029 [INFO ] main org.pytorch.serve.ModelServer - Initialize Metrics server with: EpollServerSocketChannel.
+2025-12-05T08:04:15,030 [INFO ] main org.pytorch.serve.ModelServer - Metrics API bind to: http://0.0.0.0:8082
+2025-12-05T08:04:15,030 [INFO ] main org.pytorch.serve.ModelServer - Metrics API bind to: http://0.0.0.0:8082
+2025-12-05T08:04:15,248 [WARN ] pool-3-thread-1 org.pytorch.serve.metrics.MetricCollector - worker pid is not available yet.
+2025-12-05T08:04:15,248 [WARN ] pool-3-thread-1 org.pytorch.serve.metrics.MetricCollector - worker pid is not available yet.
+2025-12-05T08:04:15,298 [ERROR] Thread-1 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:04:15,298 [ERROR] Thread-1 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:04:16,185 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9000, pid=417410
+2025-12-05T08:04:16,186 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9000
+2025-12-05T08:04:16,190 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:04:16,191 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - [PID]417410
+2025-12-05T08:04:16,191 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:04:16,191 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:04:16,192 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:04:16,192 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:04:16,196 [INFO ] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9000
+2025-12-05T08:04:16,196 [INFO ] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9000
+2025-12-05T08:04:16,203 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9000.
+2025-12-05T08:04:16,206 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764921856206
+2025-12-05T08:04:16,206 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764921856206
+2025-12-05T08:04:16,207 [INFO ] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764921856207
+2025-12-05T08:04:16,207 [INFO ] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764921856207
+2025-12-05T08:04:16,231 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:04:18,643 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:04:18,643 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:04:18,644 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:04:18,644 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:04:18,644 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:04:18,643 [WARN ] W-9000-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:04:18,645 [WARN ] W-9000-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:04:21,516 [INFO ] W-9000-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:04:21,523 [INFO ] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 5315
+2025-12-05T08:04:21,523 [INFO ] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 5315
+2025-12-05T08:04:21,523 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:04:21,523 [DEBUG] W-9000-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:04:21,526 [INFO ] W-9000-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:6556.0|#WorkerName:W-9000-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764921861
+2025-12-05T08:04:21,526 [INFO ] W-9000-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:5.0|#Level:Host|#hostname:s131,timestamp:1764921861
+2025-12-05T08:05:15,294 [ERROR] Thread-2 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:05:15,294 [ERROR] Thread-2 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:06:15,294 [ERROR] Thread-3 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:06:15,294 [ERROR] Thread-3 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:07:15,295 [ERROR] Thread-4 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:07:15,295 [ERROR] Thread-4 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:08:15,294 [ERROR] Thread-5 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:08:15,294 [ERROR] Thread-5 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:09:15,294 [ERROR] Thread-6 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:09:15,294 [ERROR] Thread-6 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:10:15,293 [ERROR] Thread-7 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:10:15,293 [ERROR] Thread-7 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:11:15,294 [ERROR] Thread-8 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:11:15,294 [ERROR] Thread-8 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:12:15,293 [ERROR] Thread-9 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:12:15,293 [ERROR] Thread-9 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:13:15,296 [ERROR] Thread-10 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:13:15,296 [ERROR] Thread-10 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:14:06,284 [DEBUG] main org.pytorch.serve.util.ConfigManager - xpu-smi not available or failed: Cannot run program "xpu-smi": error=2, No such file or directory
+2025-12-05T08:14:06,284 [DEBUG] main org.pytorch.serve.util.ConfigManager - xpu-smi not available or failed: Cannot run program "xpu-smi": error=2, No such file or directory
+2025-12-05T08:14:06,287 [WARN ] main org.pytorch.serve.util.ConfigManager - Your torchserve instance can access any URL to load models. When deploying to production, make sure to limit the set of allowed_urls in config.properties
+2025-12-05T08:14:06,287 [WARN ] main org.pytorch.serve.util.ConfigManager - Your torchserve instance can access any URL to load models. When deploying to production, make sure to limit the set of allowed_urls in config.properties
+2025-12-05T08:14:06,320 [INFO ] main org.pytorch.serve.util.TokenAuthorization - 
+######
+TorchServe now enforces token authorization by default.
+This requires the correct token to be provided when calling an API.
+Key file located at /home/user/rm_abstract_layer/key_file.json
+Check token authorization documenation for information: https://github.com/pytorch/serve/blob/master/docs/token_authorization_api.md 
+######
+
+2025-12-05T08:14:06,320 [INFO ] main org.pytorch.serve.util.TokenAuthorization - 
+######
+TorchServe now enforces token authorization by default.
+This requires the correct token to be provided when calling an API.
+Key file located at /home/user/rm_abstract_layer/key_file.json
+Check token authorization documenation for information: https://github.com/pytorch/serve/blob/master/docs/token_authorization_api.md 
+######
+
+2025-12-05T08:14:06,321 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager - Initializing plugins manager...
+2025-12-05T08:14:06,321 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager - Initializing plugins manager...
+2025-12-05T08:14:06,373 [INFO ] main org.pytorch.serve.metrics.configuration.MetricConfiguration - Successfully loaded metrics configuration from /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+2025-12-05T08:14:06,373 [INFO ] main org.pytorch.serve.metrics.configuration.MetricConfiguration - Successfully loaded metrics configuration from /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+2025-12-05T08:14:06,497 [INFO ] main org.pytorch.serve.ModelServer - 
+Torchserve version: 0.12.0
+TS Home: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages
+Current directory: /home/user/rm_abstract_layer
+Temp directory: /tmp
+Metrics config path: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+Number of GPUs: 8
+Number of CPUs: 32
+Max heap size: 30688 M
+Python executable: /home/user/rm_abstract_layer/.venv/bin/python3
+Config file: /home/user/.rm_abstract/torchserve_models/config.properties
+Inference address: http://0.0.0.0:8080
+Management address: http://0.0.0.0:8081
+Metrics address: http://0.0.0.0:8082
+Model Store: /home/user/.rm_abstract/torchserve_models
+Initial Models: all
+Log dir: /home/user/rm_abstract_layer/logs
+Metrics dir: /home/user/rm_abstract_layer/logs
+Netty threads: 0
+Netty client threads: 0
+Default workers per model: 8
+Blacklist Regex: N/A
+Maximum Response Size: 6553500
+Maximum Request Size: 6553500
+Limit Maximum Image Pixels: true
+Prefer direct buffer: false
+Allowed Urls: [file://.*|http(s)?://.*]
+Custom python dependency for model allowed: false
+Enable metrics API: true
+Metrics mode: LOG
+Disable system metrics: false
+Workflow Store: /home/user/.rm_abstract/torchserve_models
+CPP log config: N/A
+Model config: N/A
+System metrics command: default
+Model API enabled: false
+2025-12-05T08:14:06,497 [INFO ] main org.pytorch.serve.ModelServer - 
+Torchserve version: 0.12.0
+TS Home: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages
+Current directory: /home/user/rm_abstract_layer
+Temp directory: /tmp
+Metrics config path: /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml
+Number of GPUs: 8
+Number of CPUs: 32
+Max heap size: 30688 M
+Python executable: /home/user/rm_abstract_layer/.venv/bin/python3
+Config file: /home/user/.rm_abstract/torchserve_models/config.properties
+Inference address: http://0.0.0.0:8080
+Management address: http://0.0.0.0:8081
+Metrics address: http://0.0.0.0:8082
+Model Store: /home/user/.rm_abstract/torchserve_models
+Initial Models: all
+Log dir: /home/user/rm_abstract_layer/logs
+Metrics dir: /home/user/rm_abstract_layer/logs
+Netty threads: 0
+Netty client threads: 0
+Default workers per model: 8
+Blacklist Regex: N/A
+Maximum Response Size: 6553500
+Maximum Request Size: 6553500
+Limit Maximum Image Pixels: true
+Prefer direct buffer: false
+Allowed Urls: [file://.*|http(s)?://.*]
+Custom python dependency for model allowed: false
+Enable metrics API: true
+Metrics mode: LOG
+Disable system metrics: false
+Workflow Store: /home/user/.rm_abstract/torchserve_models
+CPP log config: N/A
+Model config: N/A
+System metrics command: default
+Model API enabled: false
+2025-12-05T08:14:06,506 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager -  Loading snapshot serializer plugin...
+2025-12-05T08:14:06,506 [INFO ] main org.pytorch.serve.servingsdk.impl.PluginsManager -  Loading snapshot serializer plugin...
+2025-12-05T08:14:06,507 [DEBUG] main org.pytorch.serve.ModelServer - Loading models from model store: gpt2_test.mar
+2025-12-05T08:14:06,507 [DEBUG] main org.pytorch.serve.ModelServer - Loading models from model store: gpt2_test.mar
+2025-12-05T08:14:06,526 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Adding new version 1.0 for model gpt2_test
+2025-12-05T08:14:06,526 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Adding new version 1.0 for model gpt2_test
+2025-12-05T08:14:06,527 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Setting default version to 1.0 for model gpt2_test
+2025-12-05T08:14:06,527 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Setting default version to 1.0 for model gpt2_test
+2025-12-05T08:14:06,527 [INFO ] main org.pytorch.serve.wlm.ModelManager - Model gpt2_test loaded.
+2025-12-05T08:14:06,527 [INFO ] main org.pytorch.serve.wlm.ModelManager - Model gpt2_test loaded.
+2025-12-05T08:14:06,527 [DEBUG] main org.pytorch.serve.wlm.ModelManager - updateModel: gpt2_test, count: 8
+2025-12-05T08:14:06,527 [DEBUG] main org.pytorch.serve.wlm.ModelManager - updateModel: gpt2_test, count: 8
+2025-12-05T08:14:06,534 [DEBUG] main org.pytorch.serve.ModelServer - Loading models from model store: gpt2_model.mar
+2025-12-05T08:14:06,534 [DEBUG] main org.pytorch.serve.ModelServer - Loading models from model store: gpt2_model.mar
+2025-12-05T08:14:06,536 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Adding new version 1.0 for model gpt2_model
+2025-12-05T08:14:06,536 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Adding new version 1.0 for model gpt2_model
+2025-12-05T08:14:06,537 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Setting default version to 1.0 for model gpt2_model
+2025-12-05T08:14:06,537 [DEBUG] main org.pytorch.serve.wlm.ModelVersionedRefs - Setting default version to 1.0 for model gpt2_model
+2025-12-05T08:14:06,537 [INFO ] main org.pytorch.serve.wlm.ModelManager - Model gpt2_model loaded.
+2025-12-05T08:14:06,537 [INFO ] main org.pytorch.serve.wlm.ModelManager - Model gpt2_model loaded.
+2025-12-05T08:14:06,537 [DEBUG] main org.pytorch.serve.wlm.ModelManager - updateModel: gpt2_model, count: 8
+2025-12-05T08:14:06,537 [DEBUG] main org.pytorch.serve.wlm.ModelManager - updateModel: gpt2_model, count: 8
+2025-12-05T08:14:06,538 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9003, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9000, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,539 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9004, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9001, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,539 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9005, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9007, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,539 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9002, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9006, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,540 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9009, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,540 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9010, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,539 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9005, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9007, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9001, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9000, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,539 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9004, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9003, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,539 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9002, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,540 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9010, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,538 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9006, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,542 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9013, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,540 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9009, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,542 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9012, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,542 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9008, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,542 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9013, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,543 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9014, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,542 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9012, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,543 [INFO ] main org.pytorch.serve.ModelServer - Initialize Inference server with: EpollServerSocketChannel.
+2025-12-05T08:14:06,542 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9008, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,542 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9011, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,543 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9015, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,543 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9014, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,543 [INFO ] main org.pytorch.serve.ModelServer - Initialize Inference server with: EpollServerSocketChannel.
+2025-12-05T08:14:06,542 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9011, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,543 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerLifeCycle - Worker cmdline: [/home/user/rm_abstract_layer/.venv/bin/python3, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/model_service_worker.py, --sock-type, unix, --sock-name, /tmp/.ts.sock.9015, --metrics-config, /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml]
+2025-12-05T08:14:06,639 [INFO ] main org.pytorch.serve.ModelServer - Inference API bind to: http://0.0.0.0:8080
+2025-12-05T08:14:06,639 [INFO ] main org.pytorch.serve.ModelServer - Inference API bind to: http://0.0.0.0:8080
+2025-12-05T08:14:06,640 [INFO ] main org.pytorch.serve.ModelServer - Initialize Management server with: EpollServerSocketChannel.
+2025-12-05T08:14:06,640 [INFO ] main org.pytorch.serve.ModelServer - Initialize Management server with: EpollServerSocketChannel.
+2025-12-05T08:14:06,641 [INFO ] main org.pytorch.serve.ModelServer - Management API bind to: http://0.0.0.0:8081
+2025-12-05T08:14:06,641 [INFO ] main org.pytorch.serve.ModelServer - Management API bind to: http://0.0.0.0:8081
+2025-12-05T08:14:06,642 [INFO ] main org.pytorch.serve.ModelServer - Initialize Metrics server with: EpollServerSocketChannel.
+2025-12-05T08:14:06,642 [INFO ] main org.pytorch.serve.ModelServer - Initialize Metrics server with: EpollServerSocketChannel.
+2025-12-05T08:14:06,645 [INFO ] main org.pytorch.serve.ModelServer - Metrics API bind to: http://0.0.0.0:8082
+2025-12-05T08:14:06,645 [INFO ] main org.pytorch.serve.ModelServer - Metrics API bind to: http://0.0.0.0:8082
+2025-12-05T08:14:06,872 [WARN ] pool-3-thread-1 org.pytorch.serve.metrics.MetricCollector - worker pid is not available yet.
+2025-12-05T08:14:06,872 [WARN ] pool-3-thread-1 org.pytorch.serve.metrics.MetricCollector - worker pid is not available yet.
+2025-12-05T08:14:06,916 [ERROR] Thread-1 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:14:06,916 [ERROR] Thread-1 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:14:07,929 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9009, pid=420390
+2025-12-05T08:14:07,930 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9009
+2025-12-05T08:14:07,935 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:07,935 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - [PID]420390
+2025-12-05T08:14:07,936 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:07,936 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:07,936 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9009-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:07,936 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9009-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:07,940 [INFO ] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9009
+2025-12-05T08:14:07,940 [INFO ] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9009
+2025-12-05T08:14:07,948 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9009.
+2025-12-05T08:14:07,951 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922447951
+2025-12-05T08:14:07,951 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922447951
+2025-12-05T08:14:07,953 [INFO ] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922447953
+2025-12-05T08:14:07,953 [INFO ] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922447953
+2025-12-05T08:14:07,976 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,003 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9007, pid=420385
+2025-12-05T08:14:08,004 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9007
+2025-12-05T08:14:08,009 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,010 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - [PID]420385
+2025-12-05T08:14:08,010 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,010 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,010 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9007-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,010 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9007-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,010 [INFO ] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9007
+2025-12-05T08:14:08,010 [INFO ] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9007
+2025-12-05T08:14:08,013 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9007.
+2025-12-05T08:14:08,013 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448013
+2025-12-05T08:14:08,013 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448013
+2025-12-05T08:14:08,013 [INFO ] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448013
+2025-12-05T08:14:08,013 [INFO ] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448013
+2025-12-05T08:14:08,024 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9014, pid=420442
+2025-12-05T08:14:08,024 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:08,025 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9014
+2025-12-05T08:14:08,030 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,030 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - [PID]420442
+2025-12-05T08:14:08,030 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,031 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,031 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9014-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,031 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9014-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,031 [INFO ] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9014
+2025-12-05T08:14:08,031 [INFO ] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9014
+2025-12-05T08:14:08,034 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448034
+2025-12-05T08:14:08,034 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9014.
+2025-12-05T08:14:08,034 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448034
+2025-12-05T08:14:08,034 [INFO ] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448034
+2025-12-05T08:14:08,034 [INFO ] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448034
+2025-12-05T08:14:08,045 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,050 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9011, pid=420444
+2025-12-05T08:14:08,050 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9015, pid=420441
+2025-12-05T08:14:08,050 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9011
+2025-12-05T08:14:08,050 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9015
+2025-12-05T08:14:08,055 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,055 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,055 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - [PID]420444
+2025-12-05T08:14:08,056 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9011-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,056 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,056 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - [PID]420441
+2025-12-05T08:14:08,056 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9011-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,056 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,056 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9015-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,056 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,056 [INFO ] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9011
+2025-12-05T08:14:08,056 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9015-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,056 [INFO ] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9011
+2025-12-05T08:14:08,056 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,056 [INFO ] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9015
+2025-12-05T08:14:08,056 [INFO ] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9015
+2025-12-05T08:14:08,058 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9011.
+2025-12-05T08:14:08,058 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448058
+2025-12-05T08:14:08,058 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448058
+2025-12-05T08:14:08,059 [INFO ] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448059
+2025-12-05T08:14:08,059 [INFO ] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448059
+2025-12-05T08:14:08,060 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9015.
+2025-12-05T08:14:08,060 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448060
+2025-12-05T08:14:08,060 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448060
+2025-12-05T08:14:08,060 [INFO ] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448060
+2025-12-05T08:14:08,060 [INFO ] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448060
+2025-12-05T08:14:08,061 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9010, pid=420389
+2025-12-05T08:14:08,061 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9010
+2025-12-05T08:14:08,061 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9000, pid=420439
+2025-12-05T08:14:08,062 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9000
+2025-12-05T08:14:08,063 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9006, pid=420445
+2025-12-05T08:14:08,064 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9006
+2025-12-05T08:14:08,067 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,067 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - [PID]420389
+2025-12-05T08:14:08,067 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,067 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,067 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - [PID]420439
+2025-12-05T08:14:08,068 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,068 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,068 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,068 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,068 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9010-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,068 [INFO ] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9000
+2025-12-05T08:14:08,068 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,068 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9010-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,068 [INFO ] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9000
+2025-12-05T08:14:08,068 [INFO ] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9010
+2025-12-05T08:14:08,068 [INFO ] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9010
+2025-12-05T08:14:08,068 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9008, pid=420440
+2025-12-05T08:14:08,069 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9008
+2025-12-05T08:14:08,074 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,076 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - [PID]420445
+2025-12-05T08:14:08,076 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448076
+2025-12-05T08:14:08,076 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448076
+2025-12-05T08:14:08,076 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9000.
+2025-12-05T08:14:08,076 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,076 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,076 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,076 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448076
+2025-12-05T08:14:08,076 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448076
+2025-12-05T08:14:08,076 [INFO ] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448076
+2025-12-05T08:14:08,076 [INFO ] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448076
+2025-12-05T08:14:08,077 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9006-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,077 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9006-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,077 [INFO ] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9006
+2025-12-05T08:14:08,076 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9010.
+2025-12-05T08:14:08,077 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,076 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - [PID]420440
+2025-12-05T08:14:08,077 [INFO ] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9006
+2025-12-05T08:14:08,076 [INFO ] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448076
+2025-12-05T08:14:08,077 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,077 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9008-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,077 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,076 [INFO ] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448076
+2025-12-05T08:14:08,077 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9008-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,077 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9003, pid=420387
+2025-12-05T08:14:08,078 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,078 [INFO ] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9008
+2025-12-05T08:14:08,078 [INFO ] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9008
+2025-12-05T08:14:08,090 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9006.
+2025-12-05T08:14:08,090 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448090
+2025-12-05T08:14:08,083 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9012, pid=420391
+2025-12-05T08:14:08,083 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9003
+2025-12-05T08:14:08,090 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9001, pid=420386
+2025-12-05T08:14:08,090 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9012
+2025-12-05T08:14:08,090 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,090 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448090
+2025-12-05T08:14:08,090 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,090 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9001
+2025-12-05T08:14:08,091 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - [PID]420387
+2025-12-05T08:14:08,090 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,091 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,091 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9003-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,090 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9013, pid=420443
+2025-12-05T08:14:08,091 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9003-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,092 [INFO ] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448091
+2025-12-05T08:14:08,091 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,091 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - [PID]420391
+2025-12-05T08:14:08,098 [INFO ] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9003
+2025-12-05T08:14:08,098 [INFO ] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9003
+2025-12-05T08:14:08,092 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9013
+2025-12-05T08:14:08,092 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,098 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9005, pid=420384
+2025-12-05T08:14:08,092 [INFO ] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448091
+2025-12-05T08:14:08,103 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,103 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9012-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,098 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9002, pid=420392
+2025-12-05T08:14:08,103 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:08,103 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9012-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,104 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,104 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - [PID]420386
+2025-12-05T08:14:08,104 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448104
+2025-12-05T08:14:08,104 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9001-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,104 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9008.
+2025-12-05T08:14:08,104 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,104 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9005
+2025-12-05T08:14:08,104 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448104
+2025-12-05T08:14:08,104 [INFO ] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9012
+2025-12-05T08:14:08,104 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:08,104 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9001-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,104 [INFO ] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9012
+2025-12-05T08:14:08,104 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,105 [INFO ] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9001
+2025-12-05T08:14:08,105 [INFO ] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448105
+2025-12-05T08:14:08,103 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - s_name_part0=/tmp/.ts.sock, s_name_part1=9004, pid=420388
+2025-12-05T08:14:08,105 [INFO ] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448105
+2025-12-05T08:14:08,106 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9004
+2025-12-05T08:14:08,106 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448106
+2025-12-05T08:14:08,106 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,104 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Listening on port: /tmp/.ts.sock.9002
+2025-12-05T08:14:08,105 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,104 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - [PID]420443
+2025-12-05T08:14:08,106 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - [PID]420388
+2025-12-05T08:14:08,106 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9003.
+2025-12-05T08:14:08,106 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Successfully loaded /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/configs/metrics.yaml.
+2025-12-05T08:14:08,106 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,107 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - [PID]420392
+2025-12-05T08:14:08,107 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,107 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9002-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,107 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9002-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,107 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,106 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448106
+2025-12-05T08:14:08,107 [INFO ] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9002
+2025-12-05T08:14:08,106 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,105 [INFO ] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9001
+2025-12-05T08:14:08,106 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,107 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9004-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,107 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9004-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,107 [INFO ] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9004
+2025-12-05T08:14:08,106 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - [PID]420384
+2025-12-05T08:14:08,107 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,106 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9013-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,106 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9013-gpt2_model_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,107 [INFO ] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9002
+2025-12-05T08:14:08,108 [INFO ] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448108
+2025-12-05T08:14:08,108 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Torch worker started.
+2025-12-05T08:14:08,107 [INFO ] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9004
+2025-12-05T08:14:08,108 [INFO ] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448108
+2025-12-05T08:14:08,110 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9005-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,111 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,111 [INFO ] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9013
+2025-12-05T08:14:08,111 [INFO ] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9013
+2025-12-05T08:14:08,111 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Python runtime: 3.11.14
+2025-12-05T08:14:08,110 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9005-gpt2_test_1.0 State change null -> WORKER_STARTED
+2025-12-05T08:14:08,119 [INFO ] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9005
+2025-12-05T08:14:08,119 [INFO ] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Connecting to: /tmp/.ts.sock.9005
+2025-12-05T08:14:08,119 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9001.
+2025-12-05T08:14:08,119 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448119
+2025-12-05T08:14:08,119 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448119
+2025-12-05T08:14:08,119 [INFO ] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448119
+2025-12-05T08:14:08,119 [INFO ] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448119
+2025-12-05T08:14:08,120 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448120
+2025-12-05T08:14:08,120 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448120
+2025-12-05T08:14:08,120 [INFO ] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448120
+2025-12-05T08:14:08,120 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,120 [INFO ] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448120
+2025-12-05T08:14:08,120 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9012.
+2025-12-05T08:14:08,136 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9002.
+2025-12-05T08:14:08,136 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9004.
+2025-12-05T08:14:08,129 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:08,137 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448137
+2025-12-05T08:14:08,137 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448137
+2025-12-05T08:14:08,138 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448138
+2025-12-05T08:14:08,138 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448138
+2025-12-05T08:14:08,138 [INFO ] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448138
+2025-12-05T08:14:08,138 [INFO ] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448138
+2025-12-05T08:14:08,137 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:08,138 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448138
+2025-12-05T08:14:08,137 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9013.
+2025-12-05T08:14:08,143 [INFO ] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448138
+2025-12-05T08:14:08,138 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448138
+2025-12-05T08:14:08,143 [INFO ] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448138
+2025-12-05T08:14:08,144 [INFO ] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448144
+2025-12-05T08:14:08,144 [INFO ] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448144
+2025-12-05T08:14:08,144 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Connection accepted: /tmp/.ts.sock.9005.
+2025-12-05T08:14:08,144 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448144
+2025-12-05T08:14:08,144 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Flushing req.cmd LOAD repeats 1 to backend at: 1764922448144
+2025-12-05T08:14:08,145 [INFO ] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448144
+2025-12-05T08:14:08,145 [INFO ] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Looping backend response at: 1764922448144
+2025-12-05T08:14:08,155 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,165 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - model_name: gpt2_model, batchSize: 1
+2025-12-05T08:14:08,165 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:08,165 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:08,165 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - model_name: gpt2_test, batchSize: 1
+2025-12-05T08:14:11,116 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,116 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,116 [WARN ] W-9009-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,117 [WARN ] W-9009-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,117 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,117 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,117 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,218 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,218 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,218 [WARN ] W-9014-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,218 [WARN ] W-9014-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,219 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,219 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,219 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,363 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,363 [WARN ] W-9007-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,364 [WARN ] W-9007-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,364 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,364 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,364 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,364 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,467 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,468 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,468 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,468 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,468 [WARN ] W-9000-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,469 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,469 [WARN ] W-9000-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,506 [WARN ] W-9006-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,506 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,507 [WARN ] W-9006-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,507 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,507 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,507 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,507 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,524 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,524 [WARN ] W-9011-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,524 [WARN ] W-9011-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,525 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,525 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,525 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,525 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,564 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,564 [WARN ] W-9002-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,564 [WARN ] W-9002-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,564 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,565 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,565 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,565 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,569 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,569 [WARN ] W-9010-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,569 [WARN ] W-9010-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,569 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,570 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,570 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,570 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,576 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,575 [WARN ] W-9008-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,576 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,577 [WARN ] W-9008-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,577 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,577 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,578 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,594 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,594 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,594 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,594 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,594 [WARN ] W-9013-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,595 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,595 [WARN ] W-9013-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,617 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,618 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,618 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,618 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,617 [WARN ] W-9003-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,618 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,618 [WARN ] W-9003-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,627 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,627 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,627 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,627 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,627 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,627 [WARN ] W-9015-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,627 [WARN ] W-9015-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,640 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,640 [WARN ] W-9012-gpt2_model_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,640 [WARN ] W-9012-gpt2_model_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,640 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,640 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,640 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,641 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,651 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,651 [WARN ] W-9005-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,651 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,651 [WARN ] W-9005-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,651 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,652 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,652 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,668 [WARN ] W-9004-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,668 [WARN ] W-9004-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,668 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,668 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,669 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,669 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,669 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:11,679 [WARN ] W-9001-gpt2_test_1.0-stderr MODEL_LOG - /home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/torch/__init__.py:1617: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+2025-12-05T08:14:11,679 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Enabled tensor cores
+2025-12-05T08:14:11,679 [WARN ] W-9001-gpt2_test_1.0-stderr MODEL_LOG -   _C._set_float32_matmul_precision(precision)
+2025-12-05T08:14:11,679 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - OpenVINO is not enabled
+2025-12-05T08:14:11,679 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - proceeding without onnxruntime
+2025-12-05T08:14:11,679 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Torch TensorRT not enabled
+2025-12-05T08:14:11,679 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Loading model: gpt2
+2025-12-05T08:14:19,291 [INFO ] W-9007-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:19,299 [INFO ] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11285
+2025-12-05T08:14:19,299 [INFO ] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11285
+2025-12-05T08:14:19,299 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9007-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:19,299 [DEBUG] W-9007-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9007-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:19,302 [INFO ] W-9007-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:12765.0|#WorkerName:W-9007-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922459
+2025-12-05T08:14:19,302 [INFO ] W-9007-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:4.0|#Level:Host|#hostname:s131,timestamp:1764922459
+2025-12-05T08:14:19,726 [INFO ] W-9006-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:19,726 [INFO ] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11622
+2025-12-05T08:14:19,726 [INFO ] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11622
+2025-12-05T08:14:19,726 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9006-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:19,726 [DEBUG] W-9006-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9006-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:19,727 [INFO ] W-9006-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13193.0|#WorkerName:W-9006-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922459
+2025-12-05T08:14:19,727 [INFO ] W-9006-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:15.0|#Level:Host|#hostname:s131,timestamp:1764922459
+2025-12-05T08:14:19,799 [INFO ] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11723
+2025-12-05T08:14:19,799 [INFO ] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11723
+2025-12-05T08:14:19,799 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:19,799 [DEBUG] W-9000-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9000-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:19,799 [INFO ] W-9000-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13268.0|#WorkerName:W-9000-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922459
+2025-12-05T08:14:19,799 [INFO ] W-9000-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:0.0|#Level:Host|#hostname:s131,timestamp:1764922459
+2025-12-05T08:14:19,805 [INFO ] W-9000-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,005 [INFO ] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11861
+2025-12-05T08:14:20,005 [INFO ] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11861
+2025-12-05T08:14:20,006 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9004-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,006 [DEBUG] W-9004-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9004-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,005 [INFO ] W-9004-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,006 [INFO ] W-9004-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13473.0|#WorkerName:W-9004-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,006 [INFO ] W-9004-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:7.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,092 [INFO ] W-9002-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,092 [INFO ] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11949
+2025-12-05T08:14:20,092 [INFO ] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 11949
+2025-12-05T08:14:20,092 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9002-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,092 [DEBUG] W-9002-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9002-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,093 [INFO ] W-9002-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13560.0|#WorkerName:W-9002-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,093 [INFO ] W-9002-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:6.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,167 [INFO ] W-9001-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,168 [INFO ] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12049
+2025-12-05T08:14:20,168 [INFO ] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12049
+2025-12-05T08:14:20,168 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9001-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,168 [DEBUG] W-9001-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9001-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,169 [INFO ] W-9001-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13636.0|#WorkerName:W-9001-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,169 [INFO ] W-9001-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:1.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,185 [INFO ] W-9014-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,185 [INFO ] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12151
+2025-12-05T08:14:20,185 [INFO ] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12151
+2025-12-05T08:14:20,185 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9014-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,185 [DEBUG] W-9014-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9014-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,186 [INFO ] W-9014-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13647.0|#WorkerName:W-9014-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,186 [INFO ] W-9014-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:1.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,257 [INFO ] W-9009-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,257 [INFO ] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12304
+2025-12-05T08:14:20,257 [INFO ] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12304
+2025-12-05T08:14:20,257 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9009-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,257 [DEBUG] W-9009-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9009-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,257 [INFO ] W-9009-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13719.0|#WorkerName:W-9009-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,258 [INFO ] W-9009-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:3.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,440 [INFO ] W-9005-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,441 [INFO ] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12296
+2025-12-05T08:14:20,441 [INFO ] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12296
+2025-12-05T08:14:20,441 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9005-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,441 [DEBUG] W-9005-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9005-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,441 [INFO ] W-9005-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13908.0|#WorkerName:W-9005-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,441 [INFO ] W-9005-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:1.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,514 [INFO ] W-9003-gpt2_test_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,514 [INFO ] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12403
+2025-12-05T08:14:20,514 [INFO ] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12403
+2025-12-05T08:14:20,515 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9003-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,515 [DEBUG] W-9003-gpt2_test_1.0 org.pytorch.serve.wlm.WorkerThread - W-9003-gpt2_test_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,515 [INFO ] W-9003-gpt2_test_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:13983.0|#WorkerName:W-9003-gpt2_test_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,515 [INFO ] W-9003-gpt2_test_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:6.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,760 [INFO ] W-9011-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:20,760 [INFO ] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12701
+2025-12-05T08:14:20,760 [INFO ] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12701
+2025-12-05T08:14:20,761 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9011-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,761 [DEBUG] W-9011-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9011-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:20,761 [INFO ] W-9011-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:14223.0|#WorkerName:W-9011-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:20,761 [INFO ] W-9011-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:2.0|#Level:Host|#hostname:s131,timestamp:1764922460
+2025-12-05T08:14:21,025 [INFO ] W-9013-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:21,025 [INFO ] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12887
+2025-12-05T08:14:21,025 [INFO ] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12887
+2025-12-05T08:14:21,026 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9013-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,026 [DEBUG] W-9013-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9013-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,026 [INFO ] W-9013-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:14487.0|#WorkerName:W-9013-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,026 [INFO ] W-9013-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:2.0|#Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,062 [INFO ] W-9012-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:21,063 [INFO ] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12939
+2025-12-05T08:14:21,063 [INFO ] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 12939
+2025-12-05T08:14:21,063 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9012-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,063 [DEBUG] W-9012-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9012-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,063 [INFO ] W-9012-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:14525.0|#WorkerName:W-9012-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,063 [INFO ] W-9012-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:4.0|#Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,080 [INFO ] W-9015-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:21,080 [INFO ] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 13020
+2025-12-05T08:14:21,080 [INFO ] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 13020
+2025-12-05T08:14:21,081 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9015-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,081 [DEBUG] W-9015-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9015-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,081 [INFO ] W-9015-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:14542.0|#WorkerName:W-9015-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,081 [INFO ] W-9015-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:1.0|#Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,239 [INFO ] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 13161
+2025-12-05T08:14:21,238 [INFO ] W-9010-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:21,239 [INFO ] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 13161
+2025-12-05T08:14:21,239 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9010-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,239 [DEBUG] W-9010-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9010-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,239 [INFO ] W-9010-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:14701.0|#WorkerName:W-9010-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,239 [INFO ] W-9010-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:2.0|#Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,278 [INFO ] W-9008-gpt2_model_1.0-stdout MODEL_LOG - Model loaded successfully
+2025-12-05T08:14:21,278 [INFO ] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 13172
+2025-12-05T08:14:21,278 [INFO ] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - Backend response time: 13172
+2025-12-05T08:14:21,278 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9008-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,278 [DEBUG] W-9008-gpt2_model_1.0 org.pytorch.serve.wlm.WorkerThread - W-9008-gpt2_model_1.0 State change WORKER_STARTED -> WORKER_MODEL_LOADED
+2025-12-05T08:14:21,278 [INFO ] W-9008-gpt2_model_1.0 TS_METRICS - WorkerLoadTime.Milliseconds:14741.0|#WorkerName:W-9008-gpt2_model_1.0,Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:14:21,278 [INFO ] W-9008-gpt2_model_1.0 TS_METRICS - WorkerThreadTime.Milliseconds:2.0|#Level:Host|#hostname:s131,timestamp:1764922461
+2025-12-05T08:15:06,915 [ERROR] Thread-2 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+
+2025-12-05T08:15:06,915 [ERROR] Thread-2 org.pytorch.serve.metrics.MetricCollector - Traceback (most recent call last):
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/metric_collector.py", line 27, in <module>
+    system_metrics.collect_all(sys.modules['ts.metrics.system_metrics'], arguments.gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 119, in collect_all
+    value(num_of_gpu)
+  File "/home/user/rm_abstract_layer/.venv/lib/python3.11/site-packages/ts/metrics/system_metrics.py", line 64, in gpu_utilization
+    import nvgpu
+ModuleNotFoundError: No module named 'nvgpu'
+

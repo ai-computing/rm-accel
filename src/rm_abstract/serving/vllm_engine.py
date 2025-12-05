@@ -131,43 +131,18 @@ class VLLMServingEngine(ServingEngine):
     
     def start_server(self) -> None:
         """
-        Start vLLM OpenAI-compatible server
+        Start vLLM engine
         
-        Uses vLLM's built-in API server
+        vLLM은 라이브러리 방식으로 동작하므로 별도의 서버 프로세스가 필요 없습니다.
+        이 메서드는 context manager 호환성을 위해 제공됩니다.
         """
         if self._is_running:
             logger.warning("Server already running")
             return
         
-        import subprocess
-        import sys
-        
-        # Build server command
-        cmd = [
-            sys.executable, "-m", "vllm.entrypoints.openai.api_server",
-            "--model", self.config.model_name or self.config.model_path,
-            "--host", self.config.host,
-            "--port", str(self.config.port),
-            "--tensor-parallel-size", str(self.config.tensor_parallel_size),
-        ]
-        
-        if self.config.device == DeviceTarget.NPU_RBLN:
-            cmd.extend(["--device", "rbln"])
-        
-        # Add extra options
-        for key, value in self.config.extra_options.items():
-            cmd.extend([f"--{key.replace('_', '-')}", str(value)])
-        
-        logger.info(f"Starting vLLM server: {' '.join(cmd)}")
-        
-        self._server = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        # vLLM은 라이브러리 방식이므로 바로 '실행 중'으로 표시
         self._is_running = True
-        
-        logger.info(f"vLLM server started on {self.config.host}:{self.config.port}")
+        logger.info("vLLM engine ready (library mode)")
     
     def stop_server(self) -> None:
         """Stop vLLM server"""
