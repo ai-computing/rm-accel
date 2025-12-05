@@ -17,6 +17,12 @@ import os
 import tempfile
 
 from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from ..exceptions import (
+    ModelLoadError,
+    ConfigurationError,
+    ServerStartError,
+    PackageNotInstalledError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -285,7 +291,7 @@ class LLMHandler(BaseHandler):
             
             if result.returncode != 0:
                 logger.error(f"Failed to create archive: {result.stderr}")
-                raise RuntimeError(f"torch-model-archiver failed: {result.stderr}")
+                raise ModelLoadError(model_name, reason=f"torch-model-archiver failed: {result.stderr}")
             
             self._mar_file = str(mar_path)
             logger.info(f"Created model archive: {mar_path}")
@@ -310,7 +316,7 @@ class LLMHandler(BaseHandler):
             Path to config file
         """
         if self._model_store is None:
-            raise RuntimeError("Model store not set")
+            raise ConfigurationError("Model store not set. Call setup_model_store() first.")
         
         config_content = f'''inference_address=http://{self.config.host}:{self.config.port}
 management_address=http://{self.config.host}:{self.config.port + 1}
@@ -355,17 +361,17 @@ rbln_device_id={self.config.device_id}
         # Check Java (required for TorchServe)
         java_cmd = shutil.which("java")
         if java_cmd is None:
-            raise RuntimeError(
-                "Java not found. TorchServe requires Java 11+.\n"
-                "Install: sudo apt install openjdk-11-jdk"
+            raise PackageNotInstalledError(
+                package="Java 11+",
+                install_cmd="sudo apt install openjdk-11-jdk"
             )
         
         # Check if torchserve is available
         torchserve_cmd = shutil.which("torchserve")
         if torchserve_cmd is None:
-            raise RuntimeError(
-                "torchserve not found. Install with:\n"
-                "  pip install torchserve torch-model-archiver"
+            raise PackageNotInstalledError(
+                package="torchserve",
+                install_cmd="pip install torchserve torch-model-archiver"
             )
         
         # Stop existing server first
@@ -389,7 +395,7 @@ rbln_device_id={self.config.device_id}
         
         if result.returncode != 0:
             logger.error(f"Failed to start TorchServe: {result.stderr}")
-            raise RuntimeError(f"TorchServe start failed: {result.stderr}")
+            raise ServerStartError("TorchServe", reason=result.stderr)
         
         self._is_running = True
         self._wait_for_server()

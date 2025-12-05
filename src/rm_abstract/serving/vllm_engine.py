@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Union
 import logging
 
 from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from ..exceptions import ModelNotLoadedError, ServerNotRunningError, BackendNotAvailableError
 
 logger = logging.getLogger(__name__)
 
@@ -111,10 +112,10 @@ class VLLMServingEngine(ServingEngine):
             # vLLM-RBLN uses different initialization
             # Note: vllm-rbln package provides RBLN support
             # Standard vLLM doesn't support 'device' parameter
-            raise RuntimeError(
-                "RBLN NPU requires vllm-rbln package which provides native RBLN support. "
-                "Install with: pip install vllm-rbln\n"
-                "Then use the standard vLLM API - device selection is automatic."
+            raise BackendNotAvailableError(
+                backend_name="vllm-rbln",
+                reason="RBLN NPU requires vllm-rbln package which provides native RBLN support",
+                install_hint="pip install vllm-rbln"
             )
         
         # Add extra options
@@ -165,7 +166,7 @@ class VLLMServingEngine(ServingEngine):
             Generated text(s)
         """
         if self._llm is None:
-            raise RuntimeError("Model not loaded. Call load_model() first.")
+            raise ModelNotLoadedError()
         
         from vllm import SamplingParams
         
@@ -205,7 +206,7 @@ class VLLMServingEngine(ServingEngine):
         import requests
         
         if not self._is_running:
-            raise RuntimeError("Server not running. Call start_server() first.")
+            raise ServerNotRunningError("vLLM")
         
         url = f"http://{self.config.host}:{self.config.port}/v1/completions"
         

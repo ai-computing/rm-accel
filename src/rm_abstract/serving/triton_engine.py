@@ -16,6 +16,12 @@ import json
 import os
 
 from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from ..exceptions import (
+    ModelNotLoadedError,
+    ServerStartError,
+    DockerNotAvailableError,
+    ConfigurationError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -122,7 +128,7 @@ class TritonServingEngine(ServingEngine):
             Path to config file
         """
         if self._model_repository is None:
-            raise RuntimeError("Model repository not set. Call setup_model_repository() first.")
+            raise ConfigurationError("Model repository not set. Call setup_model_repository() first.")
         
         model_dir = Path(self._model_repository) / model_name
         model_dir.mkdir(parents=True, exist_ok=True)
@@ -360,9 +366,8 @@ class TritonPythonModel:
         if docker_cmd:
             return self._start_docker_server()
         
-        raise RuntimeError(
-            "Neither tritonserver nor Docker found. "
-            "Install Docker to use Triton: curl -fsSL https://get.docker.com | sh"
+        raise DockerNotAvailableError(
+            reason="Neither tritonserver nor Docker found"
         )
     
     def _start_local_server(self, triton_cmd: str) -> None:
@@ -428,7 +433,7 @@ class TritonPythonModel:
             result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode != 0:
-            raise RuntimeError(f"Failed to start Docker: {result.stderr}")
+            raise ServerStartError("Triton", reason=result.stderr)
         
         self._container_id = result.stdout.strip()
         self._is_running = True

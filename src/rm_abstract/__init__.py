@@ -14,6 +14,12 @@ from .core.resource_manager import ResourceManager
 from .core.plugin import PluginMetadata
 from .system_info import get_system_info, print_system_info, get_quick_status
 from .system_validator import validate_system, print_validation_report, get_working_components
+from .exceptions import (
+    RMAbstractError,
+    NotInitializedError,
+    BackendNotAvailableError,
+    InvalidDeviceError,
+)
 
 __version__ = "0.1.0"
 __all__ = [
@@ -32,6 +38,11 @@ __all__ = [
     "validate_system",
     "print_validation_report",
     "get_working_components",
+    # Exceptions
+    "RMAbstractError",
+    "NotInitializedError",
+    "BackendNotAvailableError",
+    "InvalidDeviceError",
 ]
 
 # Global controller instance (legacy)
@@ -126,7 +137,7 @@ def switch_device(device: str) -> None:
     global _global_controller
 
     if _global_controller is None:
-        raise RuntimeError("RM Abstract Layer not initialized. Call init() first.")
+        raise NotInitializedError()
 
     _global_controller.switch_device(device)
 
@@ -141,7 +152,7 @@ def get_device_info() -> Dict[str, Any]:
     global _global_controller
 
     if _global_controller is None:
-        raise RuntimeError("RM Abstract Layer not initialized. Call init() first.")
+        raise NotInitializedError()
 
     return _global_controller.get_device_info()
 
