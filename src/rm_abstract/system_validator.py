@@ -13,52 +13,11 @@ Usage:
 
 import time
 import logging
-from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
-from enum import Enum
+
+from .validators.base import TestStatus, TestResult, ValidationReport
 
 logger = logging.getLogger(__name__)
-
-
-class TestStatus(Enum):
-    PASS = "pass"
-    FAIL = "fail"
-    SKIP = "skip"
-    WARN = "warn"
-
-
-@dataclass
-class TestResult:
-    """Single test result"""
-    name: str
-    status: TestStatus
-    message: str = ""
-    duration_ms: float = 0
-    details: Dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class ValidationReport:
-    """Complete validation report"""
-    timestamp: str = ""
-    total_tests: int = 0
-    passed: int = 0
-    failed: int = 0
-    skipped: int = 0
-    warnings: int = 0
-    results: List[TestResult] = field(default_factory=list)
-    
-    def add_result(self, result: TestResult):
-        self.results.append(result)
-        self.total_tests += 1
-        if result.status == TestStatus.PASS:
-            self.passed += 1
-        elif result.status == TestStatus.FAIL:
-            self.failed += 1
-        elif result.status == TestStatus.SKIP:
-            self.skipped += 1
-        elif result.status == TestStatus.WARN:
-            self.warnings += 1
 
 
 def _test_gpu_available() -> TestResult:
