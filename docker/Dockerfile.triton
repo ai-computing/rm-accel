@@ -1,0 +1,20 @@
+# Triton Inference Server with HuggingFace Transformers
+# Triton 23.10 uses CUDA 12.2
+FROM nvcr.io/nvidia/tritonserver:23.10-py3
+
+# Install PyTorch with matching CUDA version (cu121 is compatible)
+RUN pip install --no-cache-dir \
+    torch==2.2.0 --index-url https://download.pytorch.org/whl/cu121
+
+# Install other dependencies
+RUN pip install --no-cache-dir \
+    transformers \
+    accelerate \
+    sentencepiece \
+    protobuf
+
+# Set environment variables
+ENV TRANSFORMERS_CACHE=/models/.cache
+ENV HF_HOME=/models/.cache
+
+ENTRYPOINT ["tritonserver"]

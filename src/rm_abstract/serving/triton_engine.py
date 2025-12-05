@@ -46,7 +46,10 @@ class TritonServingEngine(ServingEngine):
         engine.stop_server()   # Docker 자동 종료
     """
     
-    DOCKER_IMAGE = "nvcr.io/nvidia/tritonserver:24.01-py3"
+    # Use custom image with transformers pre-installed
+    # Build with: docker build -t rm-triton-server:latest -f docker/Dockerfile.triton docker/
+    DOCKER_IMAGE = "rm-triton-server:latest"
+    DOCKER_IMAGE_FALLBACK = "nvcr.io/nvidia/tritonserver:23.10-py3"
     CONTAINER_NAME = "rm_abstract_triton"
     
     def __init__(self, config: ServingConfig):
