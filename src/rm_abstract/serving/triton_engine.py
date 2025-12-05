@@ -362,17 +362,13 @@ class TritonPythonModel:
             self.setup_model_repository("/tmp/triton_models")
         
         import subprocess
-        import shutil
-        import time
-        
         # 방법 1: 로컬 tritonserver
-        triton_cmd = shutil.which("tritonserver")
+        triton_cmd = find_executable("tritonserver")
         if triton_cmd:
             return self._start_local_server(triton_cmd)
         
         # 방법 2: Docker
-        docker_cmd = shutil.which("docker")
-        if docker_cmd:
+        if is_docker_available():
             return self._start_docker_server()
         
         raise DockerNotAvailableError(
@@ -381,8 +377,6 @@ class TritonPythonModel:
     
     def _start_local_server(self, triton_cmd: str) -> None:
         """로컬 tritonserver 실행"""
-        import subprocess
-        
         cmd = [
             triton_cmd,
             f"--model-repository={self._model_repository}",
@@ -391,60 +385,39 @@ class TritonPythonModel:
             f"--metrics-port={self.config.port + 2}",
         ]
         
-        logger.info(f"Starting local Triton server: {' '.join(cmd)}")
-        
-        self._server = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        self._server = start_background_process(cmd)
         self._is_running = True
         self._wait_for_server()
         logger.info(f"Triton server started on port {self.config.port}")
     
     def _start_docker_server(self) -> None:
         """Docker 컨테이너로 Triton 서버 시작"""
-        import subprocess
-        import time
-        
         # 기존 컨테이너 정리
-        subprocess.run(
-            ["docker", "rm", "-f", self.CONTAINER_NAME],
-            capture_output=True
-        )
+        docker_stop_container(self.CONTAINER_NAME)
         
         # GPU 옵션
-        gpu_opt = []
+        gpus = None
         if self.config.device == DeviceTarget.GPU:
-            gpu_opt = ["--gpus", f'"device={self.config.device_id}"']
+            gpus = f"device={self.config.device_id}"
         
-        cmd = [
-            "docker", "run", "-d",
-            "--name", self.CONTAINER_NAME,
-            *gpu_opt,
-            "-p", f"{self.config.port}:8000",
-            "-p", f"{self.config.port + 1}:8001",
-            "-p", f"{self.config.port + 2}:8002",
-            "-v", f"{self._model_repository}:/models",
-            self.DOCKER_IMAGE,
-            "tritonserver",
-            "--model-repository=/models",
-        ]
+        # Docker 실행
+        self._container_id = docker_run(
+            image=self.DOCKER_IMAGE,
+            name=self.CONTAINER_NAME,
+            ports={
+                self.config.port: 8000,
+                self.config.port + 1: 8001,
+                self.config.port + 2: 8002,
+            },
+            volumes={self._model_repository: "/models"},
+            gpus=gpus,
+            command=["tritonserver", "--model-repository=/models"],
+            remove=False,  # 로그 확인을 위해 자동 삭제 안함
+        )
         
-        # GPU 옵션이 있으면 쉘로 실행
-        if gpu_opt:
-            cmd_str = " ".join(cmd)
-            logger.info(f"Starting Triton Docker: {cmd_str}")
-            result = subprocess.run(cmd_str, shell=True, capture_output=True, text=True)
-        else:
-            cmd = [c for c in cmd if c]  # 빈 문자열 제거
-            logger.info(f"Starting Triton Docker: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True)
+        if self._container_id is None:
+            raise ServerStartError("Triton", reason="Failed to start Docker container")
         
-        if result.returncode != 0:
-            raise ServerStartError("Triton", reason=result.stderr)
-        
-        self._container_id = result.stdout.strip()
         self._is_running = True
         self._wait_for_server()
         logger.info(f"Triton Docker started: {self._container_id[:12]}")
@@ -457,20 +430,14 @@ class TritonPythonModel:
     
     def stop_server(self) -> None:
         """Stop Triton server (로컬 또는 Docker)"""
-        import subprocess
-        
         # 로컬 프로세스 종료
         if self._server is not None:
-            self._server.terminate()
-            self._server.wait()
+            stop_process(self._server)
             self._server = None
         
         # Docker 컨테이너 종료
         if self._container_id:
-            subprocess.run(
-                ["docker", "rm", "-f", self.CONTAINER_NAME],
-                capture_output=True
-            )
+            docker_stop_container(self.CONTAINER_NAME)
             self._container_id = None
         
         self._is_running = False

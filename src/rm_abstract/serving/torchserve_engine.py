@@ -74,13 +74,9 @@ class TorchServeEngine(ServingEngine):
         try:
             import torch
             # Check torch-model-archiver
-            import subprocess
-            result = subprocess.run(
-                ["torch-model-archiver", "--help"],
-                capture_output=True,
-            )
-            return result.returncode == 0
-        except (ImportError, FileNotFoundError):
+            archiver = find_executable("torch-model-archiver")
+            return archiver is not None
+        except ImportError:
             return False
     
     @classmethod
@@ -288,7 +284,7 @@ class LLMHandler(BaseHandler):
             
             logger.info(f"Creating model archive: {' '.join(cmd)}")
             
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = run_command(cmd)
             
             if result.returncode != 0:
                 logger.error(f"Failed to create archive: {result.stderr}")
@@ -375,7 +371,7 @@ rbln_device_id={self.config.device_id}
             )
         
         # Stop existing server first
-        subprocess.run([torchserve_cmd, "--stop"], capture_output=True)
+        run_command([torchserve_cmd, "--stop"])
         
         # Create config
         config_path = self.create_config()
@@ -391,7 +387,7 @@ rbln_device_id={self.config.device_id}
         
         logger.info(f"Starting TorchServe: {' '.join(cmd)}")
         
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = run_command(cmd)
         
         if result.returncode != 0:
             logger.error(f"Failed to start TorchServe: {result.stderr}")
