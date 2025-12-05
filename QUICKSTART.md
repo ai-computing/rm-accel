@@ -184,6 +184,44 @@ if __name__ == "__main__":
     print(output)
 ```
 
+### 예제 6: 통합 서빙 인터페이스 (자동 서버 관리)
+
+**Context Manager**로 서버 자동 시작/종료:
+
+```python
+from rm_abstract.serving import create_serving_engine, ServingConfig, ServingEngineType
+
+if __name__ == "__main__":
+    # vLLM (라이브러리 직접 실행)
+    config = ServingConfig(engine=ServingEngineType.VLLM)
+    with create_serving_engine(config) as engine:
+        engine.load_model("gpt2")
+        output = engine.infer("Hello, I am", max_tokens=30)
+        print(f"vLLM: {output}")
+    # with 블록 종료 시 자동 정리
+
+    # Triton (Docker 자동 시작/종료)
+    config = ServingConfig(engine=ServingEngineType.TRITON, port=8000)
+    with create_serving_engine(config) as engine:
+        engine.load_model("gpt2")
+        output = engine.infer("Hello, I am")
+        print(f"Triton: {output}")
+    # Docker 컨테이너 자동 종료
+
+    # TorchServe (서버 프로세스 자동 시작/종료)
+    config = ServingConfig(engine=ServingEngineType.TORCHSERVE, port=8080)
+    with create_serving_engine(config) as engine:
+        engine.load_model("gpt2")
+        output = engine.infer("Hello, I am")
+        print(f"TorchServe: {output}")
+    # 서버 프로세스 자동 종료
+```
+
+> 📌 **Triton 사용 시**: 커스텀 Docker 이미지가 필요합니다.
+> ```bash
+> docker build -t rm-triton-server:latest -f docker/Dockerfile.triton docker/
+> ```
+
 ---
 
 ## 🔧 디바이스 옵션
@@ -230,6 +268,7 @@ python -m rm_abstract.system_validator --quick
 | `device_switching.py` | 디바이스 전환 | ⭐ |
 | `gpu_vllm_usage.py` | GPU/vLLM + 디바이스 스위칭 | ⭐⭐ |
 | `serving_engines_demo.py` | vLLM, Triton, TorchServe 비교 | ⭐⭐⭐ |
+| `unified_serving_demo.py` | **통합 서빙 인터페이스 (자동 서버 관리)** | ⭐⭐⭐ |
 | `plugin_system_demo.py` | 플러그인 시스템 데모 | ⭐⭐⭐ |
 
 ### 단계별 실행

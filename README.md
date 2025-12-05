@@ -96,11 +96,48 @@ print(f"현재: {info['device_type']}:{info['device_id']}")
 
 ### 서빙 엔진
 
-| 엔진 | 상태 | 특징 |
-|------|------|------|
-| vLLM | ✅ 지원 | 고성능 LLM 서빙 |
-| Triton | ✅ 지원 | 다중 모델 서빙 |
-| TorchServe | ✅ 지원 | PyTorch 네이티브 |
+| 엔진 | 상태 | 특징 | 실행 방식 |
+|------|------|------|----------|
+| vLLM | ✅ 테스트 완료 | 고성능 LLM 서빙 | 라이브러리 직접 실행 |
+| Triton | ✅ 테스트 완료 | 다중 모델 서빙 | Docker 컨테이너 자동 관리 |
+| TorchServe | ✅ 테스트 완료 | PyTorch 네이티브 | Java 서버 자동 관리 |
+
+---
+
+## 🔄 통합 서빙 인터페이스
+
+모든 서빙 엔진을 **동일한 인터페이스**로 사용할 수 있습니다:
+
+```python
+from rm_abstract.serving import create_serving_engine, ServingConfig, ServingEngineType
+
+# vLLM 사용
+config = ServingConfig(engine=ServingEngineType.VLLM, model_name="gpt2")
+with create_serving_engine(config) as engine:
+    engine.load_model("gpt2")
+    output = engine.infer("Hello, I am")
+    print(output)
+
+# Triton 사용 (Docker 자동 시작/종료)
+config = ServingConfig(engine=ServingEngineType.TRITON, port=8000)
+with create_serving_engine(config) as engine:
+    engine.load_model("gpt2")
+    output = engine.infer("Hello, I am")
+    print(output)
+
+# TorchServe 사용 (서버 자동 시작/종료)
+config = ServingConfig(engine=ServingEngineType.TORCHSERVE, port=8080)
+with create_serving_engine(config) as engine:
+    engine.load_model("gpt2")
+    output = engine.infer("Hello, I am")
+    print(output)
+```
+
+### Context Manager 지원
+
+- `with` 블록 진입 시 서버 자동 시작
+- `with` 블록 종료 시 서버 자동 정리
+- 예외 발생 시에도 안전하게 정리
 
 ---
 
@@ -172,17 +209,27 @@ Summary:
 
 ```
 examples/
-├── gpu_vllm_usage.py       # GPU/vLLM 사용 예제
-├── serving_engines_demo.py # 서빙 엔진 비교
-└── ...
+├── basic_usage.py           # 기본 사용법
+├── device_switching.py      # 디바이스 전환
+├── gpu_vllm_usage.py        # GPU/vLLM 사용 예제
+├── serving_engines_demo.py  # 서빙 엔진 비교
+└── unified_serving_demo.py  # 통합 서빙 인터페이스 (자동 서버 관리)
 ```
 
 ```bash
+# 기본 사용법
+python examples/basic_usage.py
+
 # GPU/vLLM 예제 실행
 python examples/gpu_vllm_usage.py
 
-# 서빙 엔진 데모
-python examples/serving_engines_demo.py
+# 통합 서빙 데모 (권장)
+python examples/unified_serving_demo.py
+
+# 특정 엔진으로 서빙 데모
+python examples/serving_engines_demo.py --engine vllm
+python examples/serving_engines_demo.py --engine triton
+python examples/serving_engines_demo.py --engine torchserve
 ```
 
 ---
@@ -207,21 +254,25 @@ pytest tests/test_api.py -v
 ```
 rm_abstract_layer/
 ├── src/rm_abstract/
-│   ├── api/              # REST API 서버
+│   ├── api/              # REST API 서버 (OpenAI 호환)
 │   ├── backends/         # 백엔드 구현
-│   │   ├── cpu/          # CPU 백엔드
-│   │   ├── gpu/          # GPU/vLLM 백엔드
-│   │   └── npu/          # NPU 백엔드
-│   ├── serving/          # 서빙 엔진
+│   │   ├── cpu/          # CPU 백엔드 (PyTorch)
+│   │   ├── gpu/          # GPU 백엔드 (vLLM)
+│   │   └── npu/          # NPU 백엔드 (Rebellions RBLN)
+│   ├── serving/          # 서빙 엔진 (통합 인터페이스)
+│   │   ├── vllm_engine.py      # vLLM (라이브러리)
+│   │   ├── triton_engine.py    # Triton (Docker)
+│   │   └── torchserve_engine.py # TorchServe (Java)
 │   ├── core/             # 코어 모듈
 │   ├── system_info.py    # 시스템 정보
 │   ├── system_validator.py # 시스템 검증
 │   └── installer.py      # 설치 헬퍼
-├── tests/                # 테스트
-├── examples/             # 예제
+├── tests/                # pytest 테스트
+├── examples/             # 예제 스크립트
 ├── requirements/         # 의존성 파일
-├── scripts/              # 스크립트
+├── scripts/              # 설치 스크립트
 └── docker/               # Docker 설정
+    └── Dockerfile.triton # Triton 커스텀 이미지
 ```
 
 ---

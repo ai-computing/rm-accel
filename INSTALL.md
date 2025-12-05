@@ -224,20 +224,34 @@ print(f"vLLM version: {vllm.__version__}")
 # 클라이언트 설치
 pip install -r requirements/triton.txt
 
-# Docker 이미지 (서버)
-docker pull nvcr.io/nvidia/tritonserver:24.01-py3
+# 커스텀 Docker 이미지 빌드 (권장 - transformers 포함)
+docker build -t rm-triton-server:latest -f docker/Dockerfile.triton docker/
 ```
 
-**서버 시작:**
+> 📌 **커스텀 이미지 필요 이유**: 기본 Triton 이미지에는 `transformers`가 없어서 
+> Python 백엔드로 LLM 모델을 로드할 수 없습니다.
+
+**서버 시작 (자동):**
+```python
+# 통합 인터페이스 사용 시 자동으로 Docker가 시작/종료됨
+from rm_abstract.serving import create_serving_engine, ServingConfig, ServingEngineType
+
+with create_serving_engine(ServingConfig(engine=ServingEngineType.TRITON)) as engine:
+    engine.load_model("gpt2")
+    output = engine.infer("Hello")
+```
+
+**서버 시작 (수동):**
 ```bash
 # Docker Compose 사용
 docker-compose -f docker/docker-compose.yml up triton
 
 # 또는 직접 실행
-docker run --gpus=1 --rm -p8000:8000 -p8001:8001 \
-  -v /path/to/models:/models \
-  nvcr.io/nvidia/tritonserver:24.01-py3 \
-  tritonserver --model-repository=/models
+docker run --gpus all --rm -d \
+  -p 8000:8000 -p 8001:8001 -p 8002:8002 \
+  -v ~/.rm_abstract/triton_models:/models \
+  rm-triton-server:latest \
+  --model-repository=/models
 ```
 
 ### TorchServe 설치
@@ -250,11 +264,23 @@ pip install -r requirements/torchserve.txt
 sudo apt install openjdk-11-jdk
 ```
 
-**서버 시작:**
+**서버 시작 (자동):**
+```python
+# 통합 인터페이스 사용 시 자동으로 서버가 시작/종료됨
+from rm_abstract.serving import create_serving_engine, ServingConfig, ServingEngineType
+
+with create_serving_engine(ServingConfig(engine=ServingEngineType.TORCHSERVE)) as engine:
+    engine.load_model("gpt2")
+    output = engine.infer("Hello")
+```
+
+**서버 시작 (수동):**
 ```bash
 torchserve --start \
   --model-store ~/.rm_abstract/torchserve_models \
-  --models all
+  --models all \
+  --ncs \
+  --disable-token-auth
 ```
 
 ### Rebellions NPU 설치
