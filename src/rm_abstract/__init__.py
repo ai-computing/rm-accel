@@ -5,8 +5,9 @@ An abstraction layer that enables existing GPU inference scripts to run on NPU/G
 without any code modification.
 """
 
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 import os
+import warnings
 
 from .core.controller import DeviceFlowController
 from .core.config import Config
@@ -23,13 +24,13 @@ from .exceptions import (
 
 __version__ = "0.1.0"
 __all__ = [
+    # Core functions
     "init",
+    "is_initialized",
     "switch_device",
     "get_device_info",
     "get_controller",
     "get_available_backends",
-    "get_resource_manager",
-    "list_plugins",
     # System info (static check)
     "get_system_info",
     "print_system_info",
@@ -43,13 +44,21 @@ __all__ = [
     "NotInitializedError",
     "BackendNotAvailableError",
     "InvalidDeviceError",
+    # Deprecated (will be removed)
+    "get_resource_manager",
+    "list_plugins",
 ]
 
-# Global controller instance (legacy)
+# Global controller instance
+# This is the primary system used for device management and model preparation
 _global_controller: Optional[DeviceFlowController] = None
 
-# Global resource manager instance (new plugin system)
+# Global resource manager instance (experimental plugin system)
+# NOTE: This is deprecated and will be merged with DeviceFlowController in future versions
 _global_resource_manager: Optional[ResourceManager] = None
+
+# Flag to track initialization
+_initialized: bool = False
 
 
 def init(
@@ -72,28 +81,32 @@ def init(
         cache_dir: NPU compilation cache directory (default: ~/.rm_abstract/cache)
         compile_options: NPU compilation options
         verbose: Whether to print compilation progress
-        use_plugin_system: Use new plugin-based system (experimental)
+        use_plugin_system: Deprecated. Will be removed in future versions.
 
     Returns:
         DeviceFlowController instance
 
     Example:
         >>> import rm_abstract
-        >>> rm_abstract.init(device="rbln:0")
+        >>> rm_abstract.init(device="gpu:0")
         >>> # Use existing code as-is
         >>> from transformers import AutoModelForCausalLM
         >>> model = AutoModelForCausalLM.from_pretrained("gpt2")
     """
-    global _global_controller, _global_resource_manager
+    global _global_controller, _global_resource_manager, _initialized
+
+    # Deprecation warning for use_plugin_system
+    if use_plugin_system or os.environ.get("RM_USE_PLUGINS", "").lower() in ("true", "1", "yes"):
+        warnings.warn(
+            "use_plugin_system is deprecated and will be removed in a future version. "
+            "The plugin system will be merged with the main system.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     # Load settings from environment variables
     device = os.environ.get("RM_DEVICE", device)
     cache_dir = os.environ.get("RM_CACHE_DIR", cache_dir)
-    use_plugin_system = os.environ.get("RM_USE_PLUGINS", str(use_plugin_system)).lower() in (
-        "true",
-        "1",
-        "yes",
-    )
 
     # Create Config
     config = Config(
@@ -103,26 +116,14 @@ def init(
         verbose=verbose,
     )
 
-    if use_plugin_system:
-        # Use new plugin-based system
-        from .backends.auto_register import auto_register_backends
+    # Always use the main Backend system (DeviceFlowController)
+    _register_backends()
+    _global_controller = DeviceFlowController(config)
+    _global_controller.activate_hooks()
+    _initialized = True
 
-        auto_register_backends()
-        _global_resource_manager = ResourceManager(config)
-        _global_resource_manager.initialize(auto_discover=True)
-
-        if verbose:
-            print(
-                f"[RM Abstract] Initialized with plugin: {_global_resource_manager.device_name}"
-            )
-    else:
-        # Use legacy Backend system
-        _register_backends()
-        _global_controller = DeviceFlowController(config)
-        _global_controller.activate_hooks()
-
-        if verbose:
-            print(f"[RM Abstract] Initialized with device: {_global_controller.device_name}")
+    if verbose:
+        print(f"[RM Abstract] Initialized with device: {_global_controller.device_name}")
 
     return _global_controller
 
@@ -179,19 +180,41 @@ def get_available_backends() -> Dict[str, bool]:
     return DeviceFlowController.get_available_backends()
 
 
+def is_initialized() -> bool:
+    """
+    Check if RM Abstract Layer is initialized
+
+    Returns:
+        True if initialized, False otherwise
+    """
+    return _initialized
+
+
 def get_resource_manager() -> Optional[ResourceManager]:
     """
-    Get global resource manager instance (new plugin system)
+    Get global resource manager instance.
+    
+    .. deprecated::
+        This function is deprecated and will be removed in a future version.
+        Use get_controller() instead.
 
     Returns:
         ResourceManager instance or None
     """
+    warnings.warn(
+        "get_resource_manager() is deprecated. Use get_controller() instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _global_resource_manager
 
 
 def list_plugins(available_only: bool = True) -> List[Dict[str, Any]]:
     """
-    List all available plugins
+    List all available plugins.
+    
+    .. deprecated::
+        This function is deprecated. Use get_available_backends() instead.
 
     Args:
         available_only: Only show available plugins
@@ -199,14 +222,18 @@ def list_plugins(available_only: bool = True) -> List[Dict[str, Any]]:
     Returns:
         List of plugin information dictionaries
     """
+    warnings.warn(
+        "list_plugins() is deprecated. Use get_available_backends() instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    
     if _global_resource_manager is None:
         # Initialize plugin registry
         from .backends.auto_register import auto_register_backends
-
         auto_register_backends()
 
     from .backends.auto_register import list_registered_plugins
-
     return list_registered_plugins()
 
 
