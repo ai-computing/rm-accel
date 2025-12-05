@@ -380,6 +380,24 @@ if __name__ == "__main__":
     main()
 ```
 
+### Q: 에러가 발생했을 때 어떻게 처리하나요?
+
+RM Abstract Layer는 명확한 예외 계층을 제공합니다:
+
+```python
+from rm_abstract.exceptions import (
+    RMAbstractError,           # 기본 예외 (모든 예외 캐치)
+    BackendNotAvailableError,  # 백엔드 사용 불가
+    NotInitializedError,       # 초기화 안됨
+)
+
+try:
+    rm_abstract.init(device="gpu:0")
+except BackendNotAvailableError:
+    print("GPU 사용 불가, CPU로 폴백")
+    rm_abstract.init(device="cpu")
+```
+
 ---
 
 ## 🔗 다음 단계
