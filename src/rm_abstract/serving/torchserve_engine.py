@@ -17,6 +17,7 @@ import os
 import tempfile
 
 from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from .utils import wait_for_server, find_executable, run_command
 from ..exceptions import (
     ModelLoadError,
     ConfigurationError,
@@ -356,10 +357,9 @@ rbln_device_id={self.config.device_id}
             )
         
         import subprocess
-        import shutil
         
         # Check Java (required for TorchServe)
-        java_cmd = shutil.which("java")
+        java_cmd = find_executable("java")
         if java_cmd is None:
             raise PackageNotInstalledError(
                 package="Java 11+",
@@ -367,7 +367,7 @@ rbln_device_id={self.config.device_id}
             )
         
         # Check if torchserve is available
-        torchserve_cmd = shutil.which("torchserve")
+        torchserve_cmd = find_executable("torchserve")
         if torchserve_cmd is None:
             raise PackageNotInstalledError(
                 package="torchserve",
@@ -403,32 +403,15 @@ rbln_device_id={self.config.device_id}
     
     def _wait_for_server(self, timeout: int = 60) -> None:
         """서버가 준비될 때까지 대기"""
-        import time
-        import urllib.request
-        
-        start = time.time()
         url = f"http://localhost:{self.config.port}/ping"
-        
-        while time.time() - start < timeout:
-            try:
-                with urllib.request.urlopen(url, timeout=2) as response:
-                    if response.status == 200:
-                        logger.info("TorchServe server is ready")
-                        return
-            except:
-                pass
-            time.sleep(1)
-        
-        logger.warning("TorchServe server may not be fully ready yet")
+        if not wait_for_server(url, timeout=timeout):
+            logger.warning("TorchServe server may not be fully ready yet")
     
     def stop_server(self) -> None:
         """Stop TorchServe server"""
-        import subprocess
-        import shutil
-        
-        torchserve_cmd = shutil.which("torchserve")
+        torchserve_cmd = find_executable("torchserve")
         if torchserve_cmd:
-            subprocess.run([torchserve_cmd, "--stop"], capture_output=True)
+            run_command([torchserve_cmd, "--stop"])
         
         self._is_running = False
         logger.info("TorchServe stopped")

@@ -16,6 +16,15 @@ import json
 import os
 
 from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from .utils import (
+    wait_for_server,
+    find_executable,
+    is_docker_available,
+    docker_stop_container,
+    docker_run,
+    start_background_process,
+    stop_process,
+)
 from ..exceptions import (
     ModelNotLoadedError,
     ServerStartError,
@@ -442,23 +451,9 @@ class TritonPythonModel:
     
     def _wait_for_server(self, timeout: int = 60) -> None:
         """서버가 준비될 때까지 대기"""
-        import time
-        import urllib.request
-        
-        start = time.time()
         url = f"http://localhost:{self.config.port}/v2/health/ready"
-        
-        while time.time() - start < timeout:
-            try:
-                with urllib.request.urlopen(url, timeout=2) as response:
-                    if response.status == 200:
-                        logger.info("Triton server is ready")
-                        return
-            except:
-                pass
-            time.sleep(1)
-        
-        logger.warning("Triton server may not be fully ready yet")
+        if not wait_for_server(url, timeout=timeout):
+            logger.warning("Triton server may not be fully ready yet")
     
     def stop_server(self) -> None:
         """Stop Triton server (로컬 또는 Docker)"""
