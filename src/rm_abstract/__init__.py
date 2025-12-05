@@ -21,6 +21,7 @@ from .exceptions import (
     BackendNotAvailableError,
     InvalidDeviceError,
 )
+from .unified import UnifiedModel
 
 __version__ = "0.1.0"
 __all__ = [
@@ -31,6 +32,8 @@ __all__ = [
     "get_device_info",
     "get_controller",
     "get_available_backends",
+    # Unified API (NEW!)
+    "UnifiedModel",
     # System info (static check)
     "get_system_info",
     "print_system_info",

@@ -138,6 +138,7 @@ def main():
 
         rm_abstract.init(device="cpu", verbose=True)
 
+
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         tokenizer = AutoTokenizer.from_pretrained("gpt2")
