@@ -65,6 +65,7 @@ class ModelConverter:
         # Check if already converted
         onnx_file = output_path / "model.onnx"
         if onnx_file.exists():
+            print(f"[ONNX] Using cached model: {onnx_file}", flush=True)
             logger.info(f"Using cached ONNX model: {onnx_file}")
             return str(output_path)
 
@@ -74,9 +75,11 @@ class ModelConverter:
             from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
 
+            print(f"[ONNX] Converting {model_name} to ONNX format...", flush=True)
             logger.info(f"Converting {model_name} to ONNX...")
 
             # Load model and tokenizer
+            print(f"[ONNX] Loading model and tokenizer...", flush=True)
             tokenizer = AutoTokenizer.from_pretrained(model_name)
             model = AutoModelForCausalLM.from_pretrained(model_name)
             model.eval()
@@ -99,6 +102,7 @@ class ModelConverter:
                 dummy_input = {k: v.cuda() for k, v in dummy_input.items()}
 
             # Export to ONNX
+            print(f"[ONNX] Exporting to ONNX (this may take a while)...", flush=True)
             torch.onnx.export(
                 model,
                 (dummy_input["input_ids"], dummy_input["attention_mask"]),
@@ -117,6 +121,7 @@ class ModelConverter:
             # Save tokenizer
             tokenizer.save_pretrained(str(output_path))
 
+            print(f"[ONNX] Conversion complete: {output_path}", flush=True)
             logger.info(f"ONNX model saved to: {output_path}")
             return str(output_path)
 
@@ -153,6 +158,7 @@ class ModelConverter:
 
         # Check if already converted
         if mar_file.exists():
+            print(f"[MAR] Using cached model: {mar_file}", flush=True)
             logger.info(f"Using cached MAR file: {mar_file}")
             return str(mar_file)
 
@@ -160,6 +166,7 @@ class ModelConverter:
             from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
 
+            print(f"[MAR] Converting {model_name} to MAR format...", flush=True)
             logger.info(f"Converting {model_name} to MAR format...")
 
             # Create temp directory for model files
@@ -167,12 +174,14 @@ class ModelConverter:
                 tmp_path = Path(tmp_dir)
 
                 # Save model and tokenizer
+                print(f"[MAR] Loading model and tokenizer...", flush=True)
                 tokenizer = AutoTokenizer.from_pretrained(model_name)
                 model = AutoModelForCausalLM.from_pretrained(model_name)
 
                 model_dir = tmp_path / "model"
                 model_dir.mkdir()
 
+                print(f"[MAR] Saving model files...", flush=True)
                 tokenizer.save_pretrained(str(model_dir))
                 model.save_pretrained(str(model_dir))
 
@@ -181,6 +190,7 @@ class ModelConverter:
                 handler_file.write_text(self._get_handler_code(handler))
 
                 # Create MAR using torch-model-archiver
+                print(f"[MAR] Creating MAR archive...", flush=True)
                 self._create_mar_archive(
                     model_name=safe_name,
                     model_dir=str(model_dir),
@@ -188,6 +198,7 @@ class ModelConverter:
                     output_path=str(output_path),
                 )
 
+            print(f"[MAR] Conversion complete: {mar_file}", flush=True)
             logger.info(f"MAR file saved to: {mar_file}")
             return str(mar_file)
 

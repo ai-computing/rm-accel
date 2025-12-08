@@ -276,24 +276,42 @@ load_models=all
         if self._is_running and self.ts_config.cleanup_on_exit:
             self.stop_server()
 
-    def _wait_for_ready(self, timeout: int = 120) -> None:
+    def _wait_for_ready(self, timeout: int = 30) -> None:
         """Wait for TorchServe to be ready"""
         import requests
 
         url = f"http://localhost:{self.ts_config.inference_port}/ping"
         start_time = time.time()
 
-        logger.info("Waiting for TorchServe server to be ready...")
+        print(f"[TorchServe] Starting server...", flush=True)
+        check_interval = 1
+        dots = 0
+
         while time.time() - start_time < timeout:
+            elapsed = int(time.time() - start_time)
+
+            # Check if process is still running
+            if self._process and self._process.poll() is not None:
+                stderr = self._process.stderr.read() if self._process.stderr else b""
+                print(f"\n[TorchServe] Server failed!", flush=True)
+                raise RuntimeError(f"TorchServe process exited: {stderr.decode()}")
+
             try:
                 response = requests.get(url, timeout=2)
                 if response.status_code == 200:
+                    print(f"\n[TorchServe] Server ready! ({elapsed}s)", flush=True)
                     logger.info("TorchServe server is ready")
                     return
             except requests.exceptions.RequestException:
                 pass
-            time.sleep(2)
 
+            # Progress indicator
+            dots = (dots + 1) % 4
+            progress = "." * (dots + 1)
+            print(f"\r[TorchServe] Waiting for server{progress.ljust(4)} ({elapsed}/{timeout}s)", end="", flush=True)
+            time.sleep(check_interval)
+
+        print(f"\n[TorchServe] Timeout!", flush=True)
         raise TimeoutError(f"TorchServe did not become ready within {timeout}s")
 
     def _register_model(self) -> None:
