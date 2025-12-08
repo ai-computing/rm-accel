@@ -49,6 +49,31 @@ npu-furiosa = [
     # Install from: https://furiosa.ai
 ]
 
+# Triton engine (ONNX conversion)
+triton = [
+    "onnx>=1.14.0",
+    "onnxscript>=0.1.0",
+    "tritonclient[http]>=2.34.0",
+    "requests>=2.28.0",
+]
+
+# TorchServe engine
+torchserve = [
+    "torchserve>=0.8.0",
+    "torch-model-archiver>=0.8.0",
+    "requests>=2.28.0",
+]
+
+# Serving engines (all)
+serving = [
+    "onnx>=1.14.0",
+    "onnxscript>=0.1.0",
+    "tritonclient[http]>=2.34.0",
+    "torchserve>=0.8.0",
+    "torch-model-archiver>=0.8.0",
+    "requests>=2.28.0",
+]
+
 # Development tools
 dev = [
     "pytest>=7.0.0",
@@ -72,6 +97,12 @@ all = [
     "vllm>=0.2.0",
     "transformers>=4.30.0",
     "accelerate>=0.20.0",
+    "onnx>=1.14.0",
+    "onnxscript>=0.1.0",
+    "tritonclient[http]>=2.34.0",
+    "torchserve>=0.8.0",
+    "torch-model-archiver>=0.8.0",
+    "requests>=2.28.0",
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "pytest-mock>=3.10.0",
