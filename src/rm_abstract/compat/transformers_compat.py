@@ -149,6 +149,23 @@ class AutoModelForCausalLM:
             return cls._load_cpu(model_name, trust_remote_code, **kwargs)
 
     @classmethod
+    def _get_hf_automodel(cls):
+        """Get original HuggingFace AutoModelForCausalLM without hooks."""
+        import importlib
+        import sys
+
+        from rm_abstract.auto import disable_hooks, enable_hooks
+        disable_hooks()
+
+        try:
+            if "transformers" in sys.modules:
+                del sys.modules["transformers"]
+            transformers = importlib.import_module("transformers")
+            return transformers.AutoModelForCausalLM
+        finally:
+            enable_hooks()
+
+    @classmethod
     def _load_gpu(
         cls,
         model_name: str,
@@ -158,8 +175,9 @@ class AutoModelForCausalLM:
         **kwargs
     ) -> Any:
         """Load model on GPU using transformers."""
-        from transformers import AutoModelForCausalLM as HFAutoModel
         import torch
+
+        HFAutoModel = cls._get_hf_automodel()
 
         if torch_dtype is None:
             torch_dtype = torch.float16
@@ -186,8 +204,9 @@ class AutoModelForCausalLM:
         **kwargs
     ) -> Any:
         """Load model on CPU using transformers."""
-        from transformers import AutoModelForCausalLM as HFAutoModel
         import torch
+
+        HFAutoModel = cls._get_hf_automodel()
 
         if torch_dtype is None:
             torch_dtype = torch.float32
@@ -212,6 +231,23 @@ class AutoTokenizer:
     """
 
     @classmethod
+    def _get_hf_autotokenizer(cls):
+        """Get original HuggingFace AutoTokenizer without hooks."""
+        import importlib
+        import sys
+
+        from rm_abstract.auto import disable_hooks, enable_hooks
+        disable_hooks()
+
+        try:
+            if "transformers" in sys.modules:
+                del sys.modules["transformers"]
+            transformers = importlib.import_module("transformers")
+            return transformers.AutoTokenizer
+        finally:
+            enable_hooks()
+
+    @classmethod
     def from_pretrained(cls, model_name_or_path: str, **kwargs) -> Any:
         """
         Load a pretrained tokenizer.
@@ -223,6 +259,5 @@ class AutoTokenizer:
         Returns:
             Tokenizer instance
         """
-        from transformers import AutoTokenizer as HFAutoTokenizer
-
+        HFAutoTokenizer = cls._get_hf_autotokenizer()
         return HFAutoTokenizer.from_pretrained(model_name_or_path, **kwargs)
