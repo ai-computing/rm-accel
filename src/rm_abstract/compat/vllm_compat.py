@@ -33,6 +33,40 @@ def _get_engine() -> str:
     return os.environ.get("RM_ENGINE", "vllm")
 
 
+def _is_engine_available(engine: str) -> bool:
+    """Check if a serving engine is available."""
+    if engine == "vllm":
+        try:
+            import builtins
+            builtins.__import__("vllm", globals(), locals(), [], 0)
+            return True
+        except ImportError:
+            return False
+    elif engine == "triton":
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["docker", "--version"],
+                capture_output=True,
+                text=True,
+            )
+            return result.returncode == 0
+        except FileNotFoundError:
+            return False
+    elif engine == "torchserve":
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["torchserve", "--version"],
+                capture_output=True,
+                text=True,
+            )
+            return result.returncode == 0
+        except FileNotFoundError:
+            return False
+    return False
+
+
 @dataclass
 class SamplingParams:
     """
@@ -104,18 +138,25 @@ class LLM:
 
     Automatically routes to the appropriate backend based on:
     - RM_DEVICE environment variable
-    - Explicit device parameter
+    - RM_ENGINE environment variable
+    - Explicit device/engine parameters
     - Auto-detection (NPU > GPU > CPU priority)
+
+    Supported engines:
+    - vllm: High-performance LLM serving (GPU/NPU)
+    - triton: NVIDIA Triton Inference Server (GPU/CPU)
+    - torchserve: PyTorch TorchServe (GPU/CPU)
 
     Example:
         # Use environment variable
-        # RM_DEVICE=rbln python script.py
+        # RM_DEVICE=rbln RM_ENGINE=vllm python script.py
 
         llm = LLM(model="meta-llama/Llama-2-7b-hf")
         outputs = llm.generate(["Hello, world!"], SamplingParams())
 
-        # Or explicit device selection
-        llm = LLM(model="gpt2", device="cpu")
+        # Or explicit device/engine selection
+        llm = LLM(model="gpt2", device="nvidia", engine="vllm")
+        llm = LLM(model="gpt2", device="cpu", engine="triton")
     """
 
     def __init__(
@@ -123,6 +164,7 @@ class LLM:
         model: str,
         tokenizer: Optional[str] = None,
         device: Optional[str] = None,
+        engine: Optional[str] = None,
         tensor_parallel_size: int = 1,
         dtype: str = "auto",
         trust_remote_code: bool = False,
@@ -135,6 +177,7 @@ class LLM:
             model: Model name or path (HuggingFace model ID)
             tokenizer: Tokenizer name (defaults to model)
             device: Device selection (auto, cpu, nvidia, rbln, furiosa)
+            engine: Serving engine (vllm, triton, torchserve)
             tensor_parallel_size: Number of GPUs for tensor parallelism
             dtype: Data type (auto, float16, bfloat16, float32)
             trust_remote_code: Trust remote code in model
@@ -143,30 +186,40 @@ class LLM:
         self.model_name = model
         self.tokenizer_name = tokenizer or model
         self.device = device or _get_device()
+        self.engine = engine or _get_engine()
         self.tensor_parallel_size = tensor_parallel_size
         self.dtype = dtype
         self.trust_remote_code = trust_remote_code
         self.extra_kwargs = kwargs
 
         self._backend = None
+        self._engine_instance = None
         self._backend_llm = None
         self._tokenizer = None
 
         self._initialize_backend()
 
     def _initialize_backend(self):
-        """Initialize the appropriate backend based on device selection."""
+        """Initialize the appropriate backend based on device and engine selection."""
         device = self._resolve_device(self.device)
-        logger.info(f"Initializing LLM with device: {device}")
+        engine = self.engine.lower()
+        logger.info(f"Initializing LLM with device: {device}, engine: {engine}")
 
-        if device in ("nvidia", "gpu", "cuda"):
-            self._init_vllm_backend()
-        elif device == "rbln":
-            self._init_rbln_backend()
-        elif device == "furiosa":
-            self._init_furiosa_backend()
+        # Engine-specific initialization
+        if engine == "triton":
+            self._init_triton_backend(device)
+        elif engine == "torchserve":
+            self._init_torchserve_backend(device)
         else:
-            self._init_cpu_backend()
+            # Default: vllm engine (or fallback to transformers for CPU)
+            if device in ("nvidia", "gpu", "cuda"):
+                self._init_vllm_backend()
+            elif device == "rbln":
+                self._init_rbln_backend()
+            elif device == "furiosa":
+                self._init_furiosa_backend()
+            else:
+                self._init_cpu_backend()
 
     def _resolve_device(self, device: str) -> str:
         """Resolve 'auto' device to actual device."""
@@ -278,6 +331,71 @@ class LLM:
             logger.warning("FuriosaAI backend not available, falling back to CPU")
             self._init_cpu_backend()
 
+    def _init_triton_backend(self, device: str):
+        """Initialize Triton Inference Server backend."""
+        self._backend = "triton"
+        try:
+            from rm_abstract.engines.triton import TritonEngine, TritonConfig
+            from rm_abstract.engines.base import ServingConfig, ServingEngineType, DeviceTarget
+
+            # Map device string to DeviceTarget
+            device_map = {
+                "nvidia": DeviceTarget.GPU,
+                "gpu": DeviceTarget.GPU,
+                "cuda": DeviceTarget.GPU,
+                "cpu": DeviceTarget.CPU,
+                "rbln": DeviceTarget.NPU_RBLN,
+                "furiosa": DeviceTarget.NPU_FURIOSA,
+            }
+            target_device = device_map.get(device, DeviceTarget.CPU)
+
+            config = ServingConfig(
+                engine=ServingEngineType.TRITON,
+                device=target_device,
+                model_name=self.model_name,
+                tensor_parallel_size=self.tensor_parallel_size,
+            )
+
+            self._engine_instance = TritonEngine(config)
+            self._engine_instance.load_model(self.model_name)
+            logger.info(f"Initialized Triton backend for model: {self.model_name}")
+
+        except ImportError as e:
+            logger.warning(f"Triton backend not available ({e}), falling back to CPU")
+            self._init_cpu_backend()
+
+    def _init_torchserve_backend(self, device: str):
+        """Initialize TorchServe backend."""
+        self._backend = "torchserve"
+        try:
+            from rm_abstract.engines.torchserve import TorchServeEngine
+            from rm_abstract.engines.base import ServingConfig, ServingEngineType, DeviceTarget
+
+            # Map device string to DeviceTarget
+            device_map = {
+                "nvidia": DeviceTarget.GPU,
+                "gpu": DeviceTarget.GPU,
+                "cuda": DeviceTarget.GPU,
+                "cpu": DeviceTarget.CPU,
+                "rbln": DeviceTarget.NPU_RBLN,
+                "furiosa": DeviceTarget.NPU_FURIOSA,
+            }
+            target_device = device_map.get(device, DeviceTarget.CPU)
+
+            config = ServingConfig(
+                engine=ServingEngineType.TORCHSERVE,
+                device=target_device,
+                model_name=self.model_name,
+            )
+
+            self._engine_instance = TorchServeEngine(config)
+            self._engine_instance.load_model(self.model_name)
+            logger.info(f"Initialized TorchServe backend for model: {self.model_name}")
+
+        except ImportError as e:
+            logger.warning(f"TorchServe backend not available ({e}), falling back to CPU")
+            self._init_cpu_backend()
+
     def _init_cpu_backend(self):
         """Initialize CPU backend using transformers."""
         self._backend = "cpu"
@@ -348,7 +466,10 @@ class LLM:
         if sampling_params is None:
             sampling_params = SamplingParams()
 
-        if self._backend in ("vllm", "rbln") and hasattr(self._backend_llm, "generate"):
+        # Route to appropriate generation method based on backend
+        if self._backend in ("triton", "torchserve"):
+            return self._generate_engine_style(prompts, sampling_params, **kwargs)
+        elif self._backend in ("vllm", "rbln") and hasattr(self._backend_llm, "generate"):
             return self._generate_vllm_style(prompts, sampling_params, **kwargs)
         else:
             return self._generate_transformers_style(prompts, sampling_params, **kwargs)
@@ -448,10 +569,58 @@ class LLM:
 
         return results
 
+    def _generate_engine_style(
+        self,
+        prompts: List[str],
+        sampling_params: SamplingParams,
+        **kwargs
+    ) -> List[RequestOutput]:
+        """Generate using ServingEngine (Triton/TorchServe) API."""
+        if self._engine_instance is None:
+            raise RuntimeError("Engine not initialized")
+
+        results = []
+        for i, prompt in enumerate(prompts):
+            # Use engine's infer method
+            output = self._engine_instance.infer(
+                prompt,
+                temperature=sampling_params.temperature,
+                top_p=sampling_params.top_p,
+                max_tokens=sampling_params.max_tokens,
+                **kwargs
+            )
+
+            # Convert to RequestOutput format
+            if isinstance(output, str):
+                text = output
+            elif isinstance(output, dict):
+                text = output.get("text", output.get("generated_text", str(output)))
+            else:
+                text = str(output)
+
+            results.append(RequestOutput(
+                request_id=str(i),
+                prompt=prompt,
+                prompt_token_ids=[],
+                outputs=[CompletionOutput(
+                    index=0,
+                    text=text,
+                    token_ids=[],
+                    finish_reason="stop",
+                )],
+            ))
+
+        return results
+
     @property
     def backend(self) -> str:
         """Get current backend name."""
         return self._backend
 
+    @property
+    def engine_type(self) -> str:
+        """Get current engine type."""
+        return self.engine
+
     def __repr__(self) -> str:
-        return f"LLM(model={self.model_name!r}, backend={self._backend!r})"
+        return f"LLM(model={self.model_name!r}, backend={self._backend!r}, engine={self.engine!r})"

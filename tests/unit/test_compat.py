@@ -215,3 +215,81 @@ class TestCompat:
         assert RequestOutput is not None
         assert AutoModelForCausalLM is not None
         assert AutoTokenizer is not None
+
+
+class TestEngineSelection:
+    """Tests for engine selection functionality."""
+
+    def test_llm_engine_parameter(self):
+        """Test LLM accepts engine parameter."""
+        from rm_abstract.compat.vllm_compat import LLM
+
+        with patch.object(LLM, "_initialize_backend"):
+            llm = LLM(model="gpt2", device="cpu", engine="vllm")
+            assert llm.engine == "vllm"
+
+            llm = LLM(model="gpt2", device="cpu", engine="triton")
+            assert llm.engine == "triton"
+
+            llm = LLM(model="gpt2", device="cpu", engine="torchserve")
+            assert llm.engine == "torchserve"
+
+    def test_llm_engine_from_env(self):
+        """Test LLM reads engine from environment."""
+        from rm_abstract.compat.vllm_compat import LLM
+
+        with patch.dict(os.environ, {"RM_ENGINE": "triton"}):
+            with patch.object(LLM, "_initialize_backend"):
+                llm = LLM(model="gpt2", device="cpu")
+                assert llm.engine == "triton"
+
+    def test_use_function_engine(self):
+        """Test use() function with engine parameter."""
+        from rm_abstract.auto import use, get_config
+
+        use(device="cpu", engine="triton")
+        config = get_config()
+        assert config["engine"] == "triton"
+
+        use(device="cpu", engine="torchserve")
+        config = get_config()
+        assert config["engine"] == "torchserve"
+
+        # Reset
+        use(device="auto", engine="vllm")
+
+    def test_engine_type_property(self):
+        """Test engine_type property."""
+        from rm_abstract.compat.vllm_compat import LLM
+
+        with patch.object(LLM, "_initialize_backend"):
+            llm = LLM(model="gpt2", device="cpu", engine="triton")
+            assert llm.engine_type == "triton"
+
+    def test_llm_repr_includes_engine(self):
+        """Test __repr__ includes engine."""
+        from rm_abstract.compat.vllm_compat import LLM
+
+        with patch.object(LLM, "_initialize_backend"):
+            llm = LLM(model="gpt2", device="cpu", engine="triton")
+            llm._backend = "triton"  # Mock backend
+            repr_str = repr(llm)
+            assert "triton" in repr_str
+
+    def test_is_engine_available(self):
+        """Test _is_engine_available function."""
+        from rm_abstract.compat.vllm_compat import _is_engine_available
+
+        # Note: These depend on actual system setup
+        # Just test that function runs without error
+        result = _is_engine_available("vllm")
+        assert isinstance(result, bool)
+
+        result = _is_engine_available("triton")
+        assert isinstance(result, bool)
+
+        result = _is_engine_available("torchserve")
+        assert isinstance(result, bool)
+
+        result = _is_engine_available("unknown")
+        assert result is False
