@@ -74,7 +74,6 @@ class TorchServeEngine(ServingEngine):
     ):
         super().__init__(config)
         self.ts_config = ts_config or TorchServeConfig()
-        self._process: Optional[subprocess.Popen] = None
         self._model_store_path: Optional[Path] = None
         self._mar_file: Optional[str] = None
         self._tokenizer = None
@@ -206,14 +205,18 @@ class TorchServeEngine(ServingEngine):
             time.sleep(2)
 
             logger.info("Starting TorchServe server...")
-            # Use DEVNULL to avoid blocking on stdout/stderr buffer
-            self._process = subprocess.Popen(
+            # TorchServe --start runs as daemon and returns immediately
+            result = subprocess.run(
                 cmd,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
 
-            # Wait for server to be ready
+            if result.returncode != 0:
+                raise RuntimeError(f"TorchServe start failed: {result.stderr}")
+
+            # Wait for server to be ready (daemon runs in background)
             self._wait_for_ready()
             self._is_running = True
 
@@ -258,14 +261,6 @@ load_models=all
         except Exception as e:
             logger.error(f"Error stopping TorchServe: {e}")
 
-        if self._process:
-            self._process.terminate()
-            try:
-                self._process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                self._process.kill()
-            self._process = None
-
         self._is_running = False
 
         # Remove from tracking
@@ -290,12 +285,6 @@ load_models=all
 
         while time.time() - start_time < timeout:
             elapsed = int(time.time() - start_time)
-
-            # Check if process is still running
-            if self._process and self._process.poll() is not None:
-                exit_code = self._process.returncode
-                print(f"\n[TorchServe] Server failed! (exit code: {exit_code})", flush=True)
-                raise RuntimeError(f"TorchServe process exited with code {exit_code}")
 
             try:
                 response = requests.get(url, timeout=2)
