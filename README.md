@@ -1,316 +1,298 @@
 # RM Abstract Layer
 
-> **GPU / NPU / CPU 이기종 가속기를 통합 관리하는 LLM 추론 추상화 레이어**
+> **GPU / NPU / CPU Heterogeneous Accelerator Unified LLM Inference Abstraction Layer**
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 📋 개요
+## Overview
 
-RM Abstract Layer는 다양한 하드웨어 가속기(GPU, NPU, CPU)에서 LLM 추론을 **코드 수정 없이** 실행할 수 있게 해주는 추상화 레이어입니다.
+RM Abstract Layer is an abstraction layer that enables LLM inference on various hardware accelerators (GPU, NPU, CPU) **without code modification**.
 
-### 주요 특징
+### Key Features
 
-- 🔄 **디바이스 투명성**: 기존 HuggingFace 코드가 그대로 동작
-- ⚡ **런타임 스위칭**: GPU ↔ CPU ↔ NPU 실시간 전환
-- 🚀 **다중 서빙 엔진**: vLLM, Triton, TorchServe 지원
-- 🔌 **플러그인 아키텍처**: 새로운 백엔드 쉽게 추가
-- 🌐 **REST API**: OpenAI 호환 API 서버
+- **Device Transparency**: Existing code works as-is
+- **Runtime Switching**: Real-time switching between GPU, CPU, NPU
+- **Plugin Architecture**: Easily add new resources and engines via plugin registry
+- **Multiple Serving Engines**: vLLM, Triton, TorchServe support
+- **Hardware Detection**: Automatic detection and priority-based selection (NPU > GPU > CPU)
 
 ---
 
-## ⚡ 빠른 시작
+## Quick Start
 
-### 설치
+### Installation
 
 ```bash
-# 기본 설치
+# Basic installation
 pip install -e .
 
-# GPU 지원
+# GPU support
 pip install -e ".[gpu]"
 
-# 전체 설치
+# Full installation
 pip install -e ".[all]"
 ```
 
-### 시스템 확인
-
-```bash
-# 시스템 검증 (실제 테스트)
-python -m rm_abstract.system_validator
-
-# 설치 상태 확인
-python -m rm_abstract.installer
-```
-
-### 기본 사용법
+### Basic Usage
 
 ```python
 import rm_abstract
-from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# 초기화 (자동으로 최적 디바이스 선택)
+# Initialize (auto-select optimal device: NPU > GPU > CPU)
 rm_abstract.init(device="auto")
 
-# 기존 HuggingFace 코드 그대로 사용
-tokenizer = AutoTokenizer.from_pretrained("gpt2")
-model = AutoModelForCausalLM.from_pretrained("gpt2")
+# Check available resources
+resources = rm_abstract.get_available_resources()
+print(resources)
+# {'nvidia': False, 'rbln': False, 'furiosa': False, 'cpu': True}
 
-# 추론
-inputs = tokenizer("Hello, I am", return_tensors="pt")
-outputs = model.generate(**inputs, max_new_tokens=50)
-print(tokenizer.decode(outputs[0]))
+# Get device info
+info = rm_abstract.get_device_info()
+print(f"Current device: {info['resource_type']}:{info['device_id']}")
 ```
 
-### 디바이스 전환
+### Device Switching
 
 ```python
 import rm_abstract
 
-# GPU로 시작
-rm_abstract.init(device="gpu:0")
+# Start with CPU
+rm_abstract.init(device="cpu")
 
-# CPU로 전환
-rm_abstract.switch_device("cpu")
+# Switch to GPU
+rm_abstract.switch_device("nvidia")
 
-# 현재 디바이스 확인
+# Switch to NPU
+rm_abstract.switch_device("rbln")
+
+# Check current device
 info = rm_abstract.get_device_info()
-print(f"현재: {info['device_type']}:{info['device_id']}")
+print(f"Current: {info['resource_type']}:{info['device_id']}")
 ```
 
 ---
 
-## 🏗️ 지원 환경
+## Supported Environment
 
-### 하드웨어
+### Hardware Resources
 
-| 디바이스 | 상태 | 백엔드 |
-|----------|------|--------|
-| NVIDIA GPU | ✅ 지원 | vLLM |
-| CPU | ✅ 지원 | PyTorch |
-| Rebellions ATOM NPU | ✅ 지원 | vLLM-RBLN / Optimum-RBLN |
-| FuriosaAI NPU | 🔄 계획 | - |
+| Device | Status | Resource Class |
+|--------|--------|----------------|
+| NVIDIA GPU | Supported | `NvidiaGPU` (vLLM) |
+| CPU | Supported | `CPUResource` (PyTorch) |
+| Rebellions ATOM NPU | Supported | `RebellionsATOM` (vLLM-RBLN / Optimum-RBLN) |
+| FuriosaAI RNGD NPU | Supported | `FuriosaRNGD` |
 
-### 서빙 엔진
+### Serving Engines
 
-| 엔진 | 상태 | 특징 | 실행 방식 |
-|------|------|------|----------|
-| vLLM | ✅ 테스트 완료 | 고성능 LLM 서빙 | 라이브러리 직접 실행 |
-| Triton | ✅ 테스트 완료 | 다중 모델 서빙 | Docker 컨테이너 자동 관리 |
-| TorchServe | ✅ 테스트 완료 | PyTorch 네이티브 | Java 서버 자동 관리 |
+| Engine | Status | Description |
+|--------|--------|-------------|
+| vLLM | Supported | High-performance LLM serving |
+| Triton | Supported | Multi-model serving (Docker) |
+| TorchServe | Supported | PyTorch native serving |
 
 ---
 
-## 🔄 통합 서빙 인터페이스
+## Architecture
 
-모든 서빙 엔진을 **동일한 인터페이스**로 사용할 수 있습니다:
+```
+src/rm_abstract/
+├── __init__.py           # Main interface (init, switch_device, etc.)
+├── exceptions.py         # Exception classes
+├── common/               # Shared utilities
+│   ├── input_adapter.py  # Unified input format handling
+│   ├── output_adapter.py # Unified output format conversion
+│   ├── model_converter.py # ONNX conversion utilities
+│   └── hardware_detector.py # Hardware detection
+├── resources/            # Hardware-specific implementations
+│   ├── base.py           # Resource ABC
+│   ├── gpu/nvidia.py     # NVIDIA GPU (vLLM)
+│   ├── npu/rebellions.py # Rebellions ATOM NPU
+│   ├── npu/furiosa.py    # FuriosaAI RNGD NPU
+│   └── cpu/default.py    # CPU fallback
+├── engines/              # Serving engines
+│   ├── base.py           # ServingEngine base class
+│   ├── vllm.py           # vLLM engine
+│   ├── triton.py         # Triton engine
+│   └── torchserve.py     # TorchServe engine
+├── registry/             # Plugin system
+│   ├── plugin_registry.py # Centralized registry
+│   └── discovery.py      # Auto-discovery
+└── core/                 # Core modules
+    ├── config.py         # Configuration
+    └── controller.py     # DeviceFlowController
+```
+
+---
+
+## Plugin Registry System
 
 ```python
-from rm_abstract.serving import create_serving_engine, ServingConfig, ServingEngineType
+from rm_abstract import get_registry, PluginType
+from rm_abstract.registry import discover_all
 
-# vLLM 사용
-config = ServingConfig(engine=ServingEngineType.VLLM, model_name="gpt2")
-with create_serving_engine(config) as engine:
-    engine.load_model("gpt2")
-    output = engine.infer("Hello, I am")
-    print(output)
+# Get global registry
+registry = get_registry()
 
-# Triton 사용 (Docker 자동 시작/종료)
-config = ServingConfig(engine=ServingEngineType.TRITON, port=8000)
-with create_serving_engine(config) as engine:
-    engine.load_model("gpt2")
-    output = engine.infer("Hello, I am")
-    print(output)
+# Discover all plugins
+discover_all(registry)
 
-# TorchServe 사용 (서버 자동 시작/종료)
-config = ServingConfig(engine=ServingEngineType.TORCHSERVE, port=8080)
-with create_serving_engine(config) as engine:
-    engine.load_model("gpt2")
-    output = engine.infer("Hello, I am")
-    print(output)
-```
+# List available resources
+for plugin in registry.list_plugins(PluginType.RESOURCE):
+    status = "available" if plugin.is_available() else "not available"
+    print(f"{plugin.name}: {status} (priority: {plugin.priority})")
 
-### Context Manager 지원
-
-- `with` 블록 진입 시 서버 자동 시작
-- `with` 블록 종료 시 서버 자동 정리
-- 예외 발생 시에도 안전하게 정리
-
----
-
-## 🌐 REST API 서버
-
-OpenAI 호환 API 서버 제공:
-
-```bash
-# 서버 시작
-python -m rm_abstract.api --port 8000
-
-# API 문서
-open http://localhost:8000/docs
-```
-
-```bash
-# 텍스트 생성
-curl -X POST http://localhost:8000/v1/completions \
-  -H "Content-Type: application/json" \
-  -d '{"model": "gpt2", "prompt": "Hello", "max_tokens": 50}'
-
-# 채팅
-curl -X POST http://localhost:8000/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{"model": "gpt2", "messages": [{"role": "user", "content": "Hi!"}]}'
+# Get best available resource (by priority)
+best = registry.get_best_available(PluginType.RESOURCE)
+print(f"Best resource: {best.name}")
 ```
 
 ---
 
-## 📊 시스템 검증
+## Hardware Detection
 
-```bash
-python -m rm_abstract.system_validator
-```
+```python
+from rm_abstract import HardwareDetector
 
-```
-======================================================================
-  RM Abstract Layer - System Validation
-======================================================================
+detector = HardwareDetector()
 
-  Testing GPU Available... ✓
-  Testing CPU Inference... ✓
-  Testing vLLM GPU Inference... ✓
-  Testing Device Switching... ✓
-  Testing Triton... ✓
-  Testing TorchServe... ✓
+# Get summary
+print(detector.summary())
 
-Summary:
-  ✅ Passed:   6
-  ❌ Failed:   0
-======================================================================
+# Check specific vendor
+print(f"NVIDIA: {detector.is_available('nvidia')}")
+print(f"Rebellions: {detector.is_available('rebellions')}")
+print(f"CPU: {detector.is_available('cpu')}")
+
+# Get best available hardware
+best = detector.get_best_available()
+print(f"Best: {best.hardware_type.value} - {best.name}")
 ```
 
 ---
 
-## 📚 문서
+## Serving Engines
 
-| 문서 | 설명 |
-|------|------|
-| [INSTALL.md](INSTALL.md) | 상세 설치 가이드 |
-| [QUICKSTART.md](QUICKSTART.md) | 예제 중심 빠른 시작 |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 시스템 아키텍처 |
-| [API.md](API.md) | REST API 레퍼런스 |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | 개발/기여 가이드 |
+```python
+from rm_abstract.engines import (
+    VLLMEngine,
+    TritonEngine,
+    TorchServeEngine,
+    ServingConfig,
+    ServingEngineType,
+)
+
+# vLLM Engine
+if VLLMEngine.is_available():
+    config = ServingConfig(
+        engine=ServingEngineType.VLLM,
+        model_name="gpt2",
+    )
+    engine = VLLMEngine(config)
+    print(f"Engine: {engine.name}")
+    print(f"Supported devices: {engine.supported_devices()}")
+```
 
 ---
 
-## 🛠️ 예제
+## Examples
 
 ```
 examples/
-├── basic_usage.py           # 기본 사용법
-├── device_switching.py      # 디바이스 전환
-├── gpu_vllm_usage.py        # GPU/vLLM 사용 예제
-├── serving_engines_demo.py  # 서빙 엔진 비교
-└── unified_serving_demo.py  # 통합 서빙 인터페이스 (자동 서버 관리)
+├── basic_usage.py        # Basic init and resource check
+├── device_switching.py   # Runtime device switching
+├── hardware_detection.py # HardwareDetector usage
+├── plugin_registry.py    # Plugin registry demo
+└── serving_engine.py     # Serving engine demo
 ```
 
 ```bash
-# 기본 사용법
+# Run examples
 python examples/basic_usage.py
-
-# GPU/vLLM 예제 실행
-python examples/gpu_vllm_usage.py
-
-# 통합 서빙 데모 (권장)
-python examples/unified_serving_demo.py
-
-# 특정 엔진으로 서빙 데모
-python examples/serving_engines_demo.py --engine vllm
-python examples/serving_engines_demo.py --engine triton
-python examples/serving_engines_demo.py --engine torchserve
+python examples/device_switching.py
+python examples/hardware_detection.py
+python examples/plugin_registry.py
+python examples/serving_engine.py
 ```
 
 ---
 
-## 🧪 테스트
-
-**97개 테스트** (unit, integration, API)
+## Testing
 
 ```bash
-# 전체 테스트 (97개)
+# Run all tests (57 tests)
 pytest tests/ -v
 
-# 코어 테스트만
+# Run specific test file
 pytest tests/test_core.py -v
-
-# API 테스트만
-pytest tests/test_api.py -v
-
-# 타입 체크
-mypy src/rm_abstract/ --ignore-missing-imports
+pytest tests/unit/test_registry.py -v
+pytest tests/unit/test_resource.py -v
 ```
 
 ---
 
-## 🛡️ 에러 처리
-
-RM Abstract Layer는 명확한 예외 계층을 제공합니다:
+## Error Handling
 
 ```python
 from rm_abstract.exceptions import (
-    RMAbstractError,        # 모든 예외의 기본 클래스
-    NotInitializedError,    # 초기화 안됨
-    BackendNotAvailableError,  # 백엔드 사용 불가
-    ModelNotLoadedError,    # 모델 미로드
-    ServerStartError,       # 서버 시작 실패
-    DockerNotAvailableError,  # Docker 사용 불가
+    RMAbstractError,           # Base exception
+    NotInitializedError,       # Not initialized
+    BackendNotAvailableError,  # Backend unavailable
+    InvalidDeviceError,        # Invalid device spec
 )
 
 try:
     rm_abstract.init(device="gpu:0")
 except BackendNotAvailableError as e:
-    print(f"GPU 사용 불가: {e}")
-    rm_abstract.init(device="cpu")  # CPU로 폴백
+    print(f"GPU not available: {e}")
+    rm_abstract.init(device="cpu")  # Fallback to CPU
 ```
 
 ---
 
-## 📦 프로젝트 구조
+## Device Options
 
-```
-rm_abstract_layer/
-├── src/rm_abstract/
-│   ├── api/              # REST API 서버 (OpenAI 호환)
-│   ├── backends/         # 백엔드 구현
-│   │   ├── cpu/          # CPU 백엔드 (PyTorch)
-│   │   ├── gpu/          # GPU 백엔드 (vLLM)
-│   │   └── npu/          # NPU 백엔드 (Rebellions RBLN)
-│   ├── serving/          # 서빙 엔진 (통합 인터페이스)
-│   │   ├── vllm_engine.py      # vLLM (라이브러리)
-│   │   ├── triton_engine.py    # Triton (Docker)
-│   │   └── torchserve_engine.py # TorchServe (Java)
-│   ├── core/             # 코어 모듈
-│   ├── system_info.py    # 시스템 정보
-│   ├── system_validator.py # 시스템 검증
-│   └── installer.py      # 설치 헬퍼
-├── tests/                # pytest 테스트
-├── examples/             # 예제 스크립트
-├── requirements/         # 의존성 파일
-├── scripts/              # 설치 스크립트
-└── docker/               # Docker 설정
-    └── Dockerfile.triton # Triton 커스텀 이미지
+```python
+import rm_abstract
+
+# Auto-select (NPU > GPU > CPU priority)
+rm_abstract.init(device="auto")
+
+# Specific GPU
+rm_abstract.init(device="nvidia:0")
+rm_abstract.init(device="gpu:0")  # alias
+
+# CPU
+rm_abstract.init(device="cpu")
+
+# Rebellions NPU
+rm_abstract.init(device="rbln:0")
+
+# FuriosaAI NPU
+rm_abstract.init(device="furiosa:0")
 ```
 
 ---
 
-## 📄 라이선스
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [QUICKSTART.md](QUICKSTART.md) | Quick start guide |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Development/contribution guide |
+
+---
+
+## License
 
 MIT License
 
 ---
 
-## 🤝 기여
+## Contributing
 
-기여를 환영합니다! [CONTRIBUTING.md](CONTRIBUTING.md)를 참조해주세요.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
