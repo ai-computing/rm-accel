@@ -146,6 +146,41 @@ class TestAutoHook:
 
         assert found
 
+    def test_use_function(self):
+        """Test use() function for explicit configuration."""
+        from rm_abstract.auto import use, get_config
+
+        # Set device and engine
+        use(device="cpu", engine="vllm")
+        config = get_config()
+
+        assert config["device"] == "cpu"
+        assert config["engine"] == "vllm"
+
+    def test_use_sets_env_vars(self):
+        """Test that use() sets environment variables."""
+        from rm_abstract.auto import use
+
+        use(device="rbln", engine="triton")
+
+        assert os.environ.get("RM_DEVICE") == "rbln"
+        assert os.environ.get("RM_ENGINE") == "triton"
+
+        # Reset
+        use(device="auto", engine="vllm")
+
+    def test_get_config(self):
+        """Test get_config returns current configuration."""
+        from rm_abstract.auto import use, get_config
+
+        use(device="nvidia", engine="vllm")
+        config = get_config()
+
+        assert isinstance(config, dict)
+        assert "device" in config
+        assert "engine" in config
+        assert config["device"] == "nvidia"
+
 
 class TestCompat:
     """Tests for compat module exports."""
