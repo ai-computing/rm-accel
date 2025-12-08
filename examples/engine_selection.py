@@ -22,14 +22,40 @@ def test_engine(device: str, engine: str, model: str = "gpt2"):
     """Test inference with a specific device and engine."""
     # Clean module cache for fresh import
     for mod in list(sys.modules.keys()):
-        if "rm_abstract" in mod or mod == "vllm":
+        if "rm_abstract" in mod or mod == "vllm" or mod == "transformers":
             del sys.modules[mod]
-
-    from rm_abstract.auto import use, get_config
 
     print(f"\n{'='*60}")
     print(f"Testing: device={device}, engine={engine}")
     print(f"{'='*60}")
+
+    # For GPU/NPU + vllm, use original vllm directly (no hooking needed)
+    if device in ("nvidia", "gpu", "cuda", "rbln", "furiosa") and engine == "vllm":
+        print(f"Config: Using original vllm directly (no hooks)")
+        try:
+            import vllm
+            from vllm import LLM, SamplingParams
+
+            print(f"\nLoading model: {model}")
+            llm = LLM(model=model)
+            print(f"Backend: vllm (native)")
+            print(f"Engine: vllm")
+
+            # Generate
+            params = SamplingParams(max_tokens=30, temperature=0.7)
+            outputs = llm.generate(["Hello, I am"], params)
+
+            text = outputs[0].outputs[0].text.strip().replace("\n", " ")[:60]
+            print(f"Output: {text}...")
+
+            return True, None
+
+        except Exception as e:
+            print(f"Error: {type(e).__name__}: {e}")
+            return False, str(e)
+
+    # For CPU or non-vllm engines, use rm_abstract hooking
+    from rm_abstract.auto import use, get_config
 
     use(device=device, engine=engine)
     config = get_config()
