@@ -20,10 +20,18 @@ import sys
 
 def test_engine(device: str, engine: str, model: str = "gpt2"):
     """Test inference with a specific device and engine."""
-    # Clean module cache for fresh import
-    for mod in list(sys.modules.keys()):
-        if "rm_abstract" in mod or mod == "vllm" or mod == "transformers":
-            del sys.modules[mod]
+    # Clean module cache for fresh import (more thorough cleanup)
+    mods_to_remove = []
+    for mod in sys.modules.keys():
+        if any(x in mod for x in ["rm_abstract", "vllm", "transformers"]):
+            mods_to_remove.append(mod)
+    for mod in mods_to_remove:
+        del sys.modules[mod]
+
+    # Also clean environment variables
+    import os
+    for key in ["RM_DEVICE", "RM_ENGINE", "RM_HOOK_VLLM", "RM_HOOK_TRANSFORMERS"]:
+        os.environ.pop(key, None)
 
     print(f"\n{'='*60}")
     print(f"Testing: device={device}, engine={engine}")
