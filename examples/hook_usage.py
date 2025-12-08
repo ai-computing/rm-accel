@@ -1,44 +1,47 @@
 """
 Hook Usage Example
 
-Demonstrates how to use rm_abstract hooks to run existing code
-without modification.
+Demonstrates how to use rm_abstract hooks with explicit device/engine selection.
 
-Run with:
-    # Auto device selection
-    python examples/hook_usage.py
+Usage Patterns:
 
-    # Specific device
-    RM_DEVICE=cpu python examples/hook_usage.py
-    RM_DEVICE=nvidia python examples/hook_usage.py
+1. Explicit selection (recommended):
+    from rm_abstract.auto import use
+    use(device="rbln", engine="vllm")
+
+2. Environment variable:
     RM_DEVICE=rbln python examples/hook_usage.py
 
-    # Using launcher
-    python -m rm_abstract.run examples/hook_usage.py --device=auto
+3. Launcher:
+    python -m rm_abstract.run examples/hook_usage.py --device=rbln
 """
 
-# Method 1: Import rm_abstract.auto at the top of your script
-# This single line enables automatic backend switching
-import rm_abstract.auto  # noqa: F401 - This enables hooks
+# =============================================================================
+# Method 1: Explicit device and engine selection
+# =============================================================================
+from rm_abstract.auto import use
 
-# Now use vLLM as normal - it will be routed to the appropriate backend
+# Choose your device and engine before importing ML libraries
+use(device="cpu", engine="vllm")  # CPU fallback
+# use(device="nvidia", engine="vllm")  # NVIDIA GPU
+# use(device="rbln", engine="vllm")    # Rebellions NPU
+# use(device="furiosa", engine="vllm") # FuriosaAI NPU
+
+# Now import vLLM as normal - it will use the selected backend
 from vllm import LLM, SamplingParams
 
 print("=" * 60)
 print("RM Abstract Hook Usage Example")
 print("=" * 60)
 
-# Check which backend is being used
-import os
-device = os.environ.get("RM_DEVICE", "auto")
-print(f"\nDevice selection: {device}")
+# Check configuration
+from rm_abstract.auto import get_config
+config = get_config()
+print(f"\nConfiguration:")
+print(f"  Device: {config['device']}")
+print(f"  Engine: {config['engine']}")
 
 # Create LLM instance
-# This will automatically use:
-# - vLLM on NVIDIA GPU
-# - vLLM-RBLN on Rebellions NPU
-# - FuriosaAI SDK on FuriosaAI NPU
-# - Transformers on CPU (fallback)
 print("\nInitializing LLM...")
 
 try:
@@ -64,8 +67,5 @@ try:
 except Exception as e:
     print(f"\nNote: Could not run inference: {e}")
     print("This is expected if you don't have the model downloaded.")
-    print("The hook mechanism is still working correctly.")
 
 print("\n" + "=" * 60)
-print("Hook demonstration complete!")
-print("=" * 60)
