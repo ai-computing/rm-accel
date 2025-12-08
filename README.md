@@ -281,9 +281,11 @@ rm_abstract.init(device="furiosa:0")
 
 | Document | Description |
 |----------|-------------|
-| [QUICKSTART.md](QUICKSTART.md) | Quick start guide |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Development/contribution guide |
+| [QUICKSTART.md](docs/QUICKSTART.md) | Quick start guide |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture |
+| [CONTRIBUTING.md](docs/CONTRIBUTING.md) | Development/contribution guide |
+| [ADDING_RESOURCES.md](docs/ADDING_RESOURCES.md) | Guide for adding new hardware resources |
+| [ADDING_ENGINES.md](docs/ADDING_ENGINES.md) | Guide for adding new serving engines |
 
 ---
 
@@ -295,4 +297,4 @@ MIT License
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.
