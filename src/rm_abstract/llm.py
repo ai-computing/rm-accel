@@ -249,12 +249,18 @@ class LLM:
         try:
             import vllm
 
+            # Set default gpu_memory_utilization if not specified
+            gpu_memory_utilization = self.extra_kwargs.pop(
+                "gpu_memory_utilization", 0.5
+            )
+
             self._backend_llm = vllm.LLM(
                 model=self.model_name,
                 tokenizer=self.tokenizer_name,
                 tensor_parallel_size=self.tensor_parallel_size,
                 dtype=self.dtype,
                 trust_remote_code=self.trust_remote_code,
+                gpu_memory_utilization=gpu_memory_utilization,
                 **self.extra_kwargs,
             )
             self._sampling_params_cls = vllm.SamplingParams
