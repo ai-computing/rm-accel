@@ -23,7 +23,8 @@
       "Bash(python:*)",
       "Bash(git restore:*)",
       "Bash(PYTHONPATH=\"./src\" python:*)",
-      "Bash(PYTHONPATH=\"./src\" python -m pytest:*)"
+      "Bash(PYTHONPATH=\"./src\" python -m pytest:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
