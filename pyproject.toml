@@ -90,9 +90,6 @@ Documentation = "https://github.com/gspark-etri/rm_abstract_layer#readme"
 Repository = "https://github.com/gspark-etri/rm_abstract_layer.git"
 Issues = "https://github.com/gspark-etri/rm_abstract_layer/issues"
 
-[project.scripts]
-rm-abstract = "rm_abstract.cli:main"
-
 [tool.setuptools]
 package-dir = {"" = "src"}
 

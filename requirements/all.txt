@@ -1,5 +1,0 @@
-# All requirements (GPU + Triton + TorchServe)
--r gpu.txt
--r triton.txt
--r torchserve.txt
-
