@@ -59,17 +59,17 @@ def activate_transformers_hook(controller) -> None:
             
             try:
                 _set_loading(True)
-                # Call original method
-                model = _original_from_pretrained.__func__(
-                    cls, pretrained_model_name_or_path, *args, **kwargs
-                )
+            # Call original method
+            model = _original_from_pretrained.__func__(
+                cls, pretrained_model_name_or_path, *args, **kwargs
+            )
 
-                # Prepare model and wrap in proxy
-                if _controller is not None:
-                    logger.debug(f"Intercepted model load: {pretrained_model_name_or_path}")
-                    model = _controller.prepare_model_with_proxy(model)
+            # Prepare model and wrap in proxy
+            if _controller is not None:
+                logger.debug(f"Intercepted model load: {pretrained_model_name_or_path}")
+                model = _controller.prepare_model_with_proxy(model)
 
-                return model
+            return model
             finally:
                 _set_loading(False)
 

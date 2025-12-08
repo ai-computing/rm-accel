@@ -28,7 +28,7 @@ class RBLNMode(str, Enum):
 class RBLNBackend(Backend):
     """
     Rebellions ATOM NPU Backend
-    
+
     Supports both vLLM-RBLN and Optimum-RBLN modes for flexible LLM inference.
     
     Args:
@@ -46,7 +46,7 @@ class RBLNBackend(Backend):
         # Optimum mode for HuggingFace integration
         backend = RBLNBackend(device_id=0, mode="optimum")
     """
-    
+
     def __init__(
         self,
         device_id: int = 0,
@@ -62,16 +62,16 @@ class RBLNBackend(Backend):
     @property
     def device_type(self) -> DeviceType:
         return DeviceType.NPU
-    
+
     @property
     def name(self) -> str:
         return "rbln"
-    
+
     @property
     def mode(self) -> Optional[RBLNMode]:
         """Current active mode"""
         return self._active_mode
-    
+
     def is_available(self) -> bool:
         """Check RBLN SDK and NPU availability"""
         # Check for any RBLN package
@@ -150,8 +150,8 @@ class RBLNBackend(Backend):
         
         # If we can't check devices, NPU is not available
         logger.debug("Cannot detect RBLN NPU devices - SDK not found or no devices")
-        return False
-    
+            return False
+
     def _determine_mode(self) -> RBLNMode:
         """Determine which mode to use based on availability and preference"""
         if self._requested_mode == RBLNMode.AUTO:
@@ -174,7 +174,7 @@ class RBLNBackend(Backend):
         """Initialize RBLN backend"""
         if self._initialized:
             return
-        
+
         try:
             self._active_mode = self._determine_mode()
             
@@ -187,11 +187,11 @@ class RBLNBackend(Backend):
             self._initialized = True
             
             logger.info(f"RBLN backend initialized in {self._active_mode.value} mode on device {self.device_id}")
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize RBLN backend: {e}")
             raise
-    
+
     def prepare_model(self, model: Any, model_config: Optional[Dict[str, Any]] = None) -> Any:
         """Prepare model for RBLN NPU"""
         if not self._initialized:
@@ -290,7 +290,7 @@ class RBLNVLLMBackend(Backend):
     def prepare_model(self, model: Any, model_config: Optional[Dict[str, Any]] = None) -> Any:
         """
         Prepare model using vLLM-RBLN
-        
+
         Args:
             model: Model name/path or HuggingFace model
             model_config: vLLM configuration options
@@ -375,9 +375,9 @@ class RBLNVLLMBackend(Backend):
         # Convert output format if needed
         if proxy_method == "generate":
             return self._convert_to_hf_format(outputs, inputs, original_model, **kwargs)
-        
+
         return outputs
-    
+
     def _prepare_inputs(self, inputs: Any, original_model: Any = None, **kwargs) -> list:
         """Prepare inputs for vLLM"""
         if inputs is None:
@@ -471,11 +471,11 @@ class RBLNVLLMBackend(Backend):
             return vllm_outputs
     
     def get_device_info(self) -> DeviceInfo:
-        return DeviceInfo(
-            device_type=DeviceType.NPU,
-            device_id=self.device_id,
+                return DeviceInfo(
+                    device_type=DeviceType.NPU,
+                    device_id=self.device_id,
             name="Rebellions ATOM (vLLM)",
-            vendor="Rebellions",
+                    vendor="Rebellions",
         )
     
     def cleanup(self) -> None:
@@ -620,7 +620,7 @@ class RBLNOptimumBackend(Backend):
             name="Rebellions ATOM (Optimum)",
             vendor="Rebellions",
         )
-    
+
     def cleanup(self) -> None:
         self._compiled_model = None
         self._tokenizer = None
