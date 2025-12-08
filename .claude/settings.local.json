@@ -1,30 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git init:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: 이종 AI 반도체 통합 호환 라이브러리 개발 계획\n\n- DEVELOPMENT_PLAN.md: 프로젝트 설계 문서 추가\n  - GPU (vLLM), NPU (Rebellions ATOM, FuriosaAI RNGD) 지원 계획\n  - Zero Code Change 원칙 기반 추상화 레이어 설계\n  - 6단계 Phase 개발 로드맵\n- .gitignore: Python 프로젝트용 gitignore 추가\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(gh --version:*)",
-      "Bash(winget install:*)",
-      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" auth status)",
-      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" repo create rm_abstract_layer --public --source=. --remote=origin --push --description \"이종 AI 반도체 통합 호환 라이브러리 - GPU(vLLM), NPU(Rebellions ATOM, FuriosaAI RNGD) 추상화 레이어\")",
-      "Bash(git commit -m \"$(cat <<''EOF''\nPhase 1: 프로젝트 초기 구조 및 핵심 인터페이스 구현\n\n## 추가된 파일\n\n### 핵심 모듈 (src/rm_abstract/)\n- core/backend.py: Backend ABC, NPUBackend, DeviceInfo 정의\n- core/controller.py: DeviceFlowController 구현\n- core/config.py: Config 클래스\n\n### 백엔드 구현 (backends/)\n- gpu/vllm_backend.py: vLLM 기반 GPU 백엔드\n- cpu/cpu_backend.py: PyTorch CPU 백엔드\n- npu/base.py: NPU 공통 베이스 클래스\n- npu/plugins/rebellions.py: Rebellions ATOM 백엔드\n- npu/plugins/furiosa.py: FuriosaAI RNGD 백엔드\n\n### 후킹 시스템 (hooks/)\n- transformers_hook.py: HF Transformers 자동 후킹\n- pytorch_hook.py: PyTorch nn.Module 후킹\n\n### 유틸리티\n- conversion/onnx_utils.py: ONNX 변환 유틸리티\n- utils/logger.py: 로깅 유틸리티\n\n### 프로젝트 설정\n- pyproject.toml: 패키지 설정 및 의존성\n- requirements.txt: 의존성 목록\n- README.md: 프로젝트 문서\n\n### 테스트 및 예제\n- tests/unit/test_config.py: Config 클래스 테스트\n- examples/basic_usage.py: 기본 사용 예시\n- examples/device_switching.py: 디바이스 전환 예시\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git push:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nCI: GitHub Actions 워크플로우 및 테스트 추가\n\n## GitHub Actions 워크플로우\n- .github/workflows/ci.yml: 기본 CI 파이프라인\n  - Lint & Type Check (Black, Ruff, MyPy)\n  - 다중 Python 버전 테스트 (3.9~3.12)\n  - Mock 기반 통합 테스트\n  - 패키지 빌드 테스트\n  - 매주 월요일 정기 실행 (cron)\n\n- .github/workflows/hardware-test.yml: 하드웨어 테스트\n  - Self-hosted runner 기반\n  - GPU/Rebellions/FuriosaAI 개별 테스트\n  - 수동 실행 (workflow_dispatch)\n\n## 테스트 케이스\n- tests/unit/test_backend.py: Backend ABC 테스트\n- tests/unit/test_controller.py: DeviceFlowController 테스트\n- tests/integration/test_mock_backends.py: Mock 기반 통합 테스트\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" run list --limit 5)",
-      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" run view 19848808195 --log-failed)",
-      "Bash(pip install:*)",
-      "Bash(python -m black:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nTranslate Korean to English and fix Black formatting\n\n## Changes\n\n### Documentation\n- README.md: Translated to English\n- DEVELOPMENT_PLAN.md: Translated to English\n\n### Configuration\n- pyproject.toml: Translated description and comments to English\n- .github/workflows/ci.yml: Translated comments to English\n- .github/workflows/hardware-test.yml: Translated comments to English\n\n### Source Code\n- All docstrings and comments translated to English\n- Applied Black formatting to all Python files\n- Fixed code style issues flagged by Black formatter\n\n### Files Updated\n- src/rm_abstract/__init__.py\n- src/rm_abstract/core/*.py\n- src/rm_abstract/backends/**/*.py\n- src/rm_abstract/hooks/*.py\n- src/rm_abstract/utils/*.py\n- examples/*.py\n- tests/**/*.py\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(python -m pytest:*)",
-      "Bash(set PYTHONPATH=%cd%src)",
-      "Bash($env:PYTHONPATH=\"$pwd\\src\")",
-      "Bash(git commit:*)",
-      "Bash(python:*)",
-      "Bash(git restore:*)",
-      "Bash(PYTHONPATH=\"./src\" python:*)",
+      "Bash(PYTHONPATH=\"c:/Users/USER/Documents/codes/rm_abstract_layer/src\" python -m pytest:*)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\codes\\rm_abstract_layer\" add src/rm_abstract/auto.py)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\codes\\rm_abstract_layer\" commit -m \"$(cat <<''EOF''\nfix: disable vllm hooking for GPU/NPU devices\n\n## Problem\nWhen using GPU/NPU with vllm, hooking causes recursion:\n1. `from vllm import LLM` -> hooked compat.LLM\n2. compat.LLM tries to import original vllm\n3. Recursion due to hook still active\n\n## Solution\nAuto-disable vllm hooking when device is nvidia/gpu/rbln/furiosa.\n- GPU/NPU: Use original vllm directly (no hook)\n- CPU: Hook vllm to use transformers fallback\n\n## Behavior\n```python\nuse(device=\"nvidia\")  # hook_vllm=False automatically\nuse(device=\"cpu\")     # hook_vllm=True (default)\n```\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(PYTHONPATH=\"c:/Users/USER/Documents/codes/rm_abstract_layer/src\" python:*)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\codes\\rm_abstract_layer\" commit -m \"$(cat <<''EOF''\nfix: disable transformers hooking for GPU/NPU devices\n\nvLLM imports transformers internally, so we need to disable\nboth vllm and transformers hooking when using GPU/NPU devices.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\codes\\rm_abstract_layer\" log --oneline -20)",
       "Bash(PYTHONPATH=\"./src\" python -m pytest:*)",
-      "Bash(cat:*)"
+      "Bash(PYTHONPATH=\"./src\" python -c:*)"
     ],
     "deny": [],
     "ask": []

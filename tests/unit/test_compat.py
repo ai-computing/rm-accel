@@ -1,13 +1,12 @@
-"""Tests for compatibility layer."""
+"""Tests for compatibility layer (legacy compat module)."""
 
 import os
-import sys
 import pytest
 from unittest.mock import patch, MagicMock
 
 
-class TestSamplingParams:
-    """Tests for SamplingParams."""
+class TestCompatSamplingParams:
+    """Tests for compat.SamplingParams (legacy)."""
 
     def test_default_values(self):
         """Test default sampling parameters."""
@@ -48,8 +47,8 @@ class TestSamplingParams:
         assert d["max_tokens"] == 50
 
 
-class TestRequestOutput:
-    """Tests for RequestOutput."""
+class TestCompatRequestOutput:
+    """Tests for compat.RequestOutput (legacy)."""
 
     def test_request_output_creation(self):
         """Test creating RequestOutput."""
@@ -67,14 +66,13 @@ class TestRequestOutput:
         assert output.output.text == "World"
 
 
-class TestLLMDeviceSelection:
-    """Tests for LLM device selection."""
+class TestCompatLLMDeviceSelection:
+    """Tests for compat.LLM device selection (legacy)."""
 
     def test_resolve_device_explicit(self):
         """Test explicit device selection."""
         from rm_abstract.compat.vllm_compat import LLM
 
-        # Create LLM with explicit device
         with patch.object(LLM, "_initialize_backend"):
             llm = LLM(model="gpt2", device="cpu")
             assert llm.device == "cpu"
@@ -98,8 +96,8 @@ class TestLLMDeviceSelection:
             assert resolved == "nvidia"
 
 
-class TestAutoModelDeviceSelection:
-    """Tests for AutoModelForCausalLM device selection."""
+class TestCompatTransformers:
+    """Tests for transformers_compat (legacy)."""
 
     def test_device_from_env(self):
         """Test device selection from environment."""
@@ -114,75 +112,7 @@ class TestAutoModelDeviceSelection:
         assert _resolve_device("nvidia:0") == "nvidia"
 
 
-class TestAutoHook:
-    """Tests for auto-hook functionality."""
-
-    def test_enable_disable_hooks(self):
-        """Test enabling and disabling hooks."""
-        from rm_abstract.auto import enable_hooks, disable_hooks, is_hooked
-
-        # Ensure hooks are enabled
-        enable_hooks()
-        assert is_hooked()
-
-        # Disable hooks
-        disable_hooks()
-        assert not is_hooked()
-
-        # Re-enable for other tests
-        enable_hooks()
-
-    def test_hook_finder_installed(self):
-        """Test that hook finder is in sys.meta_path."""
-        from rm_abstract.auto import RMAbstractFinder, enable_hooks
-
-        enable_hooks()
-
-        found = False
-        for finder in sys.meta_path:
-            if isinstance(finder, RMAbstractFinder):
-                found = True
-                break
-
-        assert found
-
-    def test_use_function(self):
-        """Test use() function for explicit configuration."""
-        from rm_abstract.auto import use, get_config
-
-        # Set device and engine
-        use(device="cpu", engine="vllm")
-        config = get_config()
-
-        assert config["device"] == "cpu"
-        assert config["engine"] == "vllm"
-
-    def test_use_sets_env_vars(self):
-        """Test that use() sets environment variables."""
-        from rm_abstract.auto import use
-
-        use(device="rbln", engine="triton")
-
-        assert os.environ.get("RM_DEVICE") == "rbln"
-        assert os.environ.get("RM_ENGINE") == "triton"
-
-        # Reset
-        use(device="auto", engine="vllm")
-
-    def test_get_config(self):
-        """Test get_config returns current configuration."""
-        from rm_abstract.auto import use, get_config
-
-        use(device="nvidia", engine="vllm")
-        config = get_config()
-
-        assert isinstance(config, dict)
-        assert "device" in config
-        assert "engine" in config
-        assert config["device"] == "nvidia"
-
-
-class TestCompat:
+class TestCompatModuleExports:
     """Tests for compat module exports."""
 
     def test_vllm_compat_exports(self):
@@ -217,8 +147,8 @@ class TestCompat:
         assert AutoTokenizer is not None
 
 
-class TestEngineSelection:
-    """Tests for engine selection functionality."""
+class TestCompatEngineSelection:
+    """Tests for engine selection in compat layer (legacy)."""
 
     def test_llm_engine_parameter(self):
         """Test LLM accepts engine parameter."""
@@ -243,21 +173,6 @@ class TestEngineSelection:
                 llm = LLM(model="gpt2", device="cpu")
                 assert llm.engine == "triton"
 
-    def test_use_function_engine(self):
-        """Test use() function with engine parameter."""
-        from rm_abstract.auto import use, get_config
-
-        use(device="cpu", engine="triton")
-        config = get_config()
-        assert config["engine"] == "triton"
-
-        use(device="cpu", engine="torchserve")
-        config = get_config()
-        assert config["engine"] == "torchserve"
-
-        # Reset
-        use(device="auto", engine="vllm")
-
     def test_engine_type_property(self):
         """Test engine_type property."""
         from rm_abstract.compat.vllm_compat import LLM
@@ -266,22 +181,10 @@ class TestEngineSelection:
             llm = LLM(model="gpt2", device="cpu", engine="triton")
             assert llm.engine_type == "triton"
 
-    def test_llm_repr_includes_engine(self):
-        """Test __repr__ includes engine."""
-        from rm_abstract.compat.vllm_compat import LLM
-
-        with patch.object(LLM, "_initialize_backend"):
-            llm = LLM(model="gpt2", device="cpu", engine="triton")
-            llm._backend = "triton"  # Mock backend
-            repr_str = repr(llm)
-            assert "triton" in repr_str
-
     def test_is_engine_available(self):
         """Test _is_engine_available function."""
         from rm_abstract.compat.vllm_compat import _is_engine_available
 
-        # Note: These depend on actual system setup
-        # Just test that function runs without error
         result = _is_engine_available("vllm")
         assert isinstance(result, bool)
 

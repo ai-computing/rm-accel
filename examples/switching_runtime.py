@@ -8,21 +8,12 @@ Usage:
     python examples/switching_runtime.py
 """
 
-import sys
+from rm_abstract import LLM, SamplingParams
 
 
 def create_llm(device: str, model: str = "gpt2"):
     """Create LLM with specified device."""
-    # Must clean modules to switch device
-    for mod in list(sys.modules.keys()):
-        if "rm_abstract" in mod or mod == "vllm":
-            del sys.modules[mod]
-
-    from rm_abstract.auto import use
-    use(device=device, engine="vllm")
-
-    from vllm import LLM
-    return LLM(model=model)
+    return LLM(model=model, device=device, engine="vllm")
 
 
 def main():
@@ -35,7 +26,6 @@ def main():
     llm_cpu = create_llm("cpu")
     print(f"    Backend: {llm_cpu.backend}")
 
-    from vllm import SamplingParams
     params = SamplingParams(max_tokens=20)
 
     outputs = llm_cpu.generate(["CPU says:"], params)
