@@ -317,11 +317,17 @@ class LLM:
 
     def _init_triton_backend(self, device: str):
         """Initialize Triton Inference Server backend."""
-        self._backend = "triton"
         try:
             from .engines.triton import TritonEngine
             from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
 
+            # Check if Triton server is available
+            if not TritonEngine.is_available():
+                logger.warning("Triton server not available, falling back to transformers")
+                self._init_transformers_backend(device)
+                return
+
+            self._backend = "triton"
             device_map = {
                 "nvidia": DeviceTarget.GPU,
                 "gpu": DeviceTarget.GPU,
@@ -342,16 +348,22 @@ class LLM:
             logger.info(f"Initialized Triton backend: {self.model_name}")
 
         except ImportError as e:
-            logger.warning(f"Triton backend not available ({e}), falling back to CPU")
-            self._init_cpu_backend()
+            logger.warning(f"Triton backend not available ({e}), falling back to transformers")
+            self._init_transformers_backend(device)
 
     def _init_torchserve_backend(self, device: str):
         """Initialize TorchServe backend."""
-        self._backend = "torchserve"
         try:
             from .engines.torchserve import TorchServeEngine
             from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
 
+            # Check if TorchServe server is available
+            if not TorchServeEngine.is_available():
+                logger.warning("TorchServe server not available, falling back to transformers")
+                self._init_transformers_backend(device)
+                return
+
+            self._backend = "torchserve"
             device_map = {
                 "nvidia": DeviceTarget.GPU,
                 "gpu": DeviceTarget.GPU,
@@ -372,16 +384,23 @@ class LLM:
 
         except ImportError as e:
             logger.warning(
-                f"TorchServe backend not available ({e}), falling back to CPU"
+                f"TorchServe backend not available ({e}), falling back to transformers"
             )
-            self._init_cpu_backend()
+            self._init_transformers_backend(device)
 
     def _init_cpu_backend(self):
         """Initialize CPU backend using transformers."""
-        self._backend = "cpu"
+        self._init_transformers_backend("cpu")
+
+    def _init_transformers_backend(self, device: str):
+        """Initialize transformers backend for CPU or GPU."""
         try:
             from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
+
+            # Determine if using GPU or CPU
+            use_gpu = device in ("nvidia", "gpu", "cuda") and torch.cuda.is_available()
+            self._backend = "transformers-gpu" if use_gpu else "transformers-cpu"
 
             self._tokenizer = AutoTokenizer.from_pretrained(
                 self.tokenizer_name,
@@ -389,7 +408,7 @@ class LLM:
             )
 
             dtype_map = {
-                "auto": torch.float32,
+                "auto": torch.float16 if use_gpu else torch.float32,
                 "float32": torch.float32,
                 "float16": torch.float16,
                 "bfloat16": torch.bfloat16,
@@ -401,7 +420,12 @@ class LLM:
                 torch_dtype=torch_dtype,
                 trust_remote_code=self.trust_remote_code,
             )
-            logger.info(f"Initialized CPU backend: {self.model_name}")
+
+            if use_gpu:
+                self._backend_llm = self._backend_llm.cuda()
+                logger.info(f"Initialized transformers GPU backend: {self.model_name}")
+            else:
+                logger.info(f"Initialized transformers CPU backend: {self.model_name}")
 
         except ImportError as e:
             raise RuntimeError(f"No backend available: {e}")
@@ -490,25 +514,33 @@ class LLM:
         """Generate using transformers-style API."""
         import torch
 
+        # Determine device from model
+        device = next(self._backend_llm.parameters()).device
+
         results = []
         for i, prompt in enumerate(prompts):
             inputs = self._tokenizer(prompt, return_tensors="pt")
+            # Move inputs to same device as model
+            inputs = {k: v.to(device) for k, v in inputs.items()}
 
             with torch.no_grad():
                 output_ids = self._backend_llm.generate(
-                    inputs.input_ids,
+                    inputs["input_ids"],
+                    attention_mask=inputs.get("attention_mask"),
                     max_new_tokens=sampling_params.max_tokens or 16,
                     temperature=sampling_params.temperature,
                     top_p=sampling_params.top_p,
                     top_k=sampling_params.top_k if sampling_params.top_k > 0 else None,
                     do_sample=sampling_params.temperature > 0,
                     num_return_sequences=sampling_params.n,
+                    pad_token_id=self._tokenizer.eos_token_id,
                     **kwargs,
                 )
 
             completions = []
+            input_len = inputs["input_ids"].shape[1]
             for j, ids in enumerate(output_ids):
-                new_ids = ids[inputs.input_ids.shape[1] :]
+                new_ids = ids[input_len:]
                 text = self._tokenizer.decode(
                     new_ids,
                     skip_special_tokens=sampling_params.skip_special_tokens,
