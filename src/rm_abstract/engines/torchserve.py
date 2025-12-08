@@ -205,16 +205,22 @@ class TorchServeEngine(ServingEngine):
             time.sleep(2)
 
             logger.info("Starting TorchServe server...")
+            print("[TorchServe] Starting daemon...", flush=True)
+
             # TorchServe --start runs as daemon and returns immediately
+            # But on some systems it may take longer due to Java startup
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=60,
             )
 
             if result.returncode != 0:
+                print(f"[TorchServe] Start failed: {result.stderr}", flush=True)
                 raise RuntimeError(f"TorchServe start failed: {result.stderr}")
+
+            print("[TorchServe] Daemon started", flush=True)
 
             # Wait for server to be ready (daemon runs in background)
             self._wait_for_ready()
