@@ -316,25 +316,14 @@ class LLM:
             self._init_cpu_backend()
 
     def _init_triton_backend(self, device: str):
-        """Initialize Triton Inference Server backend."""
+        """Initialize Triton Inference Server backend with auto-start."""
         try:
-            from .engines.triton import TritonEngine
+            from .engines.triton import TritonEngine, TritonConfig
             from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
 
             # Check if Docker is available
             if not TritonEngine.is_available():
                 logger.warning("Docker not available, falling back to transformers")
-                self._init_transformers_backend(device)
-                return
-
-            # Check if Triton server is actually running
-            try:
-                import requests
-                response = requests.get("http://localhost:8000/v2/health/ready", timeout=2)
-                if response.status_code != 200:
-                    raise ConnectionError("Triton not ready")
-            except Exception:
-                logger.warning("Triton server not running, falling back to transformers")
                 self._init_transformers_backend(device)
                 return
 
@@ -354,28 +343,34 @@ class LLM:
                 tensor_parallel_size=self.tensor_parallel_size,
             )
 
-            self._backend_llm = TritonEngine(config)
+            # Configure auto-start behavior
+            triton_config = TritonConfig(
+                auto_start=True,
+                auto_convert=True,
+                cleanup_on_exit=True,
+            )
+
+            self._backend_llm = TritonEngine(config, triton_config)
+            # load_model will auto-convert to ONNX and start Docker container
             self._backend_llm.load_model(self.model_name)
-            logger.info(f"Initialized Triton backend: {self.model_name}")
+            logger.info(f"Initialized Triton backend with auto-start: {self.model_name}")
 
         except ImportError as e:
             logger.warning(f"Triton backend not available ({e}), falling back to transformers")
             self._init_transformers_backend(device)
+        except Exception as e:
+            logger.warning(f"Failed to start Triton ({e}), falling back to transformers")
+            self._init_transformers_backend(device)
 
     def _init_torchserve_backend(self, device: str):
-        """Initialize TorchServe backend."""
+        """Initialize TorchServe backend with auto-start."""
         try:
-            from .engines.torchserve import TorchServeEngine
+            from .engines.torchserve import TorchServeEngine, TorchServeConfig
             from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
 
-            # Check if TorchServe server is actually running
-            try:
-                import requests
-                response = requests.get("http://localhost:8080/ping", timeout=2)
-                if response.status_code != 200:
-                    raise ConnectionError("TorchServe not ready")
-            except Exception:
-                logger.warning("TorchServe server not running, falling back to transformers")
+            # Check if TorchServe is installed
+            if not TorchServeEngine.is_available():
+                logger.warning("TorchServe not installed, falling back to transformers")
                 self._init_transformers_backend(device)
                 return
 
@@ -394,14 +389,25 @@ class LLM:
                 model_name=self.model_name,
             )
 
-            self._backend_llm = TorchServeEngine(config)
+            # Configure auto-start behavior
+            ts_config = TorchServeConfig(
+                auto_start=True,
+                auto_package=True,
+                cleanup_on_exit=True,
+            )
+
+            self._backend_llm = TorchServeEngine(config, ts_config)
+            # load_model will auto-package MAR and start server
             self._backend_llm.load_model(self.model_name)
-            logger.info(f"Initialized TorchServe backend: {self.model_name}")
+            logger.info(f"Initialized TorchServe backend with auto-start: {self.model_name}")
 
         except ImportError as e:
             logger.warning(
                 f"TorchServe backend not available ({e}), falling back to transformers"
             )
+            self._init_transformers_backend(device)
+        except Exception as e:
+            logger.warning(f"Failed to start TorchServe ({e}), falling back to transformers")
             self._init_transformers_backend(device)
 
     def _init_cpu_backend(self):
