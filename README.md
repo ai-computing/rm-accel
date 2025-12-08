@@ -13,8 +13,10 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
 
 ### Key Features
 
-- **Device Transparency**: Existing code works as-is
+- **Zero Code Change**: Just change `from vllm import LLM` to `from rm_abstract import LLM`
+- **Device Transparency**: Existing vLLM code works as-is on any device
 - **Runtime Switching**: Real-time switching between GPU, CPU, NPU
+- **Auto Server Management**: Triton/TorchServe auto-start with model conversion
 - **Plugin Architecture**: Easily add new resources and engines via plugin registry
 - **Multiple Serving Engines**: vLLM, Triton, TorchServe support
 - **Hardware Detection**: Automatic detection and priority-based selection (NPU > GPU > CPU)
@@ -36,7 +38,59 @@ pip install -e ".[gpu]"
 pip install -e ".[all]"
 ```
 
-### Basic Usage
+### Zero Code Change Usage (Recommended)
+
+```python
+# Before (vLLM only - GPU required)
+# from vllm import LLM, SamplingParams
+
+# After (rm_abstract - works on GPU, NPU, CPU)
+from rm_abstract import LLM, SamplingParams
+
+# Rest of your code remains EXACTLY the same!
+llm = LLM(model="gpt2")
+outputs = llm.generate(["Hello, I am"], SamplingParams(max_tokens=50))
+print(outputs[0].outputs[0].text)
+```
+
+### Device Selection
+
+```python
+from rm_abstract import LLM, SamplingParams
+
+# Auto-detect best device (NPU > GPU > CPU)
+llm = LLM(model="gpt2")
+
+# Explicit device selection
+llm = LLM(model="gpt2", device="nvidia")   # NVIDIA GPU
+llm = LLM(model="gpt2", device="cpu")      # CPU
+llm = LLM(model="gpt2", device="rbln")     # Rebellions NPU
+llm = LLM(model="gpt2", device="furiosa")  # FuriosaAI NPU
+
+# Environment variable control
+# RM_DEVICE=nvidia python your_script.py
+# RM_DEVICE=cpu python your_script.py
+```
+
+### Engine Selection
+
+```python
+from rm_abstract import LLM, SamplingParams
+
+# vLLM engine (default)
+llm = LLM(model="gpt2", engine="vllm")
+
+# Triton Inference Server (auto-starts Docker, converts to ONNX)
+llm = LLM(model="gpt2", engine="triton")
+
+# TorchServe (auto-starts server, creates MAR package)
+llm = LLM(model="gpt2", engine="torchserve")
+
+# Environment variable control
+# RM_ENGINE=triton python your_script.py
+```
+
+### Classic API Usage
 
 ```python
 import rm_abstract
@@ -52,25 +106,10 @@ print(resources)
 # Get device info
 info = rm_abstract.get_device_info()
 print(f"Current device: {info['resource_type']}:{info['device_id']}")
-```
 
-### Device Switching
-
-```python
-import rm_abstract
-
-# Start with CPU
-rm_abstract.init(device="cpu")
-
-# Switch to GPU
-rm_abstract.switch_device("nvidia")
-
-# Switch to NPU
-rm_abstract.switch_device("rbln")
-
-# Check current device
-info = rm_abstract.get_device_info()
-print(f"Current: {info['resource_type']}:{info['device_id']}")
+# Runtime device switching
+rm_abstract.switch_device("cpu")
+rm_abstract.switch_device("nvidia")  # If available
 ```
 
 ---
@@ -79,34 +118,33 @@ print(f"Current: {info['resource_type']}:{info['device_id']}")
 
 ### Hardware Resources
 
-| Device | Status | Resource Class |
-|--------|--------|----------------|
-| NVIDIA GPU | Supported | `NvidiaGPU` (vLLM) |
-| CPU | Supported | `CPUResource` (PyTorch) |
-| Rebellions ATOM NPU | Supported | `RebellionsATOM` (vLLM-RBLN / Optimum-RBLN) |
-| FuriosaAI RNGD NPU | Supported | `FuriosaRNGD` |
+| Device | Status | Backend |
+|--------|--------|---------|
+| NVIDIA GPU | Supported | vLLM / Triton / TorchServe |
+| CPU | Supported | transformers / TorchServe |
+| Rebellions ATOM NPU | Supported | vLLM-RBLN / Optimum-RBLN |
+| FuriosaAI RNGD NPU | Supported | FuriosaAI SDK |
 
 ### Serving Engines
 
-| Engine | Status | Description |
-|--------|--------|-------------|
-| vLLM | Supported | High-performance LLM serving |
-| Triton | Supported | Multi-model serving (Docker) |
-| TorchServe | Supported | PyTorch native serving |
+| Engine | Status | Auto Management | Description |
+|--------|--------|-----------------|-------------|
+| vLLM | Supported | - | High-performance LLM serving |
+| Triton | Supported | Docker auto-start, ONNX conversion | Multi-model serving |
+| TorchServe | Supported | Server auto-start, MAR packaging | PyTorch native serving |
 
 ---
 
 ## Architecture
 
-```
+```text
 src/rm_abstract/
-├── __init__.py           # Main interface (init, switch_device, etc.)
+├── __init__.py           # Main interface (init, switch_device, LLM, SamplingParams)
+├── llm.py                # LLM proxy class (vLLM-compatible API)
 ├── exceptions.py         # Exception classes
 ├── common/               # Shared utilities
 │   ├── input_adapter.py  # Unified input format handling
-│   ├── output_adapter.py # Unified output format conversion
-│   ├── model_converter.py # ONNX conversion utilities
-│   └── hardware_detector.py # Hardware detection
+│   └── output_adapter.py # Unified output format conversion
 ├── resources/            # Hardware-specific implementations
 │   ├── base.py           # Resource ABC
 │   ├── gpu/nvidia.py     # NVIDIA GPU (vLLM)
@@ -116,8 +154,9 @@ src/rm_abstract/
 ├── engines/              # Serving engines
 │   ├── base.py           # ServingEngine base class
 │   ├── vllm.py           # vLLM engine
-│   ├── triton.py         # Triton engine
-│   └── torchserve.py     # TorchServe engine
+│   ├── triton.py         # Triton engine (auto-start, ONNX conversion)
+│   ├── torchserve.py     # TorchServe engine (auto-start, MAR packaging)
+│   └── model_converter.py # HuggingFace to ONNX/MAR conversion
 ├── registry/             # Plugin system
 │   ├── plugin_registry.py # Centralized registry
 │   └── discovery.py      # Auto-discovery
@@ -128,72 +167,41 @@ src/rm_abstract/
 
 ---
 
-## Plugin Registry System
+## Auto Server Management
+
+### Triton Inference Server
+
+When using `engine="triton"`, rm_abstract will automatically:
+
+1. Convert HuggingFace model to ONNX format
+2. Create Triton model repository with proper config.pbtxt
+3. Start Docker container with Triton server
+4. Clean up on exit
 
 ```python
-from rm_abstract import get_registry, PluginType
-from rm_abstract.registry import discover_all
+from rm_abstract import LLM, SamplingParams
 
-# Get global registry
-registry = get_registry()
-
-# Discover all plugins
-discover_all(registry)
-
-# List available resources
-for plugin in registry.list_plugins(PluginType.RESOURCE):
-    status = "available" if plugin.is_available() else "not available"
-    print(f"{plugin.name}: {status} (priority: {plugin.priority})")
-
-# Get best available resource (by priority)
-best = registry.get_best_available(PluginType.RESOURCE)
-print(f"Best resource: {best.name}")
+# Triton with auto-management (requires Docker)
+llm = LLM(model="gpt2", engine="triton", device="nvidia")
+outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
 ```
 
----
+### TorchServe
 
-## Hardware Detection
+When using `engine="torchserve"`, rm_abstract will automatically:
 
-```python
-from rm_abstract import HardwareDetector
-
-detector = HardwareDetector()
-
-# Get summary
-print(detector.summary())
-
-# Check specific vendor
-print(f"NVIDIA: {detector.is_available('nvidia')}")
-print(f"Rebellions: {detector.is_available('rebellions')}")
-print(f"CPU: {detector.is_available('cpu')}")
-
-# Get best available hardware
-best = detector.get_best_available()
-print(f"Best: {best.hardware_type.value} - {best.name}")
-```
-
----
-
-## Serving Engines
+1. Convert HuggingFace model to MAR (Model Archive) format
+2. Create TorchServe configuration
+3. Start TorchServe server
+4. Register and load the model
+5. Clean up on exit
 
 ```python
-from rm_abstract.engines import (
-    VLLMEngine,
-    TritonEngine,
-    TorchServeEngine,
-    ServingConfig,
-    ServingEngineType,
-)
+from rm_abstract import LLM, SamplingParams
 
-# vLLM Engine
-if VLLMEngine.is_available():
-    config = ServingConfig(
-        engine=ServingEngineType.VLLM,
-        model_name="gpt2",
-    )
-    engine = VLLMEngine(config)
-    print(f"Engine: {engine.name}")
-    print(f"Supported devices: {engine.supported_devices()}")
+# TorchServe with auto-management (requires torchserve installed)
+llm = LLM(model="gpt2", engine="torchserve", device="cpu")
+outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
 ```
 
 ---
@@ -202,20 +210,20 @@ if VLLMEngine.is_available():
 
 ```
 examples/
+├── zero_code_change.py   # Minimal code change demo
 ├── basic_usage.py        # Basic init and resource check
 ├── device_switching.py   # Runtime device switching
-├── hardware_detection.py # HardwareDetector usage
-├── plugin_registry.py    # Plugin registry demo
+├── test_inference.py     # Inference testing with CLI args
+├── compare_devices.py    # Compare performance across devices
 └── serving_engine.py     # Serving engine demo
 ```
 
 ```bash
 # Run examples
+python examples/zero_code_change.py
 python examples/basic_usage.py
-python examples/device_switching.py
-python examples/hardware_detection.py
-python examples/plugin_registry.py
-python examples/serving_engine.py
+python examples/test_inference.py --device cpu --model gpt2
+python examples/compare_devices.py
 ```
 
 ---
@@ -223,13 +231,13 @@ python examples/serving_engine.py
 ## Testing
 
 ```bash
-# Run all tests (57 tests)
+# Run all tests
 pytest tests/ -v
 
-# Run specific test file
+# Run specific test files
 pytest tests/test_core.py -v
+pytest tests/unit/test_llm.py -v
 pytest tests/unit/test_registry.py -v
-pytest tests/unit/test_resource.py -v
 ```
 
 ---
@@ -245,10 +253,11 @@ from rm_abstract.exceptions import (
 )
 
 try:
-    rm_abstract.init(device="gpu:0")
+    from rm_abstract import LLM
+    llm = LLM(model="gpt2", device="nvidia")
 except BackendNotAvailableError as e:
     print(f"GPU not available: {e}")
-    rm_abstract.init(device="cpu")  # Fallback to CPU
+    llm = LLM(model="gpt2", device="cpu")  # Fallback to CPU
 ```
 
 ---
@@ -256,23 +265,24 @@ except BackendNotAvailableError as e:
 ## Device Options
 
 ```python
-import rm_abstract
+from rm_abstract import LLM
 
 # Auto-select (NPU > GPU > CPU priority)
-rm_abstract.init(device="auto")
+llm = LLM(model="gpt2", device="auto")
 
 # Specific GPU
-rm_abstract.init(device="nvidia:0")
-rm_abstract.init(device="gpu:0")  # alias
+llm = LLM(model="gpt2", device="nvidia")
+llm = LLM(model="gpt2", device="gpu")  # alias
+llm = LLM(model="gpt2", device="cuda")  # alias
 
 # CPU
-rm_abstract.init(device="cpu")
+llm = LLM(model="gpt2", device="cpu")
 
 # Rebellions NPU
-rm_abstract.init(device="rbln:0")
+llm = LLM(model="gpt2", device="rbln")
 
 # FuriosaAI NPU
-rm_abstract.init(device="furiosa:0")
+llm = LLM(model="gpt2", device="furiosa")
 ```
 
 ---
@@ -281,11 +291,11 @@ rm_abstract.init(device="furiosa:0")
 
 | Document | Description |
 |----------|-------------|
-| [QUICKSTART.md](docs/QUICKSTART.md) | Quick start guide |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture |
-| [CONTRIBUTING.md](docs/CONTRIBUTING.md) | Development/contribution guide |
-| [ADDING_RESOURCES.md](docs/ADDING_RESOURCES.md) | Guide for adding new hardware resources |
-| [ADDING_ENGINES.md](docs/ADDING_ENGINES.md) | Guide for adding new serving engines |
+| [QUICKSTART.md](QUICKSTART.md) | Quick start guide |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Development/contribution guide |
+| [docs/ADDING_RESOURCES.md](docs/ADDING_RESOURCES.md) | Guide for adding new hardware resources |
+| [docs/ADDING_ENGINES.md](docs/ADDING_ENGINES.md) | Guide for adding new serving engines |
 
 ---
 
@@ -297,4 +307,4 @@ MIT License
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
