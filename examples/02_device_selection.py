@@ -59,7 +59,7 @@ def test_auto():
     print("Auto Device Selection (NPU > GPU > CPU)")
     print("="*80)
 
-    from rm_abstract import get_available_resources, get_device_info
+    from rm_abstract import get_available_resources
 
     # Check available resources
     resources = get_available_resources()
@@ -68,9 +68,8 @@ def test_auto():
     # Create LLM with auto device selection
     llm = LLM(model="gpt2", device="auto")
 
-    # Check which device was selected
-    info = get_device_info()
-    print(f"Selected device: {info['resource_type']}:{info['device_id']}")
+    # Note: Device info is available after LLM initialization
+    print(f"Using device: auto (NPU > GPU > CPU priority)")
 
     # Generate
     outputs = llm.generate(
