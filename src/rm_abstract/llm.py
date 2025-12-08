@@ -250,8 +250,9 @@ class LLM:
             import vllm
 
             # Set default gpu_memory_utilization if not specified
+            # Use 0.15 as default to work on shared GPU environments
             gpu_memory_utilization = self.extra_kwargs.pop(
-                "gpu_memory_utilization", 0.5
+                "gpu_memory_utilization", 0.15
             )
 
             self._backend_llm = vllm.LLM(
@@ -267,8 +268,12 @@ class LLM:
             logger.info(f"Initialized vLLM GPU backend: {self.model_name}")
 
         except ImportError:
-            logger.warning("vLLM not available, falling back to CPU")
-            self._init_cpu_backend()
+            logger.warning("vLLM not available, falling back to transformers GPU")
+            self._init_transformers_backend("nvidia")
+        except Exception as e:
+            # Fallback to transformers on GPU memory errors, etc.
+            logger.warning(f"vLLM initialization failed ({e}), falling back to transformers GPU")
+            self._init_transformers_backend("nvidia")
 
     def _init_vllm_rbln_backend(self):
         """Initialize vLLM backend for Rebellions NPU."""
