@@ -1,0 +1,15 @@
+# RM Abstract Layer - Triton Requirements
+# Install with: pip install -r requirements-triton.txt
+# Or with uv: uv pip install -r requirements-triton.txt
+
+-r requirements.txt
+
+# ONNX conversion
+onnx>=1.14.0
+onnxscript>=0.1.0
+
+# Triton client
+tritonclient[http]>=2.34.0
+
+# HTTP requests for health checks
+requests>=2.28.0

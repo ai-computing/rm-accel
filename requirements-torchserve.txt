@@ -1,0 +1,12 @@
+# RM Abstract Layer - TorchServe Requirements
+# Install with: pip install -r requirements-torchserve.txt
+# Or with uv: uv pip install -r requirements-torchserve.txt
+
+-r requirements.txt
+
+# TorchServe
+torchserve>=0.8.0
+torch-model-archiver>=0.8.0
+
+# HTTP requests for health checks
+requests>=2.28.0

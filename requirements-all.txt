@@ -1,0 +1,6 @@
+# RM Abstract Layer - All Dependencies
+# Install with: pip install -r requirements-all.txt
+# Or with uv: uv pip install -r requirements-all.txt
+
+-r requirements-serving.txt
+-r requirements-dev.txt

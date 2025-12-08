@@ -1,0 +1,7 @@
+# RM Abstract Layer - All Serving Engines
+# Install with: pip install -r requirements-serving.txt
+# Or with uv: uv pip install -r requirements-serving.txt
+
+-r requirements-gpu.txt
+-r requirements-triton.txt
+-r requirements-torchserve.txt
