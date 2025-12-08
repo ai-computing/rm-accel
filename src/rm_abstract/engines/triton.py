@@ -265,24 +265,54 @@ class TritonEngine(ServingEngine):
         if self._is_running and self.triton_config.cleanup_on_exit:
             self.stop_server()
 
-    def _wait_for_ready(self, timeout: int = 120) -> None:
+    def _wait_for_ready(self, timeout: int = 60) -> None:
         """Wait for Triton to be ready"""
         import requests
+        import sys
 
         url = f"http://localhost:{self.triton_config.http_port}/v2/health/ready"
         start_time = time.time()
 
-        logger.info("Waiting for Triton server to be ready...")
+        print(f"[Triton] Starting Docker container...", flush=True)
+        check_interval = 2
+        dots = 0
+
         while time.time() - start_time < timeout:
+            elapsed = int(time.time() - start_time)
+
+            # Check if container is still running
+            if self._container_id:
+                result = subprocess.run(
+                    ["docker", "ps", "-q", "-f", f"id={self._container_id}"],
+                    capture_output=True,
+                    text=True,
+                )
+                if not result.stdout.strip():
+                    # Container stopped, get logs
+                    logs = subprocess.run(
+                        ["docker", "logs", self.triton_config.container_name],
+                        capture_output=True,
+                        text=True,
+                    )
+                    print(f"\n[Triton] Container failed!", flush=True)
+                    raise RuntimeError(f"Triton container exited: {logs.stderr}")
+
             try:
                 response = requests.get(url, timeout=2)
                 if response.status_code == 200:
+                    print(f"\n[Triton] Server ready! ({elapsed}s)", flush=True)
                     logger.info("Triton server is ready")
                     return
             except requests.exceptions.RequestException:
                 pass
-            time.sleep(2)
 
+            # Progress indicator
+            dots = (dots + 1) % 4
+            progress = "." * (dots + 1)
+            print(f"\r[Triton] Waiting for server{progress.ljust(4)} ({elapsed}/{timeout}s)", end="", flush=True)
+            time.sleep(check_interval)
+
+        print(f"\n[Triton] Timeout!", flush=True)
         raise TimeoutError(f"Triton server did not become ready within {timeout}s")
 
     def infer(self, inputs: Any, **kwargs) -> Any:
