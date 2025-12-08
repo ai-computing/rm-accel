@@ -9,7 +9,17 @@
       "Bash(git -C \"c:\\Users\\USER\\Documents\\codes\\rm_abstract_layer\" log --oneline -20)",
       "Bash(PYTHONPATH=\"./src\" python -m pytest:*)",
       "Bash(PYTHONPATH=\"./src\" python -c:*)",
-      "Bash(git tag:*)"
+      "Bash(git tag:*)",
+      "Bash(PYTHONPATH=\"./src\" python:*)",
+      "Bash(PYTHONPATH=\"./src\" python3:*)",
+      "Bash(ls:*)",
+      "Bash(.venv/bin/python:*)",
+      "Bash(PYTHONPATH=\"./src\" .venv/bin/python:*)",
+      "Bash(nvidia-smi:*)",
+      "Bash(tee:*)",
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

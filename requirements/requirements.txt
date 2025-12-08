@@ -1,7 +1,12 @@
 # RM Abstract Layer - Base Requirements
 # Install with: pip install -r requirements.txt
 # Or with uv: uv pip install -r requirements.txt
+#
+# This installs the minimum dependencies for CPU inference with transformers
 
 torch>=2.0.0
 numpy>=1.20.0,<3.0.0
 transformers>=4.30.0
+accelerate>=0.20.0
+sentencepiece>=0.1.99  # For tokenizer support
+protobuf>=3.20.0  # For model serialization
