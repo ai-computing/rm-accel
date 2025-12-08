@@ -158,6 +158,7 @@ class TritonEngine(ServingEngine):
             model_name=model_name,
             onnx_path=onnx_path,
             output_dir=str(self._model_repo_path),
+            device="gpu" if self.config.device == DeviceTarget.GPU else "cpu",
         )
 
         self.triton_config.model_repository = str(self._model_repo_path)

@@ -325,6 +325,7 @@ class TextGenerationHandler(BaseHandler):
         output_dir: str,
         max_batch_size: int = 8,
         platform: str = "onnxruntime_onnx",
+        device: str = "gpu",
     ) -> str:
         """
         Create Triton model repository structure.
@@ -335,6 +336,7 @@ class TextGenerationHandler(BaseHandler):
             output_dir: Output directory for Triton model repository
             max_batch_size: Maximum batch size
             platform: Triton backend platform
+            device: Device type ("gpu" or "cpu")
 
         Returns:
             Path to model directory in repository
@@ -378,7 +380,7 @@ output [
 instance_group [
   {{
     count: 1
-    kind: KIND_GPU
+    kind: {"KIND_GPU" if device.lower() == "gpu" else "KIND_CPU"}
   }}
 ]
 
