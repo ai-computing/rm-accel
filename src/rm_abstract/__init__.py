@@ -1,10 +1,18 @@
 """
 RM Abstract Layer - Heterogeneous AI Accelerator Unified Compatibility Library
 
-An abstraction layer that enables existing GPU inference scripts to run on NPU/GPU
-without any code modification.
+A unified interface for running LLM inference across different hardware
+(GPU, NPU, CPU) and serving engines (vLLM, Triton, TorchServe).
+
+Quick Start:
+    from rm_abstract import LLM, SamplingParams
+
+    llm = LLM(model="gpt2", device="auto")
+    outputs = llm.generate(["Hello, world!"], SamplingParams(max_tokens=50))
+    print(outputs[0].outputs[0].text)
 
 Architecture:
+- llm.py: Main LLM proxy class (recommended entry point)
 - common/: Shared utilities (InputAdapter, OutputAdapter, ModelConverter, HardwareDetector)
 - resources/: Hardware-specific implementations (GPU, NPU, CPU)
 - engines/: Serving engines (vLLM, Triton, TorchServe)
@@ -23,12 +31,20 @@ from .exceptions import (
     InvalidDeviceError,
 )
 
+# Main LLM interface (recommended)
+from .llm import LLM, SamplingParams, RequestOutput, CompletionOutput
+
 # Modular components
 from .registry import PluginRegistry, PluginType, get_registry, discover_all
 from .common import InputAdapter, OutputAdapter, ModelConverter, HardwareDetector
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __all__ = [
+    # Main LLM interface (recommended)
+    "LLM",
+    "SamplingParams",
+    "RequestOutput",
+    "CompletionOutput",
     # Core functions
     "init",
     "is_initialized",

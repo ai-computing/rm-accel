@@ -7,30 +7,17 @@ Usage:
     python examples/compare_devices.py
 """
 
-import sys
 import time
+from rm_abstract import LLM, SamplingParams
 
 
 def test_device(device: str, model: str = "gpt2"):
     """Test inference on a specific device."""
-    # Clean module cache for fresh import
-    for mod in list(sys.modules.keys()):
-        if "rm_abstract" in mod or mod == "vllm":
-            del sys.modules[mod]
-
-    from rm_abstract.auto import use, get_config
-
-    use(device=device, engine="vllm")
-    config = get_config()
-
     print(f"\n[Device: {device}]")
-    print(f"  Config: {config['device']}:{config['engine']}")
 
     try:
-        from vllm import LLM, SamplingParams
-
         start = time.time()
-        llm = LLM(model=model)
+        llm = LLM(model=model, device=device, engine="vllm")
         load_time = time.time() - start
 
         print(f"  Backend: {llm.backend}")

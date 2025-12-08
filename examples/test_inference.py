@@ -11,6 +11,7 @@ Usage:
 """
 
 import argparse
+from rm_abstract import LLM, SamplingParams
 
 
 def main():
@@ -34,23 +35,17 @@ def main():
     )
     args = parser.parse_args()
 
-    # Configure rm_abstract BEFORE importing vllm
-    from rm_abstract.auto import use, get_config
-
-    use(device=args.device, engine=args.engine)
-
     print("=" * 60)
     print("RM Abstract Inference Test")
     print("=" * 60)
-    print(f"Config: {get_config()}")
+    print(f"Device: {args.device}")
+    print(f"Engine: {args.engine}")
     print(f"Model: {args.model}")
     print()
 
-    # Now import vllm - it will use the configured backend
-    from vllm import LLM, SamplingParams
-
+    # Create LLM with specified device and engine
     print("Loading model...")
-    llm = LLM(model=args.model)
+    llm = LLM(model=args.model, device=args.device, engine=args.engine)
     print(f"Backend: {llm.backend}")
     print()
 

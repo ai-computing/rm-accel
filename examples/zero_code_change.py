@@ -1,62 +1,66 @@
 """
-Zero Code Change Example
+Minimal Code Change Example
 
-This file demonstrates a script that can run on different backends
-WITHOUT ANY MODIFICATION to the script itself.
+This example demonstrates how to migrate from vLLM to rm_abstract
+with just ONE line of code change.
 
-This script is written as if it only uses vLLM. But by running it
-through rm_abstract, it will automatically work on:
-- NVIDIA GPU (vLLM)
-- Rebellions NPU (vLLM-RBLN)
-- FuriosaAI NPU (FuriosaAI SDK)
-- CPU (Transformers fallback)
+Before (vLLM only):
+    from vllm import LLM, SamplingParams
+
+After (rm_abstract - works on GPU, NPU, CPU):
+    from rm_abstract import LLM, SamplingParams
+
+That's it! The rest of the code remains exactly the same.
 
 Run with different devices:
-    # Auto-select best available device
-    python -m rm_abstract.run examples/zero_code_change.py
+    # Auto-select best available device (NPU > GPU > CPU)
+    python examples/zero_code_change.py
 
-    # Force specific device
-    python -m rm_abstract.run examples/zero_code_change.py --device=cpu
-    python -m rm_abstract.run examples/zero_code_change.py --device=nvidia
-    python -m rm_abstract.run examples/zero_code_change.py --device=rbln
-
-    # With verbose output
-    python -m rm_abstract.run examples/zero_code_change.py --device=auto -v
+    # Force specific device via environment variable
+    RM_DEVICE=cpu python examples/zero_code_change.py
+    RM_DEVICE=nvidia python examples/zero_code_change.py
+    RM_DEVICE=rbln python examples/zero_code_change.py
 """
 
 # =============================================================================
-# ORIGINAL CODE - NO MODIFICATIONS NEEDED
-# This is exactly how you would write vLLM code normally
+# ONE LINE CHANGE - From vLLM to rm_abstract
 # =============================================================================
+# Before: from vllm import LLM, SamplingParams
+from rm_abstract import LLM, SamplingParams  # <-- Only this line changes!
 
-from vllm import LLM, SamplingParams
 
 def main():
-    # Standard vLLM initialization
+    # Standard LLM initialization - NO CHANGES NEEDED
     llm = LLM(
         model="gpt2",
         trust_remote_code=True,
     )
 
-    # Standard sampling parameters
+    # Show which backend is being used
+    print(f"Backend: {llm.backend}")
+    print(f"Device: {llm.device}")
+    print(f"Engine: {llm.engine_type}")
+    print()
+
+    # Standard sampling parameters - NO CHANGES NEEDED
     sampling_params = SamplingParams(
         temperature=0.7,
         top_p=0.9,
         max_tokens=100,
     )
 
-    # Standard prompts
+    # Standard prompts - NO CHANGES NEEDED
     prompts = [
         "The future of AI is",
         "Once upon a time",
         "Python is a programming language that",
     ]
 
-    # Standard generation
+    # Standard generation - NO CHANGES NEEDED
     print("Generating responses...")
     outputs = llm.generate(prompts, sampling_params)
 
-    # Standard output handling
+    # Standard output handling - NO CHANGES NEEDED
     for i, output in enumerate(outputs):
         prompt = output.prompt
         generated = output.outputs[0].text
