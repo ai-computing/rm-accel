@@ -272,10 +272,27 @@ class LLM:
         """Initialize CPU backend using transformers."""
         self._backend = "cpu"
         try:
-            from transformers import AutoModelForCausalLM, AutoTokenizer
+            # Import original transformers directly to avoid hook recursion
+            import importlib
+            import sys
+
+            # Temporarily bypass hooks
+            from rm_abstract.auto import disable_hooks, enable_hooks
+            disable_hooks()
+
+            try:
+                # Force reimport of real transformers
+                if "transformers" in sys.modules:
+                    del sys.modules["transformers"]
+                transformers = importlib.import_module("transformers")
+                HFAutoModelForCausalLM = transformers.AutoModelForCausalLM
+                HFAutoTokenizer = transformers.AutoTokenizer
+            finally:
+                enable_hooks()
+
             import torch
 
-            self._tokenizer = AutoTokenizer.from_pretrained(
+            self._tokenizer = HFAutoTokenizer.from_pretrained(
                 self.tokenizer_name,
                 trust_remote_code=self.trust_remote_code,
             )
@@ -288,7 +305,7 @@ class LLM:
             }
             torch_dtype = dtype_map.get(self.dtype, torch.float32)
 
-            self._backend_llm = AutoModelForCausalLM.from_pretrained(
+            self._backend_llm = HFAutoModelForCausalLM.from_pretrained(
                 self.model_name,
                 torch_dtype=torch_dtype,
                 trust_remote_code=self.trust_remote_code,
