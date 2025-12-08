@@ -206,10 +206,11 @@ class TorchServeEngine(ServingEngine):
             time.sleep(2)
 
             logger.info("Starting TorchServe server...")
+            # Use DEVNULL to avoid blocking on stdout/stderr buffer
             self._process = subprocess.Popen(
                 cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
 
             # Wait for server to be ready
@@ -292,9 +293,9 @@ load_models=all
 
             # Check if process is still running
             if self._process and self._process.poll() is not None:
-                stderr = self._process.stderr.read() if self._process.stderr else b""
-                print(f"\n[TorchServe] Server failed!", flush=True)
-                raise RuntimeError(f"TorchServe process exited: {stderr.decode()}")
+                exit_code = self._process.returncode
+                print(f"\n[TorchServe] Server failed! (exit code: {exit_code})", flush=True)
+                raise RuntimeError(f"TorchServe process exited with code {exit_code}")
 
             try:
                 response = requests.get(url, timeout=2)

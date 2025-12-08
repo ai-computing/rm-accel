@@ -1,0 +1,8 @@
+# RM Abstract Layer - GPU Requirements (vLLM)
+# Install with: pip install -r requirements-gpu.txt
+# Or with uv: uv pip install -r requirements-gpu.txt
+
+-r requirements.txt
+
+vllm>=0.2.0
+accelerate>=0.20.0
