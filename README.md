@@ -31,10 +31,19 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
 # Basic installation
 pip install -e .
 
-# GPU support
+# GPU support (vLLM)
 pip install -e ".[gpu]"
 
-# Full installation
+# Triton engine support (ONNX conversion)
+pip install -e ".[triton]"
+
+# TorchServe engine support
+pip install -e ".[torchserve]"
+
+# All serving engines
+pip install -e ".[serving]"
+
+# Full installation (everything)
 pip install -e ".[all]"
 ```
 
