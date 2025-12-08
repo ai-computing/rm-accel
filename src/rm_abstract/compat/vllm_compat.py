@@ -195,27 +195,16 @@ class LLM:
 
         return "cpu"
 
-    def _get_original_vllm(self):
-        """Get original vLLM module without hooks."""
-        import importlib
-        import sys
-
-        from rm_abstract.auto import disable_hooks, enable_hooks
-        disable_hooks()
-
-        try:
-            if "vllm" in sys.modules:
-                del sys.modules["vllm"]
-            vllm_module = importlib.import_module("vllm")
-            return vllm_module
-        finally:
-            enable_hooks()
-
     def _init_vllm_backend(self):
         """Initialize vLLM backend for NVIDIA GPU."""
         self._backend = "vllm"
         try:
-            vllm_module = self._get_original_vllm()
+            # Directly use real vllm module
+            # We access it through __builtins__ import to bypass any hooks
+            import builtins
+            real_import = builtins.__import__
+            vllm_module = real_import("vllm", globals(), locals(), [], 0)
+
             VLLMEngine = vllm_module.LLM
             VLLMSamplingParams = vllm_module.SamplingParams
 
@@ -238,8 +227,11 @@ class LLM:
         """Initialize Rebellions NPU backend."""
         self._backend = "rbln"
         try:
-            # Try vllm-rbln first (uses same vllm import pattern)
-            vllm_module = self._get_original_vllm()
+            # Try vllm-rbln first - use builtins import to bypass hooks
+            import builtins
+            real_import = builtins.__import__
+            vllm_module = real_import("vllm", globals(), locals(), [], 0)
+
             VLLMRBLNEngine = vllm_module.LLM
 
             self._backend_llm = VLLMRBLNEngine(
