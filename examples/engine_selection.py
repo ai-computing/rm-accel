@@ -20,6 +20,14 @@ import sys
 
 def test_engine(device: str, engine: str, model: str = "gpt2"):
     """Test inference with a specific device and engine."""
+    import os
+    from importlib.abc import MetaPathFinder
+
+    # Remove any existing hooks from sys.meta_path
+    sys.meta_path = [f for f in sys.meta_path if not (
+        hasattr(f, '__class__') and 'RMAbstract' in f.__class__.__name__
+    )]
+
     # Clean module cache for fresh import (more thorough cleanup)
     mods_to_remove = []
     for mod in sys.modules.keys():
@@ -29,7 +37,6 @@ def test_engine(device: str, engine: str, model: str = "gpt2"):
         del sys.modules[mod]
 
     # Also clean environment variables
-    import os
     for key in ["RM_DEVICE", "RM_ENGINE", "RM_HOOK_VLLM", "RM_HOOK_TRANSFORMERS"]:
         os.environ.pop(key, None)
 
