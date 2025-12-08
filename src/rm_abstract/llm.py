@@ -321,9 +321,20 @@ class LLM:
             from .engines.triton import TritonEngine
             from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
 
-            # Check if Triton server is available
+            # Check if Docker is available
             if not TritonEngine.is_available():
-                logger.warning("Triton server not available, falling back to transformers")
+                logger.warning("Docker not available, falling back to transformers")
+                self._init_transformers_backend(device)
+                return
+
+            # Check if Triton server is actually running
+            try:
+                import requests
+                response = requests.get("http://localhost:8000/v2/health/ready", timeout=2)
+                if response.status_code != 200:
+                    raise ConnectionError("Triton not ready")
+            except Exception:
+                logger.warning("Triton server not running, falling back to transformers")
                 self._init_transformers_backend(device)
                 return
 
@@ -357,9 +368,14 @@ class LLM:
             from .engines.torchserve import TorchServeEngine
             from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
 
-            # Check if TorchServe server is available
-            if not TorchServeEngine.is_available():
-                logger.warning("TorchServe server not available, falling back to transformers")
+            # Check if TorchServe server is actually running
+            try:
+                import requests
+                response = requests.get("http://localhost:8080/ping", timeout=2)
+                if response.status_code != 200:
+                    raise ConnectionError("TorchServe not ready")
+            except Exception:
+                logger.warning("TorchServe server not running, falling back to transformers")
                 self._init_transformers_backend(device)
                 return
 
@@ -558,7 +574,7 @@ class LLM:
                 RequestOutput(
                     request_id=str(i),
                     prompt=prompt,
-                    prompt_token_ids=inputs.input_ids[0].tolist(),
+                    prompt_token_ids=inputs["input_ids"][0].tolist(),
                     outputs=completions,
                 )
             )
