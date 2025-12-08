@@ -5,36 +5,39 @@ Demonstrates how to switch devices at runtime.
 """
 
 import rm_abstract
-from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# Start with GPU
-rm_abstract.init(device="gpu:0", verbose=True)
 
-model_name = "gpt2"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+def main():
+    # Initialize with CPU
+    print("=" * 50)
+    print("Starting with CPU...")
+    print("=" * 50)
 
-print("=" * 50)
-print("Running on GPU...")
-print("=" * 50)
+    rm_abstract.init(device="cpu", verbose=True)
+    print(f"Current device: {rm_abstract.get_device_info()}")
 
-model = AutoModelForCausalLM.from_pretrained(model_name)
-inputs = tokenizer("GPU inference test:", return_tensors="pt")
-outputs = model.generate(**inputs, max_length=30)
-print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+    # Switch to GPU (if available)
+    print("\n" + "=" * 50)
+    print("Switching to GPU...")
+    print("=" * 50)
 
-# Switch to NPU
-print("\n" + "=" * 50)
-print("Switching to NPU...")
-print("=" * 50)
+    try:
+        rm_abstract.switch_device("nvidia")
+        print(f"Current device: {rm_abstract.get_device_info()}")
+    except Exception as e:
+        print(f"GPU not available: {e}")
 
-rm_abstract.switch_device("rbln:0")
+    # Switch to NPU (if available)
+    print("\n" + "=" * 50)
+    print("Switching to NPU...")
+    print("=" * 50)
 
-# Inference on NPU with same code
-model = AutoModelForCausalLM.from_pretrained(model_name)
-inputs = tokenizer("NPU inference test:", return_tensors="pt")
-outputs = model.generate(**inputs, max_length=30)
-print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+    try:
+        rm_abstract.switch_device("rbln")
+        print(f"Current device: {rm_abstract.get_device_info()}")
+    except Exception as e:
+        print(f"NPU not available: {e}")
 
-# Check device info
-print("\nCurrent Device:")
-print(rm_abstract.get_device_info())
+
+if __name__ == "__main__":
+    main()

@@ -1,14 +1,16 @@
 """
 DeviceFlowController - Device Flow Controller
 
-Core controller responsible for device selection, backend management, and model hooking.
+Core controller responsible for device selection and resource management.
+Uses the plugin registry system for resource discovery.
 """
 
 from typing import Any, Dict, Optional, Type
 import logging
 
-from .backend import Backend, DeviceType, DeviceInfo
 from .config import Config
+from ..resources.base import Resource, ResourceInfo
+from ..registry import PluginRegistry, PluginType, get_registry, discover_resources
 
 logger = logging.getLogger(__name__)
 
@@ -17,13 +19,12 @@ class DeviceFlowController:
     """
     Device Flow Controller
 
-    - Device string parsing and backend selection
-    - Model auto-hooking management
-    - Inter-backend switching support
-    """
+    - Device string parsing and resource selection
+    - Model preparation and execution
+    - Inter-resource switching support
 
-    # Registered backend classes
-    _backend_registry: Dict[str, Type[Backend]] = {}
+    Uses the plugin registry system for resource discovery and selection.
+    """
 
     def __init__(self, config: Config):
         """
@@ -31,200 +32,154 @@ class DeviceFlowController:
             config: Configuration object
         """
         self.config = config
-        self._backend: Optional[Backend] = None
-        self._hooks_activated = False
+        self._resource: Optional[Resource] = None
         self._prepared_models: Dict[int, Any] = {}
+        self._registry = get_registry()
 
-        # Initialize backend
-        self._initialize_backend()
+        # Auto-discover resources if registry is empty
+        if not self._registry.list_plugins(PluginType.RESOURCE):
+            discover_resources(self._registry)
 
-    @classmethod
-    def register_backend(cls, name: str, backend_class: Type[Backend]) -> None:
-        """
-        Register a backend
-
-        Args:
-            name: Backend name (e.g., 'gpu', 'rbln', 'furiosa')
-            backend_class: Backend class
-        """
-        cls._backend_registry[name.lower()] = backend_class
+        # Initialize resource
+        self._initialize_resource()
 
     @classmethod
     def get_available_backends(cls) -> Dict[str, bool]:
         """
-        Return list of available backends
+        Return list of available resources.
 
         Returns:
-            {backend_name: availability} dictionary
+            {resource_name: availability} dictionary
         """
+        registry = get_registry()
+        if not registry.list_plugins(PluginType.RESOURCE):
+            discover_resources(registry)
+
         result = {}
-        for name, backend_class in cls._backend_registry.items():
-            try:
-                backend = backend_class(device_id=0)
-                result[name] = backend.is_available()
-            except Exception:
-                result[name] = False
+        for plugin_info in registry.list_plugins(PluginType.RESOURCE):
+            result[plugin_info.name] = plugin_info.is_available()
+
         return result
 
-    def _initialize_backend(self) -> None:
-        """Initialize backend for the device"""
+    def _initialize_resource(self) -> None:
+        """Initialize resource for the device"""
         device_type = self.config.device_type
         device_id = self.config.device_id
 
         if device_type == "auto":
-            self._backend = self._auto_select_backend()
+            self._resource = self._auto_select_resource()
         else:
-            self._backend = self._create_backend(device_type, device_id)
+            self._resource = self._create_resource(device_type, device_id)
 
-        if self._backend is not None:
-            self._backend.initialize()
+        if self._resource is not None:
+            self._resource.initialize()
 
-    def _auto_select_backend(self) -> Optional[Backend]:
-        """Auto-select optimal backend (NPU > GPU > CPU)"""
-        # Priority: NPU > GPU > CPU
-        priority_order = ["rbln", "furiosa", "gpu", "cpu"]
+    def _auto_select_resource(self) -> Optional[Resource]:
+        """
+        Auto-select optimal resource.
 
-        for backend_name in priority_order:
-            if backend_name in self._backend_registry:
-                try:
-                    backend = self._create_backend(backend_name, 0)
-                    if backend and backend.is_available():
-                        logger.info(f"Auto-selected backend: {backend_name}")
-                        return backend
-                except Exception as e:
-                    logger.debug(f"Backend {backend_name} not available: {e}")
+        Uses plugin registry priority (NPU > GPU > CPU).
+        """
+        best_plugin = self._registry.get_best_available(PluginType.RESOURCE)
+        if best_plugin:
+            try:
+                resource = self._create_resource_instance(
+                    best_plugin.cls, 0, best_plugin.name
+                )
+                if resource and resource.is_available():
+                    logger.info(f"Auto-selected resource: {best_plugin.name}")
+                    return resource
+            except Exception as e:
+                logger.debug(f"Resource {best_plugin.name} not available: {e}")
 
-        logger.warning("No backend available")
+        logger.warning("No resource available")
         return None
 
-    def _create_backend(self, device_type: str, device_id: int) -> Optional[Backend]:
-        """Create backend instance"""
-        backend_class = self._backend_registry.get(device_type.lower())
+    def _create_resource(self, device_type: str, device_id: int) -> Optional[Resource]:
+        """Create resource instance from plugin registry"""
+        device_type_lower = device_type.lower()
 
-        if backend_class is None:
-            raise ValueError(f"Unknown device type: {device_type}")
+        plugin_info = self._registry.get_info(device_type_lower)
+        if plugin_info:
+            return self._create_resource_instance(
+                plugin_info.cls, device_id, plugin_info.name
+            )
 
-        # Pass additional options for NPU backends
-        if device_type in ["rbln", "furiosa"]:
-            return backend_class(
+        raise ValueError(f"Unknown device type: {device_type}")
+
+    def _create_resource_instance(
+        self, resource_class: Type, device_id: int, name: str
+    ) -> Optional[Resource]:
+        """Create a resource instance with appropriate options."""
+        # NPU resources need additional options
+        if name in ["rbln", "furiosa", "rebellions", "rngd"]:
+            resource = resource_class(
                 device_id=device_id,
                 cache_dir=self.config.cache_dir,
-                compile_options=self.config.compile_options,
             )
         else:
-            return backend_class(device_id=device_id)
+            resource = resource_class(device_id=device_id)
+
+        return resource
 
     @property
-    def backend(self) -> Optional[Backend]:
-        """Return current backend"""
-        return self._backend
+    def resource(self) -> Optional[Resource]:
+        """Return current resource"""
+        return self._resource
 
     @property
     def device_name(self) -> str:
         """Return current device name"""
-        if self._backend is None:
+        if self._resource is None:
             return "none"
-        return f"{self._backend.name}:{self._backend.device_id}"
+        return f"{self._resource.name}:{self._resource.device_id}"
 
     def switch_device(self, device: str) -> None:
         """
-        Switch device at runtime
+        Switch device at runtime.
 
         Args:
             device: New device specification
         """
-        # Cleanup existing backend
-        if self._backend:
-            self._backend.cleanup()
+        if self._resource:
+            self._resource.cleanup()
 
-        # Update with new settings
         self.config.device = device
         self._prepared_models.clear()
-
-        # Initialize new backend
-        self._initialize_backend()
+        self._initialize_resource()
 
         logger.info(f"Switched to device: {self.device_name}")
 
-    def prepare_model(self, model: Any, model_config: Optional[Dict[str, Any]] = None) -> Any:
+    def prepare_model(
+        self, model: Any, model_config: Optional[Dict[str, Any]] = None
+    ) -> Any:
         """
-        Prepare model (convert/compile for the backend)
+        Prepare model (convert/compile for the resource).
 
         Args:
             model: Original model
             model_config: Model configuration
 
         Returns:
-            Prepared model (compiled/optimized for the backend)
+            Prepared model (compiled/optimized for the resource)
         """
-        if self._backend is None:
-            logger.warning("No backend available, returning original model")
+        if self._resource is None:
+            logger.warning("No resource available, returning original model")
             return model
 
         model_id = id(model)
 
-        # Check if model is already prepared
         if model_id in self._prepared_models:
             return self._prepared_models[model_id]
 
-        # Prepare model in backend
-        prepared = self._backend.prepare_model(model, model_config)
+        prepared = self._resource.prepare_model(model, model_config)
         self._prepared_models[model_id] = prepared
 
         return prepared
 
-    def prepare_model_with_proxy(
-        self, model: Any, model_config: Optional[Dict[str, Any]] = None
-    ) -> Any:
-        """
-        Prepare model and wrap in ModelProxy for transparent interception.
-
-        This is the primary method used by hooks to prepare models.
-        The returned proxy intercepts generate(), forward(), __call__()
-        and routes them to the appropriate backend.
-
-        Args:
-            model: Original model
-            model_config: Model configuration
-
-        Returns:
-            ModelProxy wrapping the original and compiled model
-        """
-        from .model_proxy import ModelProxy, create_model_proxy
-
-        if self._backend is None:
-            logger.warning("No backend available, returning original model")
-            return model
-
-        model_id = id(model)
-
-        # Check if model is already wrapped in proxy
-        if model_id in self._prepared_models:
-            existing = self._prepared_models[model_id]
-            if isinstance(existing, ModelProxy):
-                return existing
-
-        # Prepare model in backend (compile for NPU, etc.)
-        compiled_model = self._backend.prepare_model(model, model_config)
-
-        # Create proxy wrapping both original and compiled model
-        proxy = create_model_proxy(
-            original_model=model,
-            compiled_model=compiled_model,
-            backend=self._backend,
-            controller=self,
-        )
-
-        # Store the proxy
-        self._prepared_models[model_id] = proxy
-
-        logger.info(f"Created ModelProxy for {type(model).__name__} " f"on {self._backend.name}")
-
-        return proxy
-
     def execute(self, model: Any, inputs: Any, **kwargs) -> Any:
         """
-        Execute inference
+        Execute inference.
 
         Args:
             model: Prepared model
@@ -234,32 +189,19 @@ class DeviceFlowController:
         Returns:
             Inference result
         """
-        if self._backend is None:
-            raise RuntimeError("No backend available")
+        if self._resource is None:
+            raise RuntimeError("No resource available")
 
-        return self._backend.execute(model, inputs, **kwargs)
-
-    def should_intercept(self, model: Any) -> bool:
-        """
-        Determine whether to intercept this model's calls
-
-        Args:
-            model: Model object
-
-        Returns:
-            True if should intercept
-        """
-        # Intercept if model is already prepared
-        return id(model) in self._prepared_models
+        return self._resource.execute(model, inputs, **kwargs)
 
     def get_device_info(self) -> Dict[str, Any]:
         """Return current device information"""
-        if self._backend is None:
-            return {"status": "no_backend"}
+        if self._resource is None:
+            return {"status": "no_resource"}
 
-        info = self._backend.get_device_info()
+        info = self._resource.get_info()
         return {
-            "device_type": info.device_type.value,
+            "resource_type": info.resource_type.value,
             "device_id": info.device_id,
             "name": info.name,
             "vendor": info.vendor,
@@ -268,29 +210,20 @@ class DeviceFlowController:
             "extra": info.extra,
         }
 
-    def activate_hooks(self) -> None:
-        """Activate hooking system"""
-        if self._hooks_activated:
-            return
+    def get_available_resources(self) -> Dict[str, bool]:
+        """
+        Get available resources from plugin registry.
 
-        from ..hooks import activate_all_hooks
-
-        activate_all_hooks(self)
-        self._hooks_activated = True
-
-    def deactivate_hooks(self) -> None:
-        """Deactivate hooking system"""
-        if not self._hooks_activated:
-            return
-
-        from ..hooks import deactivate_all_hooks
-
-        deactivate_all_hooks()
-        self._hooks_activated = False
+        Returns:
+            {resource_name: availability} dictionary
+        """
+        result = {}
+        for plugin_info in self._registry.list_plugins(PluginType.RESOURCE):
+            result[plugin_info.name] = plugin_info.is_available()
+        return result
 
     def cleanup(self) -> None:
         """Cleanup resources"""
-        self.deactivate_hooks()
-        if self._backend:
-            self._backend.cleanup()
+        if self._resource:
+            self._resource.cleanup()
         self._prepared_models.clear()

@@ -26,18 +26,9 @@ def test_prompt():
 def rm_abstract_initialized():
     """Initialize rm_abstract for testing"""
     import rm_abstract
-    
+
     try:
         rm_abstract.init(device="auto", verbose=False)
         return True
     except Exception:
         return False
-
-
-@pytest.fixture
-def api_client():
-    """FastAPI test client"""
-    from fastapi.testclient import TestClient
-    from rm_abstract.api.server import app
-    
-    return TestClient(app)

@@ -21,7 +21,9 @@
       "Bash($env:PYTHONPATH=\"$pwd\\src\")",
       "Bash(git commit:*)",
       "Bash(python:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(PYTHONPATH=\"./src\" python:*)",
+      "Bash(PYTHONPATH=\"./src\" python -m pytest:*)"
     ],
     "deny": [],
     "ask": []
