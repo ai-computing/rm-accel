@@ -57,11 +57,15 @@ class SamplingParams:
     skip_special_tokens: bool = True
     ignore_eos: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
-        return {
+    def to_dict(self, include_best_of: bool = True) -> Dict[str, Any]:
+        """Convert to dictionary.
+
+        Args:
+            include_best_of: Whether to include best_of parameter.
+                Set to False for vLLM v0.12+ which deprecated best_of.
+        """
+        result = {
             "n": self.n,
-            "best_of": self.best_of or self.n,
             "presence_penalty": self.presence_penalty,
             "frequency_penalty": self.frequency_penalty,
             "repetition_penalty": self.repetition_penalty,
@@ -74,6 +78,9 @@ class SamplingParams:
             "skip_special_tokens": self.skip_special_tokens,
             "ignore_eos": self.ignore_eos,
         }
+        if include_best_of and self.best_of is not None:
+            result["best_of"] = self.best_of
+        return result
 
 
 @dataclass
@@ -436,11 +443,13 @@ class LLM:
     ) -> List[RequestOutput]:
         """Generate using vLLM-style API."""
         if self._sampling_params_cls:
-            vllm_params = self._sampling_params_cls(**sampling_params.to_dict())
+            # vLLM v0.12+ deprecated best_of parameter
+            params_dict = sampling_params.to_dict(include_best_of=False)
+            vllm_params = self._sampling_params_cls(**params_dict)
             outputs = self._backend_llm.generate(prompts, vllm_params, **kwargs)
         else:
             outputs = self._backend_llm.generate(
-                prompts, sampling_params.to_dict(), **kwargs
+                prompts, sampling_params.to_dict(include_best_of=False), **kwargs
             )
 
         results = []
