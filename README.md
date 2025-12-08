@@ -29,27 +29,27 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
 
 ```bash
 # Basic installation (CPU with transformers)
-pip install -r requirements.txt
+pip install -r requirements/requirements.txt
 pip install -e .
 
 # GPU support (vLLM)
-pip install -r requirements-gpu.txt
+pip install -r requirements/requirements-gpu.txt
 pip install -e ".[gpu]"
 
 # Triton engine support (ONNX conversion)
-pip install -r requirements-triton.txt
+pip install -r requirements/requirements-triton.txt
 pip install -e ".[triton]"
 
 # TorchServe engine support
-pip install -r requirements-torchserve.txt
+pip install -r requirements/requirements-torchserve.txt
 pip install -e ".[torchserve]"
 
 # All serving engines
-pip install -r requirements-serving.txt
+pip install -r requirements/requirements-serving.txt
 pip install -e ".[serving]"
 
 # Full installation (everything)
-pip install -r requirements-all.txt
+pip install -r requirements/requirements-all.txt
 pip install -e ".[all]"
 ```
 
@@ -223,23 +223,28 @@ outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
 
 ## Examples
 
+All 5 examples are tested and validated (✅ 100% pass rate):
+
 ```
 examples/
 ├── 01_quick_start.py         # Simplest usage
 ├── 02_device_selection.py    # Device control (CPU/GPU/NPU)
 ├── 03_auto_import_hook.py    # Auto import hooking
 ├── 04_serving_engines.py     # Test all serving engines
-├── 05_engine_comparison.py   # Performance comparison
-├── zero_code_change.py       # Minimal code change demo
-├── basic_usage.py            # Basic init and resource check
-├── device_switching.py       # Runtime device switching
-├── test_inference.py         # Inference testing with CLI args
-└── compare_devices.py        # Compare performance across devices
+└── 05_engine_comparison.py   # Performance comparison
 ```
+
+### Run Examples
 
 ```bash
 # Quick start
-python examples/01_quick_start.py
+PYTHONPATH=./src python examples/01_quick_start.py
+
+# Device selection
+PYTHONPATH=./src python examples/02_device_selection.py
+
+# Auto import hook
+PYTHONPATH=./src python examples/03_auto_import_hook.py
 
 # Test all serving engines
 PYTHONPATH=./src python examples/04_serving_engines.py
@@ -247,12 +252,8 @@ PYTHONPATH=./src python examples/04_serving_engines.py
 # Compare engine performance
 PYTHONPATH=./src python examples/05_engine_comparison.py
 
-# Device selection
-PYTHONPATH=./src python examples/02_device_selection.py
-
-# Legacy examples
-python examples/zero_code_change.py
-python examples/test_inference.py --device cpu --model gpt2
+# Run all examples with automated test
+bash test_all_examples.sh
 ```
 
 ---
@@ -318,13 +319,32 @@ llm = LLM(model="gpt2", device="furiosa")
 
 ## Documentation
 
+### Getting Started
 | Document | Description |
 |----------|-------------|
-| [QUICKSTART.md](QUICKSTART.md) | Quick start guide |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Development/contribution guide |
+| [docs/QUICKSTART.md](docs/QUICKSTART.md) | 5-minute quick start guide |
+| [docs/SERVING_ENGINES.md](docs/SERVING_ENGINES.md) | Complete guide for all serving engines |
+| [docs/README_REQUIREMENTS.md](docs/README_REQUIREMENTS.md) | Installation and dependencies guide |
+
+### Technical Documentation
+| Document | Description |
+|----------|-------------|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture and design |
+| [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) | Project layout and organization |
+| [docs/FINAL_TEST_REPORT.md](docs/FINAL_TEST_REPORT.md) | Test results and validation |
+| [CLEANUP_SUMMARY.md](CLEANUP_SUMMARY.md) | Project cleanup summary |
+
+### Development
+| Document | Description |
+|----------|-------------|
+| [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Development and contribution guide |
 | [docs/ADDING_RESOURCES.md](docs/ADDING_RESOURCES.md) | Guide for adding new hardware resources |
 | [docs/ADDING_ENGINES.md](docs/ADDING_ENGINES.md) | Guide for adding new serving engines |
+
+### Presentation
+| Document | Description |
+|----------|-------------|
+| [docs/PRESENTATION.md](docs/PRESENTATION.md) | Project presentation slides (Korean) |
 
 ---
 
