@@ -28,22 +28,28 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
 ### Installation
 
 ```bash
-# Basic installation
+# Basic installation (CPU with transformers)
+pip install -r requirements.txt
 pip install -e .
 
 # GPU support (vLLM)
+pip install -r requirements-gpu.txt
 pip install -e ".[gpu]"
 
 # Triton engine support (ONNX conversion)
+pip install -r requirements-triton.txt
 pip install -e ".[triton]"
 
 # TorchServe engine support
+pip install -r requirements-torchserve.txt
 pip install -e ".[torchserve]"
 
 # All serving engines
+pip install -r requirements-serving.txt
 pip install -e ".[serving]"
 
 # Full installation (everything)
+pip install -r requirements-all.txt
 pip install -e ".[all]"
 ```
 
@@ -219,20 +225,34 @@ outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
 
 ```
 examples/
-├── zero_code_change.py   # Minimal code change demo
-├── basic_usage.py        # Basic init and resource check
-├── device_switching.py   # Runtime device switching
-├── test_inference.py     # Inference testing with CLI args
-├── compare_devices.py    # Compare performance across devices
-└── serving_engine.py     # Serving engine demo
+├── 01_quick_start.py         # Simplest usage
+├── 02_device_selection.py    # Device control (CPU/GPU/NPU)
+├── 03_auto_import_hook.py    # Auto import hooking
+├── 04_serving_engines.py     # Test all serving engines
+├── 05_engine_comparison.py   # Performance comparison
+├── zero_code_change.py       # Minimal code change demo
+├── basic_usage.py            # Basic init and resource check
+├── device_switching.py       # Runtime device switching
+├── test_inference.py         # Inference testing with CLI args
+└── compare_devices.py        # Compare performance across devices
 ```
 
 ```bash
-# Run examples
+# Quick start
+python examples/01_quick_start.py
+
+# Test all serving engines
+PYTHONPATH=./src python examples/04_serving_engines.py
+
+# Compare engine performance
+PYTHONPATH=./src python examples/05_engine_comparison.py
+
+# Device selection
+PYTHONPATH=./src python examples/02_device_selection.py
+
+# Legacy examples
 python examples/zero_code_change.py
-python examples/basic_usage.py
 python examples/test_inference.py --device cpu --model gpt2
-python examples/compare_devices.py
 ```
 
 ---

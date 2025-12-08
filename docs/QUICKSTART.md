@@ -1,266 +1,254 @@
-# Quick Start Guide
+# RM Abstract Layer - Quick Start Guide
 
-Get started with RM Abstract Layer in 5 minutes.
-
----
+Get started with RM Abstract Layer in 5 minutes!
 
 ## Installation
 
+### Basic (CPU)
+
 ```bash
-# Create virtual environment
-python -m venv .venv && source .venv/bin/activate
-
-# Install
-pip install -e ".[all]"
+pip install -r requirements.txt
+pip install -e .
 ```
 
----
+### With GPU Support
 
-## Example 1: Zero Code Change (Recommended)
-
-The simplest way to use RM Abstract Layer - just change one import line:
-
-```python
-# Before (vLLM only - GPU required)
-# from vllm import LLM, SamplingParams
-
-# After (rm_abstract - works on GPU, NPU, CPU)
-from rm_abstract import LLM, SamplingParams
-
-# Rest of your code remains EXACTLY the same!
-llm = LLM(model="gpt2")
-outputs = llm.generate(["Hello, I am"], SamplingParams(max_tokens=50))
-print(outputs[0].outputs[0].text)
+```bash
+pip install -r requirements-gpu.txt
+pip install -e ".[gpu]"
 ```
 
----
+### With All Serving Engines
 
-## Example 2: Device Selection
+```bash
+pip install -r requirements-serving.txt
+pip install -e ".[serving]"
+```
+
+## Hello World
 
 ```python
 from rm_abstract import LLM, SamplingParams
 
 # Auto-detect best device (NPU > GPU > CPU)
 llm = LLM(model="gpt2")
-print(f"Backend: {llm.backend}")  # e.g., "transformers-cpu"
 
-# Explicit device selection
-llm = LLM(model="gpt2", device="nvidia")   # NVIDIA GPU
-llm = LLM(model="gpt2", device="cpu")      # CPU
-llm = LLM(model="gpt2", device="rbln")     # Rebellions NPU
-llm = LLM(model="gpt2", device="furiosa")  # FuriosaAI NPU
-
-# Generate
+# Generate text
 outputs = llm.generate(
-    ["The future of AI is"],
-    SamplingParams(temperature=0.7, max_tokens=50)
+    ["Hello, I am"],
+    SamplingParams(max_tokens=50, temperature=0.8)
 )
+
 print(outputs[0].outputs[0].text)
 ```
 
----
+## Zero Code Change Migration
 
-## Example 3: Engine Selection
+### Before (vLLM only - GPU required)
 
 ```python
-from rm_abstract import LLM, SamplingParams
+from vllm import LLM, SamplingParams
 
-# vLLM engine (default)
-llm = LLM(model="gpt2", engine="vllm")
-
-# Triton Inference Server
-# - Auto-converts model to ONNX
-# - Auto-starts Docker container
-# - Auto-cleans up on exit
-llm = LLM(model="gpt2", engine="triton", device="nvidia")
-
-# TorchServe
-# - Auto-packages model to MAR format
-# - Auto-starts TorchServe server
-# - Auto-cleans up on exit
-llm = LLM(model="gpt2", engine="torchserve", device="cpu")
-
-# Generate
+llm = LLM(model="gpt2")
 outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
 ```
 
----
+### After (works on GPU, NPU, CPU)
 
-## Example 4: Environment Variables
+```python
+from rm_abstract import LLM, SamplingParams  # <- Only this line changed!
 
-Control device and engine via environment variables:
+llm = LLM(model="gpt2")
+outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
+```
+
+## Device Selection
+
+### Auto (Recommended)
+
+```python
+# Automatically selects: NPU > GPU > CPU
+llm = LLM(model="gpt2", device="auto")
+```
+
+### Explicit Device
+
+```python
+# CPU
+llm = LLM(model="gpt2", device="cpu")
+
+# NVIDIA GPU
+llm = LLM(model="gpt2", device="nvidia")
+
+# Rebellions NPU
+llm = LLM(model="gpt2", device="rbln")
+
+# FuriosaAI NPU
+llm = LLM(model="gpt2", device="furiosa")
+```
+
+## Serving Engines
+
+### vLLM (Default)
+
+```python
+# High-performance GPU inference
+llm = LLM(model="gpt2", engine="vllm", device="nvidia")
+```
+
+### TorchServe
+
+```python
+# Production deployment with auto-start
+llm = LLM(model="gpt2", engine="torchserve")
+```
+
+### Triton Inference Server
+
+```python
+# ONNX optimization with Docker auto-start
+llm = LLM(model="gpt2", engine="triton")
+```
+
+## Auto Import Hook
+
+```python
+# Configure BEFORE importing vllm
+from rm_abstract.auto import use
+use(device="cpu", hook_vllm=True)
+
+# Now import vllm - automatically hooked!
+from vllm import LLM, SamplingParams
+
+llm = LLM(model="gpt2")  # Uses rm_abstract under the hood
+```
+
+## Examples
 
 ```bash
-# Select device
-RM_DEVICE=nvidia python your_script.py
-RM_DEVICE=cpu python your_script.py
-RM_DEVICE=rbln python your_script.py
+# Run examples
+cd examples
 
-# Select engine
-RM_ENGINE=vllm python your_script.py
-RM_ENGINE=triton python your_script.py
-RM_ENGINE=torchserve python your_script.py
+# Quick start
+python 01_quick_start.py
+
+# Test all engines
+PYTHONPATH=../src python 04_serving_engines.py
+
+# Compare performance
+PYTHONPATH=../src python 05_engine_comparison.py
 ```
+
+## Common Patterns
+
+### GPU with Memory Limit
 
 ```python
-# In your script - no changes needed
-from rm_abstract import LLM, SamplingParams
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Select GPU
 
-llm = LLM(model="gpt2")  # Uses RM_DEVICE and RM_ENGINE from environment
-outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
+llm = LLM(
+    model="gpt2",
+    device="nvidia",
+    enforce_eager=True,  # Faster init
+    gpu_memory_utilization=0.15,  # Low memory for shared GPU
+)
 ```
 
----
-
-## Example 5: Classic API (Device Switching)
-
-```python
-import rm_abstract
-
-# Initialize (auto-select: NPU > GPU > CPU)
-rm_abstract.init(device="auto")
-
-# Check available resources
-for name, available in rm_abstract.get_available_resources().items():
-    status = "OK" if available else "Not available"
-    print(f"  {name}: {status}")
-
-# Get device info
-info = rm_abstract.get_device_info()
-print(f"Current device: {info['resource_type']}:{info['device_id']}")
-
-# Switch device at runtime
-rm_abstract.switch_device("cpu")
-print(f"Switched to: {rm_abstract.get_device_info()}")
-```
-
----
-
-## Example 6: Plugin Registry
-
-```python
-from rm_abstract import get_registry, PluginType
-from rm_abstract.registry import discover_all
-
-# Get registry and discover plugins
-registry = get_registry()
-discover_all(registry)
-
-# List resources with priority
-print("Available Resources:")
-for plugin in registry.list_plugins(PluginType.RESOURCE):
-    status = "available" if plugin.is_available() else "not available"
-    print(f"  {plugin.name} (priority: {plugin.priority}) [{status}]")
-
-# Get best available
-best = registry.get_best_available(PluginType.RESOURCE)
-if best:
-    print(f"Best resource: {best.name}")
-```
-
----
-
-## Device Options
+### CPU Fallback
 
 ```python
 from rm_abstract import LLM
-
-# Auto-select (NPU > GPU > CPU)
-llm = LLM(model="gpt2", device="auto")
-
-# Specific devices
-llm = LLM(model="gpt2", device="nvidia")   # NVIDIA GPU
-llm = LLM(model="gpt2", device="gpu")      # Alias for nvidia
-llm = LLM(model="gpt2", device="cuda")     # Alias for nvidia
-llm = LLM(model="gpt2", device="cpu")      # CPU
-llm = LLM(model="gpt2", device="rbln")     # Rebellions NPU
-llm = LLM(model="gpt2", device="furiosa")  # FuriosaAI NPU
-```
-
----
-
-## Error Handling
-
-```python
-from rm_abstract import LLM, SamplingParams
-from rm_abstract.exceptions import (
-    RMAbstractError,
-    BackendNotAvailableError,
-    NotInitializedError,
-)
+from rm_abstract.exceptions import BackendNotAvailableError
 
 try:
     llm = LLM(model="gpt2", device="nvidia")
 except BackendNotAvailableError:
-    print("GPU not available, falling back to CPU")
+    print("GPU not available, using CPU")
     llm = LLM(model="gpt2", device="cpu")
-
-outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
 ```
 
----
-
-## FAQ
-
-### Q: Model loads slowly on first run?
-
-For Triton/TorchServe engines, the first run includes:
-
-- Downloading model from HuggingFace (cached)
-- Converting to ONNX/MAR format (cached at `~/.rm_abstract/models`)
-- Starting server container
-
-Subsequent runs use cached conversions and are much faster.
-
-### Q: How to force CPU even with GPU available?
+### Batch Inference
 
 ```python
-llm = LLM(model="gpt2", device="cpu")
-# or
-# RM_DEVICE=cpu python your_script.py
+prompts = [
+    "Hello, I am",
+    "The future of AI",
+    "Python is",
+]
+
+outputs = llm.generate(
+    prompts,
+    SamplingParams(max_tokens=50, temperature=0.8)
+)
+
+for output in outputs:
+    print(f"Prompt: {output.prompt}")
+    print(f"Generated: {output.outputs[0].text}")
+    print("-" * 80)
 ```
 
-### Q: How to check which backend is being used?
+### Streaming (vLLM only)
 
 ```python
-llm = LLM(model="gpt2")
-print(f"Backend: {llm.backend}")
-print(f"Device: {llm.device}")
-print(f"Engine: {llm.engine_type}")
+llm = LLM(model="gpt2", device="nvidia", engine="vllm")
+
+for output in llm.generate(
+    ["Hello, I am"],
+    SamplingParams(max_tokens=100),
+    use_tqdm=False,
+):
+    print(output.outputs[0].text, end="", flush=True)
 ```
 
-### Q: Triton requires Docker but I don't have it?
+## Troubleshooting
 
-rm_abstract will automatically fall back to transformers if Docker is not available:
+### GPU Hang
 
+**Problem**: vLLM hangs on GPU initialization
+
+**Solution**: Use eager mode
 ```python
-llm = LLM(model="gpt2", engine="triton")
-# If Docker not available, falls back to transformers backend
-print(llm.backend)  # "transformers-cpu" or "transformers-gpu"
+llm = LLM(model="gpt2", enforce_eager=True)
 ```
 
----
+### GPU Memory Error
 
-## Running Examples
+**Problem**: CUDA out of memory
 
-```bash
-# Zero code change demo
-python examples/zero_code_change.py
-
-# Basic usage
-python examples/basic_usage.py
-
-# Test inference with CLI args
-python examples/test_inference.py --device cpu --model gpt2
-
-# Compare performance across devices
-python examples/compare_devices.py
+**Solution**: Reduce memory utilization
+```python
+llm = LLM(model="gpt2", gpu_memory_utilization=0.15)
 ```
 
----
+### Import Hook Not Working
 
-## Next Steps
+**Problem**: `from vllm import LLM` still uses original vLLM
 
-- [README.md](../README.md) - Full documentation
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Development guide
+**Solution**: Call `use()` BEFORE importing
+```python
+from rm_abstract.auto import use
+use(device="cpu", hook_vllm=True)
+
+# NOW import vllm
+from vllm import LLM
+```
+
+## What's Next?
+
+- [Serving Engines Guide](docs/SERVING_ENGINES.md) - Detailed engine comparison
+- [Architecture](ARCHITECTURE.md) - System design
+- [API Reference](docs/API.md) - Complete API documentation
+- [Contributing](CONTRIBUTING.md) - Development guide
+
+## Get Help
+
+- **Issues**: https://github.com/gspark-etri/rm_abstract_layer/issues
+- **Discussions**: https://github.com/gspark-etri/rm_abstract_layer/discussions
+
+## Verified Environments
+
+✅ **CPU**: All platforms with Python 3.9+
+✅ **GPU**: NVIDIA GPUs with CUDA 11.8+
+✅ **NPU**: Rebellions ATOM, FuriosaAI RNGD
+✅ **Engines**: vLLM, TorchServe, Triton (all tested)
