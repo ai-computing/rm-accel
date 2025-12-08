@@ -78,6 +78,15 @@ def use(
         _config["engine"] = engine
         os.environ["RM_ENGINE"] = engine
 
+    # Auto-determine hook settings based on device
+    # GPU/NPU: Don't hook vllm (use original vllm directly)
+    # CPU: Hook vllm to use transformers fallback
+    resolved_device = device or _config["device"]
+    if resolved_device in ("nvidia", "gpu", "cuda", "rbln", "furiosa"):
+        # For GPU/NPU, disable vllm hooking - use original vllm
+        if hook_vllm is None:
+            hook_vllm = False
+
     if hook_vllm is not None:
         _config["hook_vllm"] = hook_vllm
         os.environ["RM_HOOK_VLLM"] = "1" if hook_vllm else "0"
@@ -90,7 +99,7 @@ def use(
     disable_hooks()
     enable_hooks()
 
-    logger.info(f"RM Abstract configured: device={_config['device']}, engine={_config['engine']}")
+    logger.info(f"RM Abstract configured: device={_config['device']}, engine={_config['engine']}, hook_vllm={_config['hook_vllm']}")
 
 
 def get_config() -> dict:
