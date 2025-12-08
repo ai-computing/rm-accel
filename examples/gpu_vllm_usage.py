@@ -20,18 +20,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 def check_backends():
     """Check available backends"""
-    import rm_abstract
-    
-    print("=" * 60)
-    print("Checking available backends...")
-    print("=" * 60)
+import rm_abstract
 
-    backends = rm_abstract.get_available_backends()
-    for name, available in backends.items():
-        status = "✓ Available" if available else "✗ Not available"
-        print(f"  {name}: {status}")
-    print()
-    
+print("=" * 60)
+print("Checking available backends...")
+print("=" * 60)
+
+backends = rm_abstract.get_available_backends()
+for name, available in backends.items():
+    status = "✓ Available" if available else "✗ Not available"
+    print(f"  {name}: {status}")
+print()
+
     return backends
 
 
@@ -46,7 +46,7 @@ def run_inference(model, tokenizer, prompt, device_name):
         do_sample=True,
         temperature=0.7,
     )
-    
+
     generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
     print(f"  [Output] \"{generated_text}\"")
     
@@ -159,18 +159,18 @@ def example3_compare_outputs():
         print("  ✓ Outputs are identical!")
     else:
         print("  ⚠ Outputs differ (expected due to different backends)")
-    
-    print()
+
+print()
 
 
 def example4_device_info():
     """Example 4: Display device information"""
     import rm_abstract
     
-    print("=" * 60)
+print("=" * 60)
     print("Example 4: Final Device Information")
-    print("=" * 60)
-    
+print("=" * 60)
+
     info = rm_abstract.get_device_info()
     print(f"  Device Type: {info.get('device_type', 'N/A')}")
     print(f"  Device ID: {info.get('device_id', 'N/A')}")
@@ -178,8 +178,8 @@ def example4_device_info():
     print(f"  Vendor: {info.get('vendor', 'N/A')}")
     if info.get("memory_total"):
         print(f"  Memory: {info['memory_total'] / 1e9:.1f} GB")
-    
-    print()
+
+print()
 
 
 def main():
@@ -207,14 +207,14 @@ def main():
         example2_switch_to_cpu(model_name, tokenizer)
         example3_compare_outputs()
         example4_device_info()
-    except Exception as e:
+except Exception as e:
         print(f"Error: {e}")
         import traceback
         traceback.print_exc()
-    
-    print("=" * 60)
+
+print("=" * 60)
     print("All Examples Completed!")
-    print("=" * 60)
+print("=" * 60)
 
 
 # IMPORTANT: This guard is required for vLLM's multiprocessing (spawn method)
