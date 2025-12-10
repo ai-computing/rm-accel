@@ -9,17 +9,17 @@
 
 ## Overview
 
-RM Abstract Layer is an abstraction layer that enables LLM inference on various hardware accelerators (GPU, NPU, CPU) **without code modification**.
+RM Abstract Layer is an abstraction layer that enables LLM inference on various hardware accelerators (GPU, CPU) with **minimal code modification**.
 
 ### Key Features
 
-- **Zero Code Change**: Just change `from vllm import LLM` to `from rm_abstract import LLM`
-- **Device Transparency**: Existing vLLM code works as-is on any device
-- **Runtime Switching**: Real-time switching between GPU, CPU, NPU
+- **Minimal Code Change**: Just change `from vllm import LLM` to `from rm_abstract import LLM`
+- **Device Transparency**: vLLM-compatible API works on GPU and CPU
+- **Runtime Switching**: Real-time switching between GPU and CPU
 - **Auto Server Management**: Triton/TorchServe auto-start with model conversion
 - **Plugin Architecture**: Easily add new resources and engines via plugin registry
 - **Multiple Serving Engines**: vLLM, Triton, TorchServe support
-- **Hardware Detection**: Automatic detection and priority-based selection (NPU > GPU > CPU)
+- **Hardware Detection**: Automatic detection and priority-based selection (GPU > CPU)
 
 ---
 
@@ -53,16 +53,16 @@ pip install -r requirements/requirements-all.txt
 pip install -e ".[all]"
 ```
 
-### Zero Code Change Usage (Recommended)
+### Basic Usage
 
 ```python
 # Before (vLLM only - GPU required)
 # from vllm import LLM, SamplingParams
 
-# After (rm_abstract - works on GPU, NPU, CPU)
+# After (rm_abstract - works on GPU and CPU)
 from rm_abstract import LLM, SamplingParams
 
-# Rest of your code remains EXACTLY the same!
+# Rest of your code remains the same!
 llm = LLM(model="gpt2")
 outputs = llm.generate(["Hello, I am"], SamplingParams(max_tokens=50))
 print(outputs[0].outputs[0].text)
@@ -73,14 +73,12 @@ print(outputs[0].outputs[0].text)
 ```python
 from rm_abstract import LLM, SamplingParams
 
-# Auto-detect best device (NPU > GPU > CPU)
+# Auto-detect best device (GPU > CPU)
 llm = LLM(model="gpt2")
 
 # Explicit device selection
 llm = LLM(model="gpt2", device="nvidia")   # NVIDIA GPU
 llm = LLM(model="gpt2", device="cpu")      # CPU
-llm = LLM(model="gpt2", device="rbln")     # Rebellions NPU
-llm = LLM(model="gpt2", device="furiosa")  # FuriosaAI NPU
 
 # Environment variable control
 # RM_DEVICE=nvidia python your_script.py
@@ -110,13 +108,13 @@ llm = LLM(model="gpt2", engine="torchserve")
 ```python
 import rm_abstract
 
-# Initialize (auto-select optimal device: NPU > GPU > CPU)
+# Initialize (auto-select optimal device: GPU > CPU)
 rm_abstract.init(device="auto")
 
 # Check available resources
 resources = rm_abstract.get_available_resources()
 print(resources)
-# {'nvidia': False, 'rbln': False, 'furiosa': False, 'cpu': True}
+# {'nvidia': True, 'cpu': True}
 
 # Get device info
 info = rm_abstract.get_device_info()
@@ -135,18 +133,18 @@ rm_abstract.switch_device("nvidia")  # If available
 
 | Device | Status | Backend |
 |--------|--------|---------|
-| NVIDIA GPU | Supported | vLLM / Triton / TorchServe |
-| CPU | Supported | transformers / TorchServe |
-| Rebellions ATOM NPU | Supported | vLLM-RBLN / Optimum-RBLN |
-| FuriosaAI RNGD NPU | Supported | FuriosaAI SDK |
+| NVIDIA GPU | ✅ Supported | vLLM / Triton / TorchServe |
+| CPU | ✅ Supported | transformers / TorchServe |
+| Rebellions ATOM NPU | 🔧 Planned | vLLM-RBLN / Optimum-RBLN |
+| FuriosaAI RNGD NPU | 🔧 Planned | FuriosaAI SDK |
 
 ### Serving Engines
 
 | Engine | Status | Auto Management | Description |
 |--------|--------|-----------------|-------------|
-| vLLM | Supported | - | High-performance LLM serving |
-| Triton | Supported | Docker auto-start, ONNX conversion | Multi-model serving |
-| TorchServe | Supported | Server auto-start, MAR packaging | PyTorch native serving |
+| vLLM | ✅ Supported | - | High-performance LLM serving |
+| Triton | ✅ Supported | Docker auto-start, ONNX conversion | Multi-model serving |
+| TorchServe | ✅ Supported | Server auto-start, MAR packaging | PyTorch native serving |
 
 ---
 
@@ -157,9 +155,17 @@ src/rm_abstract/
 ├── __init__.py           # Main interface (init, switch_device, LLM, SamplingParams)
 ├── llm.py                # LLM proxy class (vLLM-compatible API)
 ├── exceptions.py         # Exception classes
+├── auto.py               # Auto import hooking (use() function)
+├── run.py                # CLI runner
+├── __main__.py           # Module entry point
 ├── common/               # Shared utilities
 │   ├── input_adapter.py  # Unified input format handling
-│   └── output_adapter.py # Unified output format conversion
+│   ├── output_adapter.py # Unified output format conversion
+│   ├── model_converter.py # Model format conversion
+│   └── hardware_detector.py # Hardware detection
+├── compat/               # Compatibility modules
+│   ├── vllm_compat.py    # vLLM compatibility layer
+│   └── transformers_compat.py # Transformers compatibility layer
 ├── resources/            # Hardware-specific implementations
 │   ├── base.py           # Resource ABC
 │   ├── gpu/nvidia.py     # NVIDIA GPU (vLLM)
@@ -225,7 +231,7 @@ outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
 
 All 5 examples are tested and validated (✅ 100% pass rate):
 
-```
+```text
 examples/
 ├── 01_quick_start.py         # Simplest usage
 ├── 02_device_selection.py    # Device control (CPU/GPU/NPU)
@@ -297,7 +303,7 @@ except BackendNotAvailableError as e:
 ```python
 from rm_abstract import LLM
 
-# Auto-select (NPU > GPU > CPU priority)
+# Auto-select (GPU > CPU priority)
 llm = LLM(model="gpt2", device="auto")
 
 # Specific GPU
@@ -308,11 +314,9 @@ llm = LLM(model="gpt2", device="cuda")  # alias
 # CPU
 llm = LLM(model="gpt2", device="cpu")
 
-# Rebellions NPU
-llm = LLM(model="gpt2", device="rbln")
-
-# FuriosaAI NPU
-llm = LLM(model="gpt2", device="furiosa")
+# NPU (Planned - not yet supported)
+# llm = LLM(model="gpt2", device="rbln")     # Rebellions NPU
+# llm = LLM(model="gpt2", device="furiosa")  # FuriosaAI NPU
 ```
 
 ---
@@ -356,4 +360,4 @@ MIT License
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome! See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.
