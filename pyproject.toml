@@ -7,7 +7,7 @@ name = "rm-abstract"
 version = "0.3.0"
 description = "LLM Heterogeneous Resource Orchestrator - GPU/NPU/PIM Meta-Serving Layer"
 readme = "README.md"
-license = {text = "MIT"}
+license = {text = "BSD-3-Clause"}
 requires-python = ">=3.9"
 authors = [
     {name = "RM Abstract Team", email = "contact@rmabstract.dev"}
@@ -17,7 +17,7 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
