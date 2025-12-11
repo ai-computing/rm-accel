@@ -3,7 +3,7 @@
 > **GPU / NPU / CPU Heterogeneous Accelerator Unified LLM Inference Abstraction Layer**
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 ---
 
@@ -354,7 +354,35 @@ llm = LLM(model="gpt2", device="cpu")
 
 ## License
 
-MIT License
+BSD-3-Clause License
+
+### Third-Party Licenses
+
+This project integrates with various third-party libraries and SDKs:
+
+#### Open Source Dependencies (Permissive Licenses)
+
+| Package | License | Usage |
+|---------|---------|-------|
+| [PyTorch](https://github.com/pytorch/pytorch) | BSD-3-Clause | Deep learning framework |
+| [vLLM](https://github.com/vllm-project/vllm) | Apache-2.0 | High-performance LLM serving |
+| [Triton Inference Server](https://github.com/triton-inference-server/server) | BSD-3-Clause | Multi-model serving |
+| [TorchServe](https://github.com/pytorch/serve) | Apache-2.0 | PyTorch model serving |
+| [HuggingFace Transformers](https://github.com/huggingface/transformers) | Apache-2.0 | Model hub and inference |
+| [vllm-rbln](https://github.com/rebellions-sw/vllm-rbln) | Apache-2.0 | vLLM plugin for RBLN NPU |
+| [optimum-rbln](https://github.com/rebellions-sw/optimum-rbln) | Apache-2.0 | HuggingFace integration for RBLN |
+| [FuriosaAI SDK](https://github.com/furiosa-ai/furiosa-sdk) | Apache-2.0 | FuriosaAI Python SDK |
+
+#### Proprietary NPU SDKs
+
+The following NPU backends require proprietary SDKs with separate license agreements:
+
+| NPU | SDK | License | Access |
+|-----|-----|---------|--------|
+| **Rebellions ATOM** | RBLN SDK (rebel-compiler, drivers, runtime) | Proprietary | [Request Access](https://rebellions.ai/request-form-rbln-sdk/) |
+| **FuriosaAI RNGD** | FuriosaAI SDK (kernel driver, firmware, runtime) | Proprietary (EULA) | [Early Access Program](https://furiosa.ai/) |
+
+> **Note**: Users are responsible for complying with the respective SDK license terms when using NPU backends. This project only provides abstraction interfaces and does not redistribute any proprietary SDK components.
 
 ---
 
