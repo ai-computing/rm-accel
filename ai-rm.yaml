@@ -1,0 +1,21 @@
+name: rm_abstract_layer
+layer: l1-accel
+kind: library
+summary: GPU·NPU(RNGD, ATOM)·CPU 이종 가속기 통합 추상화 — 장치 탐지, 자원·엔진 플러그인, vLLM 호환 API
+maturity: prototype
+hardware: [GPU, CPU, RNGD, ATOM]
+install:
+  - python -m pip install -r requirements/requirements.txt
+  - python -m pip install -e .
+test:
+  - python -m pytest -q -m "not gpu and not slow" tests/unit
+deploy:
+  target: none
+  manifests: null
+  image: null
+config:
+  env_example: null
+interfaces:
+  provides: [Accelerator]
+  uses: []
+kpi: [이종자원수]
