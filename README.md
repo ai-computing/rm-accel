@@ -28,7 +28,7 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
 [ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다(`components/l1-accel/rm_abstract_layer`).
 
 - **역할**: 장치 탐지와 장치 능력 모델(`resources/base.py`의 `ResourceInfo`, `ResourceCapability`), 벤더별 자원 플러그인(`resources/gpu`, `resources/npu/furiosa.py`, `resources/npu/rebellions.py`, `resources/cpu`), 서빙 엔진 플러그인(vLLM, Triton, TorchServe).
-- **인터페이스**: ai-rm의 `Accelerator` 계약을 제공합니다([interfaces.md](https://github.com/ai-computing/ai-rm/blob/main/docs/interfaces.md)). 다음 단계로 정밀도별 peak 연산, 메모리 종류(HBM/DRAM/통합메모리), 인터커넥트, 전력 정보를 능력 모델에 추가하고 GB10 장치를 넣을 예정입니다.
+- **인터페이스**: ai-rm의 `Accelerator` 계약을 제공합니다([interfaces.md](https://github.com/ai-computing/ai-rm/blob/master/docs/interfaces.md)). 다음 단계로 정밀도별 peak 연산, 메모리 종류(HBM/DRAM/통합메모리), 인터커넥트, 전력 정보를 능력 모델에 추가하고 GB10 장치를 넣을 예정입니다.
 - **k8s + llm-d**: 아직 직접 배포되는 구성요소는 아닙니다. llm-d 모델 서버와 배치 정책(EPP)이 장치 능력을 읽는 출처가 되는 것이 목표입니다.
 - **설치·테스트**: `ai-rm.yaml` 참고 (`pip install -e .`, `pytest -m "not gpu and not slow" tests/unit`).
 - **관련 성과지표**: 이종 자원 수(장치 등록·탐지).
