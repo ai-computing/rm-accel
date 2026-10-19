@@ -9,8 +9,8 @@ How to contribute to RM Abstract Layer.
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-org/rm_abstract_layer.git
-cd rm_abstract_layer
+git clone https://github.com/your-org/rm-accel.git
+cd rm-accel
 ```
 
 ### 2. Create Virtual Environment
@@ -37,7 +37,7 @@ pytest tests/ -v
 ## Project Structure
 
 ```text
-rm_abstract_layer/
+rm-accel/
 ├── src/rm_abstract/      # Source code
 │   ├── common/           # Shared utilities
 │   ├── resources/        # Hardware resources

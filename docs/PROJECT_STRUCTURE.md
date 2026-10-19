@@ -3,7 +3,7 @@
 ## Directory Layout
 
 ```
-rm_abstract_layer/
+rm-accel/
 ├── docs/                          # 📚 Documentation
 │   ├── QUICKSTART.md              # Quick start guide
 │   ├── SERVING_ENGINES.md         # Serving engines guide

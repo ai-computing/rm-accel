@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>rm_abstract_layer</h1>
+<h1>rm-accel</h1>
 
 <h3>이종 AI 인프라를 위한 가속기 추상화</h3>
 
@@ -9,10 +9,10 @@
 </p>
 
 <p>
-  <a href="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml"><img src="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/ai-computing/rm-accel/actions/workflows/ci.yml"><img src="https://github.com/ai-computing/rm-accel/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm L1 계층"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="프로토콜 v0.1"></a>
-  <a href="https://github.com/ai-computing/rm_abstract_layer/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="릴리스 v0.4.1"></a>
+  <a href="https://github.com/ai-computing/rm-accel/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="릴리스 v0.4.1"></a>
   <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.4.2-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.4.2"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="라이선스: BSD-3-Clause"></a>
@@ -30,7 +30,10 @@
 
 ---
 
-**rm_abstract_layer**는 [ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다. 각 노드의
+이전 이름은 `rm_abstract_layer`입니다. Python 패키지 이름은 `rm_abstract` 그대로이고, 노드 데몬은 기존 대시보드와
+질의가 계속 동작하도록 지표에 `component="rm_abstract_layer"` 태그를 그대로 붙입니다.
+
+**rm-accel**는 [ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다. 각 노드의
 GPU와 NPU(FuriosaAI RNGD, Rebellions ATOM)를 탐지해 [rm-core](https://github.com/ai-computing/rm-core)의
 `Accelerator` 모델로 표현하고, Kubernetes에 `AcceleratorProfile` 객체와 노드 레이블로 게시합니다. 배치(llm-d EPP)와
 관측(lmd-top)이 이 정보를 읽습니다.
@@ -65,7 +68,7 @@ GPU와 NPU(FuriosaAI RNGD, Rebellions ATOM)를 탐지해 [rm-core](https://githu
 ## 🚀 빠른 시작
 
 ```bash
-git clone https://github.com/ai-computing/rm_abstract_layer.git && cd rm_abstract_layer
+git clone https://github.com/ai-computing/rm-accel.git && cd rm-accel
 pip install -r requirements/requirements.txt
 pip install -e .
 
@@ -74,7 +77,7 @@ python -m rm_abstract.airm.daemon --provider sim --once --dry-run   # 장치 없
 python -m rm_core.conformance airm.accelerator_providers rm-abstract  # 계약 검사 (PASS / SKIP / FAIL)
 ```
 
-ai-rm으로 설치할 때는 [ai-rm](https://github.com/ai-computing/ai-rm) 저장소에서 `make setup COMPONENTS=rm_abstract_layer`를
+ai-rm으로 설치할 때는 [ai-rm](https://github.com/ai-computing/ai-rm) 저장소에서 `make setup COMPONENTS=rm-accel`를
 실행합니다(절차는 [`ai-rm.yaml`](ai-rm.yaml)에 있습니다).
 
 ## 🔌 ai-rm 연동
@@ -255,7 +258,7 @@ bash scripts/run_examples.sh                    # 예제 전체 실행 (모델·
 | **사용** | [빠른 시작](docs/QUICKSTART.md) · [서빙 엔진](docs/SERVING_ENGINES.md) · [Requirements](docs/README_REQUIREMENTS.md) |
 | **이해** | [아키텍처](docs/ARCHITECTURE.md) · [프로젝트 구조](docs/PROJECT_STRUCTURE.md) · [변경 이력](CHANGELOG.md) |
 | **확장** | [기여](docs/CONTRIBUTING.md) · [자원 추가](docs/ADDING_RESOURCES.md) · [엔진 추가](docs/ADDING_ENGINES.md) |
-| **ai-rm** | [Umbrella](https://github.com/ai-computing/ai-rm) · [rm-core 프로토콜](https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md) · [구성요소 카드](https://github.com/ai-computing/ai-rm/blob/master/docs/components/rm_abstract_layer.md) |
+| **ai-rm** | [Umbrella](https://github.com/ai-computing/ai-rm) · [rm-core 프로토콜](https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md) · [구성요소 카드](https://github.com/ai-computing/ai-rm/blob/master/docs/components/rm-accel.md) |
 
 예전 테스트 보고서와 발표 자료: [docs/archive](docs/archive/README.md). 상세 문서는 영어로 작성되어 있습니다.
 
