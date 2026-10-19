@@ -17,8 +17,8 @@ Usage:
     outputs = llm.generate(["Hello, I am"], SamplingParams(max_tokens=50))
 """
 
-import os
 import logging
+import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
@@ -272,7 +272,9 @@ class LLM:
             self._init_transformers_backend("nvidia")
         except Exception as e:
             # Fallback to transformers on GPU memory errors, etc.
-            logger.warning(f"vLLM initialization failed ({e}), falling back to transformers GPU")
+            logger.warning(
+                f"vLLM initialization failed ({e}), falling back to transformers GPU"
+            )
             self._init_transformers_backend("nvidia")
 
     def _init_vllm_rbln_backend(self):
@@ -329,8 +331,8 @@ class LLM:
     def _init_triton_backend(self, device: str):
         """Initialize Triton Inference Server backend with auto-start."""
         try:
-            from .engines.triton import TritonEngine, TritonConfig
-            from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
+            from .engines.base import DeviceTarget, ServingConfig, ServingEngineType
+            from .engines.triton import TritonConfig, TritonEngine
 
             # Check if Docker is available
             if not TritonEngine.is_available():
@@ -364,20 +366,26 @@ class LLM:
             self._backend_llm = TritonEngine(config, triton_config)
             # load_model will auto-convert to ONNX and start Docker container
             self._backend_llm.load_model(self.model_name)
-            logger.info(f"Initialized Triton backend with auto-start: {self.model_name}")
+            logger.info(
+                f"Initialized Triton backend with auto-start: {self.model_name}"
+            )
 
         except ImportError as e:
-            logger.warning(f"Triton backend not available ({e}), falling back to transformers")
+            logger.warning(
+                f"Triton backend not available ({e}), falling back to transformers"
+            )
             self._init_transformers_backend(device)
         except Exception as e:
-            logger.warning(f"Failed to start Triton ({e}), falling back to transformers")
+            logger.warning(
+                f"Failed to start Triton ({e}), falling back to transformers"
+            )
             self._init_transformers_backend(device)
 
     def _init_torchserve_backend(self, device: str):
         """Initialize TorchServe backend with auto-start."""
         try:
-            from .engines.torchserve import TorchServeEngine, TorchServeConfig
-            from .engines.base import ServingConfig, ServingEngineType, DeviceTarget
+            from .engines.base import DeviceTarget, ServingConfig, ServingEngineType
+            from .engines.torchserve import TorchServeConfig, TorchServeEngine
 
             # Check if TorchServe is installed
             if not TorchServeEngine.is_available():
@@ -410,7 +418,9 @@ class LLM:
             self._backend_llm = TorchServeEngine(config, ts_config)
             # load_model will auto-package MAR and start server
             self._backend_llm.load_model(self.model_name)
-            logger.info(f"Initialized TorchServe backend with auto-start: {self.model_name}")
+            logger.info(
+                f"Initialized TorchServe backend with auto-start: {self.model_name}"
+            )
 
         except ImportError as e:
             logger.warning(
@@ -418,7 +428,9 @@ class LLM:
             )
             self._init_transformers_backend(device)
         except Exception as e:
-            logger.warning(f"Failed to start TorchServe ({e}), falling back to transformers")
+            logger.warning(
+                f"Failed to start TorchServe ({e}), falling back to transformers"
+            )
             self._init_transformers_backend(device)
 
     def _init_cpu_backend(self):
@@ -428,8 +440,8 @@ class LLM:
     def _init_transformers_backend(self, device: str):
         """Initialize transformers backend for CPU or GPU."""
         try:
-            from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
+            from transformers import AutoModelForCausalLM, AutoTokenizer
 
             # Determine if using GPU or CPU
             use_gpu = device in ("nvidia", "gpu", "cuda") and torch.cuda.is_available()

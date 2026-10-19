@@ -4,11 +4,11 @@ Serving Engine Base Classes
 Abstract base class for all serving engines (vLLM, Triton, TorchServe, etc.)
 """
 
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
-import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

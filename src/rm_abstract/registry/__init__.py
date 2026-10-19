@@ -9,15 +9,15 @@ Structure:
 - discovery.py: Auto-discovery of available plugins
 """
 
+from .discovery import discover_all, discover_engines, discover_resources
 from .plugin_registry import (
-    PluginRegistry,
     PluginInfo,
+    PluginRegistry,
     PluginType,
+    get_plugin,
     get_registry,
     register_plugin,
-    get_plugin,
 )
-from .discovery import discover_resources, discover_engines, discover_all
 
 __all__ = [
     "PluginRegistry",

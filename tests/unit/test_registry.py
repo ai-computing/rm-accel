@@ -1,13 +1,16 @@
 """Plugin registry tests"""
 
-import pytest
 from rm_abstract.registry import (
-    PluginRegistry,
     PluginInfo,
     PluginType,
     get_registry,
 )
-from rm_abstract.resources.base import Resource, ResourceType, ResourceInfo, ResourceCapability
+from rm_abstract.resources.base import (
+    Resource,
+    ResourceCapability,
+    ResourceInfo,
+    ResourceType,
+)
 
 
 class MockResource(Resource):

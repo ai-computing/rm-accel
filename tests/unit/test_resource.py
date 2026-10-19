@@ -1,7 +1,11 @@
 """Resource base class tests"""
 
-import pytest
-from rm_abstract.resources.base import Resource, ResourceType, ResourceInfo, ResourceCapability
+from rm_abstract.resources.base import (
+    Resource,
+    ResourceCapability,
+    ResourceInfo,
+    ResourceType,
+)
 
 
 class MockResource(Resource):

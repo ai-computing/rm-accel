@@ -6,12 +6,12 @@ Converts HuggingFace models to formats required by serving engines.
 - MAR (Model Archive) for TorchServe
 """
 
+import logging
 import os
 import shutil
 import tempfile
-import logging
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -72,14 +72,14 @@ class ModelConverter:
         output_path.mkdir(parents=True, exist_ok=True)
 
         try:
-            from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
+            from transformers import AutoModelForCausalLM, AutoTokenizer
 
             print(f"[ONNX] Converting {model_name} to ONNX format...", flush=True)
             logger.info(f"Converting {model_name} to ONNX...")
 
             # Load model and tokenizer
-            print(f"[ONNX] Loading model and tokenizer...", flush=True)
+            print("[ONNX] Loading model and tokenizer...", flush=True)
             tokenizer = AutoTokenizer.from_pretrained(model_name)
             model = AutoModelForCausalLM.from_pretrained(model_name)
             model.eval()
@@ -102,7 +102,7 @@ class ModelConverter:
                 dummy_input = {k: v.cuda() for k, v in dummy_input.items()}
 
             # Export to ONNX
-            print(f"[ONNX] Exporting to ONNX (this may take a while)...", flush=True)
+            print("[ONNX] Exporting to ONNX (this may take a while)...", flush=True)
             torch.onnx.export(
                 model,
                 (dummy_input["input_ids"], dummy_input["attention_mask"]),
@@ -163,8 +163,8 @@ class ModelConverter:
             return str(mar_file)
 
         try:
+            import torch  # noqa: F401
             from transformers import AutoModelForCausalLM, AutoTokenizer
-            import torch
 
             print(f"[MAR] Converting {model_name} to MAR format...", flush=True)
             logger.info(f"Converting {model_name} to MAR format...")
@@ -174,14 +174,14 @@ class ModelConverter:
                 tmp_path = Path(tmp_dir)
 
                 # Save model and tokenizer
-                print(f"[MAR] Loading model and tokenizer...", flush=True)
+                print("[MAR] Loading model and tokenizer...", flush=True)
                 tokenizer = AutoTokenizer.from_pretrained(model_name)
                 model = AutoModelForCausalLM.from_pretrained(model_name)
 
                 model_dir = tmp_path / "model"
                 model_dir.mkdir()
 
-                print(f"[MAR] Saving model files...", flush=True)
+                print("[MAR] Saving model files...", flush=True)
                 tokenizer.save_pretrained(str(model_dir))
                 model.save_pretrained(str(model_dir))
 
@@ -190,7 +190,7 @@ class ModelConverter:
                 handler_file.write_text(self._get_handler_code(handler))
 
                 # Create MAR using torch-model-archiver
-                print(f"[MAR] Creating MAR archive...", flush=True)
+                print("[MAR] Creating MAR archive...", flush=True)
                 self._create_mar_archive(
                     model_name=safe_name,
                     model_dir=str(model_dir),
@@ -295,12 +295,18 @@ class TextGenerationHandler(BaseHandler):
 
         cmd = [
             "torch-model-archiver",
-            "--model-name", model_name,
-            "--version", "1.0",
-            "--serialized-file", os.path.join(model_dir, "pytorch_model.bin"),
-            "--handler", handler_file,
-            "--extra-files", f"{model_dir}/config.json,{model_dir}/tokenizer.json,{model_dir}/vocab.json",
-            "--export-path", output_path,
+            "--model-name",
+            model_name,
+            "--version",
+            "1.0",
+            "--serialized-file",
+            os.path.join(model_dir, "pytorch_model.bin"),
+            "--handler",
+            handler_file,
+            "--extra-files",
+            f"{model_dir}/config.json,{model_dir}/tokenizer.json,{model_dir}/vocab.json",
+            "--export-path",
+            output_path,
             "--force",
         ]
 
@@ -312,7 +318,15 @@ class TextGenerationHandler(BaseHandler):
                 cmd[cmd.index("--serialized-file") + 1] = str(model_files[0])
             else:
                 # No serialized file, use handler-only mode
-                cmd = [c for c in cmd if c not in ["--serialized-file", cmd[cmd.index("--serialized-file") + 1]]]
+                cmd = [
+                    c
+                    for c in cmd
+                    if c
+                    not in [
+                        "--serialized-file",
+                        cmd[cmd.index("--serialized-file") + 1],
+                    ]
+                ]
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
@@ -352,7 +366,7 @@ class TextGenerationHandler(BaseHandler):
             shutil.copy(onnx_src, version_dir / "model.onnx")
 
         # Create config.pbtxt
-        config_content = f'''name: "{safe_name}"
+        config_content = f"""name: "{safe_name}"
 platform: "{platform}"
 max_batch_size: {max_batch_size}
 
@@ -388,7 +402,7 @@ dynamic_batching {{
   preferred_batch_size: [1, 2, 4, 8]
   max_queue_delay_microseconds: 100
 }}
-'''
+"""
 
         config_file = model_dir / "config.pbtxt"
         config_file.write_text(config_content)

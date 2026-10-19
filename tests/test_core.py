@@ -2,8 +2,6 @@
 Core functionality tests
 """
 
-import pytest
-
 
 class TestInitialization:
     """Test rm_abstract initialization"""

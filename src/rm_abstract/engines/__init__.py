@@ -12,14 +12,14 @@ Structure:
 """
 
 from .base import (
+    DeviceTarget,
+    ServingConfig,
     ServingEngine,
     ServingEngineType,
-    ServingConfig,
-    DeviceTarget,
 )
-from .vllm import VLLMEngine
-from .triton import TritonEngine
 from .torchserve import TorchServeEngine
+from .triton import TritonEngine
+from .vllm import VLLMEngine
 
 __all__ = [
     "ServingEngine",

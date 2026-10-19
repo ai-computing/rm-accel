@@ -1,8 +1,7 @@
 """Tests for the new LLM proxy class."""
 
 import os
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class TestSamplingParams:
@@ -52,7 +51,7 @@ class TestRequestOutput:
 
     def test_request_output_creation(self):
         """Test creating RequestOutput."""
-        from rm_abstract import RequestOutput, CompletionOutput
+        from rm_abstract import CompletionOutput, RequestOutput
 
         output = RequestOutput(
             request_id="0",
@@ -193,19 +192,23 @@ class TestLLMModuleExports:
     def test_llm_exported(self):
         """Test LLM is exported from rm_abstract."""
         from rm_abstract import LLM
+
         assert LLM is not None
 
     def test_sampling_params_exported(self):
         """Test SamplingParams is exported."""
         from rm_abstract import SamplingParams
+
         assert SamplingParams is not None
 
     def test_request_output_exported(self):
         """Test RequestOutput is exported."""
         from rm_abstract import RequestOutput
+
         assert RequestOutput is not None
 
     def test_completion_output_exported(self):
         """Test CompletionOutput is exported."""
         from rm_abstract import CompletionOutput
+
         assert CompletionOutput is not None

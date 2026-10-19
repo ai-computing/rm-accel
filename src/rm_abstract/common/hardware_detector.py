@@ -5,10 +5,10 @@ Unified hardware detection utilities.
 Detects available devices (GPU, NPU, CPU) across different vendors.
 """
 
+import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Callable
-import logging
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -383,8 +383,8 @@ class HardwareDetector:
 
     def _detect_cpu(self) -> List[HardwareInfo]:
         """Detect CPU (always available)"""
-        import platform
         import os
+        import platform
 
         return [
             HardwareInfo(

@@ -15,8 +15,8 @@ Usage:
     tokenizer = AutoTokenizer.from_pretrained("gpt2")
 """
 
-import os
 import logging
+import os
 from typing import Any, Dict, Optional, Union
 
 logger = logging.getLogger(__name__)
@@ -38,18 +38,21 @@ def _detect_device() -> str:
     """Detect the best available device on this host (NPU > GPU > CPU)."""
     try:
         import rebel  # noqa: F401
+
         return "rbln"
     except ImportError:
         pass
 
     try:
         import furiosa_sdk  # noqa: F401
+
         return "furiosa"
     except ImportError:
         pass
 
     try:
         import torch
+
         if torch.cuda.is_available():
             return "nvidia"
     except ImportError:
@@ -80,7 +83,7 @@ class AutoModelForCausalLM:
         trust_remote_code: bool = False,
         torch_dtype: Any = None,
         device_map: Optional[Union[str, Dict]] = None,
-        **kwargs
+        **kwargs,
     ) -> Any:
         """
         Load a pretrained model with automatic backend selection.
@@ -121,10 +124,7 @@ class AutoModelForCausalLM:
             from optimum.rbln import RBLNAutoModelForCausalLM
 
             model = RBLNAutoModelForCausalLM.from_pretrained(
-                model_name,
-                export=True,
-                trust_remote_code=trust_remote_code,
-                **kwargs
+                model_name, export=True, trust_remote_code=trust_remote_code, **kwargs
             )
             logger.info(f"Loaded model with optimum-rbln: {model_name}")
             return model
@@ -140,9 +140,7 @@ class AutoModelForCausalLM:
             from furiosa_llm import LLM as FuriosaLLM
 
             model = FuriosaLLM.from_pretrained(
-                model_name,
-                trust_remote_code=trust_remote_code,
-                **kwargs
+                model_name, trust_remote_code=trust_remote_code, **kwargs
             )
             logger.info(f"Loaded model with FuriosaAI: {model_name}")
             return model
@@ -158,6 +156,7 @@ class AutoModelForCausalLM:
         import sys
 
         from rm_abstract.auto import disable_hooks, enable_hooks
+
         disable_hooks()
 
         try:
@@ -175,7 +174,7 @@ class AutoModelForCausalLM:
         trust_remote_code: bool,
         torch_dtype: Any,
         device_map: Optional[Union[str, Dict]],
-        **kwargs
+        **kwargs,
     ) -> Any:
         """Load model on GPU using transformers."""
         import torch
@@ -193,18 +192,14 @@ class AutoModelForCausalLM:
             trust_remote_code=trust_remote_code,
             torch_dtype=torch_dtype,
             device_map=device_map,
-            **kwargs
+            **kwargs,
         )
         logger.info(f"Loaded model on GPU: {model_name}")
         return model
 
     @classmethod
     def _load_cpu(
-        cls,
-        model_name: str,
-        trust_remote_code: bool,
-        torch_dtype: Any = None,
-        **kwargs
+        cls, model_name: str, trust_remote_code: bool, torch_dtype: Any = None, **kwargs
     ) -> Any:
         """Load model on CPU using transformers."""
         import torch
@@ -219,7 +214,7 @@ class AutoModelForCausalLM:
             trust_remote_code=trust_remote_code,
             torch_dtype=torch_dtype,
             device_map="cpu",
-            **kwargs
+            **kwargs,
         )
         logger.info(f"Loaded model on CPU: {model_name}")
         return model
@@ -240,6 +235,7 @@ class AutoTokenizer:
         import sys
 
         from rm_abstract.auto import disable_hooks, enable_hooks
+
         disable_hooks()
 
         try:

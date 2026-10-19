@@ -7,13 +7,14 @@ Supports:
     python -m rm_abstract list-devices
 """
 
-import sys
 import argparse
+import sys
 
 
 def cmd_run(args):
     """Run a script with hooks enabled."""
     from rm_abstract.run import main
+
     sys.argv = ["rm_abstract.run"] + args
     main()
 
@@ -54,7 +55,9 @@ def main():
 
     # run command
     run_parser = subparsers.add_parser("run", help="Run a script with hooks enabled")
-    run_parser.add_argument("script_args", nargs=argparse.REMAINDER, help="Script and arguments")
+    run_parser.add_argument(
+        "script_args", nargs=argparse.REMAINDER, help="Script and arguments"
+    )
 
     # info command
     subparsers.add_parser("info", help="Show RM Abstract information")
