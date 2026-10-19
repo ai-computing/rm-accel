@@ -1,0 +1,6 @@
+apiVersion: v2
+name: rm-abstract-node
+description: ai-rm L1 node daemon - publishes each node's accelerators as AcceleratorProfiles and node labels
+type: application
+version: 0.3.0
+appVersion: "0.3.0"

@@ -9,9 +9,11 @@ install:
   - python -m pip install -e .
 test:
   - python -m pytest -q -m "not gpu and not slow" tests/unit
+  - python -m rm_core.conformance airm.accelerator_providers rm-abstract
 deploy:
-  target: none
+  target: k8s
   manifests: null
+  chart: deploy/helm/rm-abstract-node
   image: null
 config:
   env_example: null
@@ -19,3 +21,9 @@ interfaces:
   provides: [Accelerator]
   uses: []
 kpi: [이종자원수]
+# protocol v0.1 (ai-rm docs/integration-guide.md section 2.7)
+protocol: "0.1"
+adapters:
+  - group: airm.accelerator_providers
+    name: rm-abstract
+metrics: [accelerators]
