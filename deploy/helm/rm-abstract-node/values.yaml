@@ -24,6 +24,15 @@ serviceAccount:
   create: true
   name: ""
 
+# Site extension points (all empty by default). A site without the published image can run a
+# stock Python image: an init container installs rm-abstract[k8s] into a volume on PYTHONPATH,
+# and the host's vendor tools are mounted read-only and appended to PATH.
+command: []            # default: python -m rm_abstract.airm.daemon
+extraEnv: []           # [{name, value}] appended to the daemon's env
+initContainers: []     # pod initContainers, verbatim
+extraVolumes: []       # pod volumes, verbatim
+extraVolumeMounts: []  # daemon volumeMounts, verbatim
+
 nodeAffinity: {}       # default: every node; restrict with airm.ai-computing.io/<vendor>.<model> labels
 tolerations:
   - operator: Exists   # run on tainted accelerator nodes too
