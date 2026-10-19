@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.2 / Chart 0.5.0 — 2026-10-19
+
+### Added
+- Node daemon image `ghcr.io/ai-computing/rm-accel` ([`Dockerfile`](Dockerfile)): python:3.11-slim with
+  rm-abstract (no torch), rm-core v0.1.1, the Kubernetes client and numpy. Vendor tools are not baked in.
+- Workflow `Image`: builds and smoke-tests the image on pull requests, publishes `:master` from master and
+  `:X.Y.Z` / `:X.Y` from `vX.Y.Z` tags (GITHUB_TOKEN, `packages: write`).
+- Chart value `hostBin` (default `/usr/bin`): the host's vendor tools mounted read-only at `/host/usr/bin`,
+  which is on the image's `PATH`.
+
+### Changed
+- Chart default image `ghcr.io/ai-computing/rm-accel` (was the never-published `rm-abstract-node`), tag =
+  `appVersion` 0.4.2. Sites no longer need the init-container workaround; the extension points stay.
+
 ## Chart 0.4.2 — 2026-10-19
 
 Found while running the daemon on the live cluster (ai-rm end-to-end run).

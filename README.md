@@ -13,7 +13,7 @@
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm layer L1"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="Protocol v0.1"></a>
   <a href="https://github.com/ai-computing/rm-accel/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="Release v0.4.1"></a>
-  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.4.2-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.4.2"></a>
+  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.5.0-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.5.0"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="License: BSD-3-Clause"></a>
 </p>
@@ -127,28 +127,34 @@ Applying to a cluster needs the Kubernetes client: `pip install -e ".[k8s]"`.
 [`deploy/helm/rm-abstract-node`](deploy/helm/rm-abstract-node) installs the daemon as a DaemonSet with a
 ServiceAccount and ClusterRole (`acceleratorprofiles` CRUD, `nodes` get/patch). The `AcceleratorProfile` CRD
 ships with [rm-core](https://github.com/ai-computing/rm-core/tree/v0.1.1/k8s) and is installed by llm-d-setup / the
-ai-rm umbrella. Set the image for your site with `image.repository` / `image.tag`.
+ai-rm umbrella chart. The image is `ghcr.io/ai-computing/rm-accel` (tag = chart `appVersion`), built from the
+[`Dockerfile`](Dockerfile) and published by the [Image workflow](.github/workflows/image.yml) on `master` and on `v*` tags.
 
 ```bash
-helm template rm-abstract-node deploy/helm/rm-abstract-node --set image.repository=<registry>/rm-abstract-node
+helm template rm-abstract-node deploy/helm/rm-abstract-node                      # published image, host tools
+helm template rm-abstract-node deploy/helm/rm-abstract-node --set provider=sim --set hostBin= --set hostDev=false
+docker build -t rm-accel:dev . && docker run --rm rm-accel:dev --provider sim --once --dry-run
 ```
 
 <details>
-<summary><b>Chart 0.4.2: container runtime and site extension points</b></summary>
+<summary><b>Chart 0.5.0: image, container runtime and site extension points</b></summary>
 <br>
 
 | Value | Default | Meaning |
 |---|---|---|
 | `privileged` | `true` | Vendor tools read the device nodes |
 | `hostDev` | `true` | Mount the host's `/dev` live, so a device the driver re-creates (e.g. an ATOM released by a pod) stays in discovery |
+| `hostBin` | `/usr/bin` | Host directory with the vendor tools, mounted read-only at `/host/usr/bin` (on the image's `PATH`); `""` disables |
 | `command` | `[]` | Override the daemon command (default `python -m rm_abstract.airm.daemon`) |
 | `extraEnv` | `[]` | `{name, value}` entries appended to the daemon's env |
 | `initContainers` | `[]` | Pod init containers, verbatim |
 | `extraVolumes` / `extraVolumeMounts` | `[]` | Pod volumes / daemon volume mounts, verbatim |
 
-The root filesystem is read-only with a writable `/tmp` (`rbln-stat` unpacks itself under `TMPDIR`). Until the
-`rm-abstract-node` image is published, the extension points let a site run the daemon from a stock Python image.
-See [`values.yaml`](deploy/helm/rm-abstract-node/values.yaml) and the [changelog](CHANGELOG.md).
+The image carries rm-abstract (without torch), rm-core, the Kubernetes client and numpy, but no vendor tools: those
+must match the host's driver, so they come from the host through `hostBin`. The root filesystem is read-only with a
+writable `/tmp` (`rbln-stat` unpacks itself under `TMPDIR`). The extension points are no longer needed for the
+published image; they remain for sites with their own image or packages. See
+[`values.yaml`](deploy/helm/rm-abstract-node/values.yaml) and the [changelog](CHANGELOG.md).
 </details>
 
 ## 🔁 vLLM-compatible API
@@ -248,7 +254,7 @@ Guides: [contributing](docs/CONTRIBUTING.md) · [adding a device](docs/ADDING_RE
 ## 🗺 Roadmap
 
 - [x] rm-core v0.1 `AcceleratorProvider`, node daemon, Helm chart
-- [ ] Published `rm-abstract-node` container image
+- [x] Node daemon container image `ghcr.io/ai-computing/rm-accel`
 - [ ] Validated RNGD / ATOM inference through the `LLM` API
 - [ ] Engine-facing backend adapters for Optimus Prime (see the ai-rm [engine plan](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md))
 - [ ] Wider device model: partitions, interconnect topology, live utilization

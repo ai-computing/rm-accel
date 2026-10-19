@@ -13,7 +13,7 @@
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm L1 계층"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="프로토콜 v0.1"></a>
   <a href="https://github.com/ai-computing/rm-accel/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="릴리스 v0.4.1"></a>
-  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.4.2-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.4.2"></a>
+  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.5.0-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.5.0"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="라이선스: BSD-3-Clause"></a>
 </p>
@@ -127,28 +127,34 @@ for acc in provider.discover():
 [`deploy/helm/rm-abstract-node`](deploy/helm/rm-abstract-node)는 데몬을 DaemonSet으로 설치하고 ServiceAccount와
 ClusterRole(`acceleratorprofiles` CRUD, `nodes` get/patch)을 만듭니다. `AcceleratorProfile` CRD는
 [rm-core](https://github.com/ai-computing/rm-core/tree/v0.1.1/k8s)에 있고 llm-d-setup / ai-rm umbrella가 설치합니다.
-이미지는 사이트별로 `image.repository` / `image.tag`로 지정합니다.
+이미지는 `ghcr.io/ai-computing/rm-accel`(태그 = chart `appVersion`)이며, [`Dockerfile`](Dockerfile)로 빌드되어
+[Image 워크플로](.github/workflows/image.yml)가 `master`와 `v*` 태그에서 배포합니다.
 
 ```bash
-helm template rm-abstract-node deploy/helm/rm-abstract-node --set image.repository=<registry>/rm-abstract-node
+helm template rm-abstract-node deploy/helm/rm-abstract-node                      # 배포 이미지, 호스트 도구
+helm template rm-abstract-node deploy/helm/rm-abstract-node --set provider=sim --set hostBin= --set hostDev=false
+docker build -t rm-accel:dev . && docker run --rm rm-accel:dev --provider sim --once --dry-run
 ```
 
 <details>
-<summary><b>Chart 0.4.2: 컨테이너 실행 환경과 사이트 확장 지점</b></summary>
+<summary><b>Chart 0.5.0: 이미지, 컨테이너 실행 환경과 사이트 확장 지점</b></summary>
 <br>
 
 | 값 | 기본값 | 의미 |
 |---|---|---|
 | `privileged` | `true` | 벤더 도구가 장치 노드를 읽기 위해 필요 |
 | `hostDev` | `true` | 호스트 `/dev`를 실시간으로 마운트해, 드라이버가 다시 만든 장치(예: pod가 놓아준 ATOM)도 계속 탐지되게 함 |
+| `hostBin` | `/usr/bin` | 벤더 도구가 있는 호스트 디렉터리, `/host/usr/bin`에 읽기 전용으로 마운트(이미지 `PATH`에 포함); `""`이면 끔 |
 | `command` | `[]` | 데몬 명령 재정의 (기본 `python -m rm_abstract.airm.daemon`) |
 | `extraEnv` | `[]` | 데몬 env에 덧붙일 `{name, value}` 항목 |
 | `initContainers` | `[]` | pod init container, 그대로 반영 |
 | `extraVolumes` / `extraVolumeMounts` | `[]` | pod volume / 데몬 volumeMount, 그대로 반영 |
 
-루트 파일시스템은 읽기 전용이고 `/tmp`만 쓰기 가능합니다(`rbln-stat`이 `TMPDIR` 아래에 스스로 압축을 풉니다).
-`rm-abstract-node` 이미지가 배포되기 전까지는 확장 지점을 써서 일반 Python 이미지로 데몬을 실행할 수 있습니다.
-[`values.yaml`](deploy/helm/rm-abstract-node/values.yaml)과 [변경 이력](CHANGELOG.md)을 참고하세요.
+이미지에는 rm-abstract(torch 제외), rm-core, Kubernetes 클라이언트, numpy가 들어 있고 벤더 도구는 없습니다. 도구는
+호스트 드라이버와 맞아야 하므로 `hostBin`으로 호스트에서 가져옵니다. 루트 파일시스템은 읽기 전용이고 `/tmp`만 쓰기
+가능합니다(`rbln-stat`이 `TMPDIR` 아래에 스스로 압축을 풉니다). 배포 이미지에는 확장 지점이 더 이상 필요 없고, 자체
+이미지나 패키지를 쓰는 사이트를 위해 남겨 둡니다. [`values.yaml`](deploy/helm/rm-abstract-node/values.yaml)과
+[변경 이력](CHANGELOG.md)을 참고하세요.
 </details>
 
 ## 🔁 vLLM 호환 API
@@ -246,7 +252,7 @@ bash scripts/run_examples.sh                    # 예제 전체 실행 (모델·
 ## 🗺 로드맵
 
 - [x] rm-core v0.1 `AcceleratorProvider`, 노드 데몬, Helm chart
-- [ ] `rm-abstract-node` 컨테이너 이미지 배포
+- [x] 노드 데몬 컨테이너 이미지 `ghcr.io/ai-computing/rm-accel`
 - [ ] `LLM` API를 통한 RNGD / ATOM 추론 검증
 - [ ] Optimus Prime용 엔진 백엔드 어댑터 (ai-rm [엔진 통합 설계](https://github.com/ai-computing/ai-rm/blob/master/docs/ko/engine-integration.md))
 - [ ] 장치 모델 확장: 파티션, 인터커넥트 토폴로지, 실시간 사용률

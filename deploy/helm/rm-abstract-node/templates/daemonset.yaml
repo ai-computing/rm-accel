@@ -41,7 +41,7 @@ spec:
           command:
             {{- toYaml .Values.command | nindent 12 }}
           {{- else }}
-          command: ["python", "-m", "rm_abstract.airm.daemon"]
+          command: ["python", "-m", "rm_abstract.airm.daemon"]  # the image's entrypoint
           {{- end }}
           env:
             - name: AIRM_NODE_NAME
@@ -79,6 +79,12 @@ spec:
             - name: dev
               mountPath: /dev
             {{- end }}
+            {{- if .Values.hostBin }}
+            # host vendor tools, on the image's PATH
+            - name: host-bin
+              mountPath: /host/usr/bin
+              readOnly: true
+            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -89,6 +95,12 @@ spec:
         - name: dev
           hostPath:
             path: /dev
+        {{- end }}
+        {{- if .Values.hostBin }}
+        - name: host-bin
+          hostPath:
+            path: {{ .Values.hostBin }}
+            type: Directory
         {{- end }}
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
