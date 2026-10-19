@@ -19,6 +19,9 @@ removeAfter: 3         # remove a device's profile after this many discoveries w
 
 # Vendor tools read the device nodes, which needs a privileged container.
 privileged: true
+# Mount the host's /dev live. A privileged container otherwise sees /dev as it was at start, and a
+# device that a driver re-creates (e.g. after a pod releases an ATOM) drops out of discovery.
+hostDev: true
 
 serviceAccount:
   create: true
