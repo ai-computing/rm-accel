@@ -5,10 +5,10 @@ Handles conversion between various input formats used by different backends.
 Eliminates duplicated input handling logic across GPU, NPU, and CPU backends.
 """
 
+import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
-import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -242,7 +242,9 @@ class InputAdapter:
             original_format=InputFormat.TOKEN_IDS_DICT,
         )
 
-    def _adapt_token_ids(self, token_ids: Any, tokenizer: Optional[Any]) -> AdaptedInput:
+    def _adapt_token_ids(
+        self, token_ids: Any, tokenizer: Optional[Any]
+    ) -> AdaptedInput:
         """Adapt token ID tensor or list"""
         # Try to decode to text prompts
         prompts = self._decode_token_ids(token_ids, tokenizer)

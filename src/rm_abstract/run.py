@@ -21,10 +21,10 @@ Examples:
     python -m rm_abstract.run --device=rbln serve.py --port 8000
 """
 
-import sys
-import os
 import argparse
+import os
 import runpy
+import sys
 
 
 def main():
@@ -38,13 +38,15 @@ def main():
         help="Python script to run",
     )
     parser.add_argument(
-        "--device", "-d",
+        "--device",
+        "-d",
         default="auto",
         choices=["auto", "cpu", "nvidia", "gpu", "rbln", "furiosa"],
         help="Device selection (default: auto)",
     )
     parser.add_argument(
-        "--engine", "-e",
+        "--engine",
+        "-e",
         default="vllm",
         choices=["vllm", "triton", "torchserve"],
         help="Serving engine (default: vllm)",
@@ -60,7 +62,8 @@ def main():
         help="Disable transformers import hooking",
     )
     parser.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Enable verbose logging",
     )
@@ -80,6 +83,7 @@ def main():
     # Setup logging
     if args.verbose:
         import logging
+
         logging.basicConfig(
             level=logging.DEBUG,
             format="[RM Abstract] %(levelname)s: %(message)s",
@@ -92,7 +96,9 @@ def main():
     sys.argv = [args.script] + script_args
 
     # Run the script
-    print(f"[RM Abstract] Running {args.script} with device={args.device}, engine={args.engine}")
+    print(
+        f"[RM Abstract] Running {args.script} with device={args.device}, engine={args.engine}"
+    )
 
     try:
         runpy.run_path(args.script, run_name="__main__")

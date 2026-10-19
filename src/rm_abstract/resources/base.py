@@ -4,11 +4,11 @@ Base Resource Class
 Defines the common interface for all hardware resources.
 """
 
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type
-import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -129,9 +129,7 @@ class Resource(ABC):
         ...
 
     @abstractmethod
-    def prepare_model(
-        self, model: Any, config: Optional[Dict[str, Any]] = None
-    ) -> Any:
+    def prepare_model(self, model: Any, config: Optional[Dict[str, Any]] = None) -> Any:
         """
         Prepare model for execution on this resource.
 

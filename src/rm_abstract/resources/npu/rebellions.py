@@ -5,16 +5,16 @@ NPU resource implementation for Rebellions ATOM chips.
 Supports two modes: vLLM-RBLN and Optimum-RBLN.
 """
 
-from enum import Enum
-from typing import Any, Dict, Literal, Optional
-from pathlib import Path
-import os
 import logging
+import os
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, Literal, Optional
 
-from ..base import NPUResource, ResourceType, ResourceInfo, ResourceCapability
 from ...common.input_adapter import InputAdapter
+from ...common.model_converter import ModelConverter
 from ...common.output_adapter import OutputAdapter
-from ...common.model_converter import ModelConverter, ConversionConfig
+from ..base import NPUResource, ResourceCapability, ResourceInfo, ResourceType
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +98,7 @@ class RebellionsATOM(NPUResource):
     def _check_vllm_rbln_static() -> bool:
         """Check if vLLM-RBLN is available (static version)"""
         try:
-            import vllm_rbln
+            import vllm_rbln  # noqa: F401
 
             return True
         except ImportError:
@@ -106,7 +106,7 @@ class RebellionsATOM(NPUResource):
 
         # Check rebel SDK + vLLM
         try:
-            import rebel
+            import rebel  # noqa: F401
             import vllm
 
             return True
@@ -115,8 +115,8 @@ class RebellionsATOM(NPUResource):
 
         # Check rbln SDK + vLLM
         try:
-            import rbln
-            import vllm
+            import rbln  # noqa: F401
+            import vllm  # noqa: F401
 
             return True
         except ImportError:
@@ -128,12 +128,12 @@ class RebellionsATOM(NPUResource):
     def _check_optimum_rbln_static() -> bool:
         """Check if Optimum-RBLN is available (static version)"""
         try:
-            from optimum.rbln import RBLNModelForCausalLM
+            from optimum.rbln import RBLNModelForCausalLM  # noqa: F401
 
             return True
         except ImportError:
             try:
-                import optimum_rbln
+                import optimum_rbln  # noqa: F401
 
                 return True
             except ImportError:
@@ -200,7 +200,10 @@ class RebellionsATOM(NPUResource):
         else:
             if self._requested_mode == RBLNMode.VLLM and not self._check_vllm_rbln():
                 raise RuntimeError("vLLM-RBLN not available")
-            if self._requested_mode == RBLNMode.OPTIMUM and not self._check_optimum_rbln():
+            if (
+                self._requested_mode == RBLNMode.OPTIMUM
+                and not self._check_optimum_rbln()
+            ):
                 raise RuntimeError("Optimum-RBLN not available")
             return self._requested_mode
 
@@ -220,9 +223,7 @@ class RebellionsATOM(NPUResource):
             logger.error(f"Failed to initialize Rebellions ATOM: {e}")
             raise
 
-    def prepare_model(
-        self, model: Any, config: Optional[Dict[str, Any]] = None
-    ) -> Any:
+    def prepare_model(self, model: Any, config: Optional[Dict[str, Any]] = None) -> Any:
         """Prepare model for RBLN NPU"""
         if not self._initialized:
             self.initialize()
@@ -261,12 +262,11 @@ class RebellionsATOM(NPUResource):
 
             # Add RBLN device
             try:
-                import vllm_rbln
+                import vllm_rbln  # noqa: F401
 
                 llm_kwargs["device"] = "rbln"
             except ImportError:
                 try:
-                    from vllm.config import DeviceConfig
 
                     llm_kwargs["device"] = "rbln"
                 except Exception:
@@ -389,7 +389,9 @@ class RebellionsATOM(NPUResource):
             temperature = kwargs.get("temperature", 1.0)
             top_p = kwargs.get("top_p", 1.0)
 
-            input_dict = inputs if isinstance(inputs, dict) else {"input_ids": inputs.input_ids}
+            input_dict = (
+                inputs if isinstance(inputs, dict) else {"input_ids": inputs.input_ids}
+            )
             outputs = model.generate(
                 **input_dict,
                 max_new_tokens=max_new_tokens,
@@ -400,7 +402,11 @@ class RebellionsATOM(NPUResource):
             return outputs
         else:
             with torch.no_grad():
-                input_dict = inputs if isinstance(inputs, dict) else {"input_ids": inputs.input_ids}
+                input_dict = (
+                    inputs
+                    if isinstance(inputs, dict)
+                    else {"input_ids": inputs.input_ids}
+                )
                 return model(**input_dict)
 
     def compile_model(self, model: Any, **kwargs) -> Any:

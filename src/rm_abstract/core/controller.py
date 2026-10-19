@@ -5,12 +5,12 @@ Core controller responsible for device selection and resource management.
 Uses the plugin registry system for resource discovery.
 """
 
-from typing import Any, Dict, Optional, Type
 import logging
+from typing import Any, Dict, Optional, Type
 
+from ..registry import PluginType, discover_resources, get_registry
+from ..resources.base import Resource
 from .config import Config
-from ..resources.base import Resource, ResourceInfo
-from ..registry import PluginRegistry, PluginType, get_registry, discover_resources
 
 logger = logging.getLogger(__name__)
 

@@ -5,17 +5,16 @@ Model serving using PyTorch TorchServe.
 Supports automatic MAR packaging and server management.
 """
 
-import os
 import atexit
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
 import logging
+import os
 import subprocess
 import time
+from dataclasses import dataclass
 from pathlib import Path
-import tempfile
+from typing import Any, Dict, List, Optional
 
-from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from .base import DeviceTarget, ServingConfig, ServingEngine, ServingEngineType
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +100,7 @@ class TorchServeEngine(ServingEngine):
         """Check if TorchServe server is already running"""
         try:
             import requests
+
             response = requests.get(f"http://localhost:{port}/ping", timeout=2)
             return response.status_code == 200
         except Exception:
@@ -154,6 +154,7 @@ class TorchServeEngine(ServingEngine):
 
         # Copy MAR to model store
         import shutil
+
         safe_name = model_name.replace("/", "_")
         dest_mar = self._model_store_path / f"{safe_name}.mar"
         if Path(mar_path).exists() and not dest_mar.exists():
@@ -164,6 +165,7 @@ class TorchServeEngine(ServingEngine):
 
         # Load tokenizer for inference
         from transformers import AutoTokenizer
+
         self._tokenizer = AutoTokenizer.from_pretrained(model_name)
         if self._tokenizer.pad_token is None:
             self._tokenizer.pad_token = self._tokenizer.eos_token
@@ -190,8 +192,10 @@ class TorchServeEngine(ServingEngine):
         cmd = [
             "torchserve",
             "--start",
-            "--model-store", model_store,
-            "--ts-config", str(self._config_file),
+            "--model-store",
+            model_store,
+            "--ts-config",
+            str(self._config_file),
             "--ncs",  # No config snapshot
         ]
 
@@ -285,7 +289,7 @@ load_models=all
         url = f"http://localhost:{self.ts_config.inference_port}/ping"
         start_time = time.time()
 
-        print(f"[TorchServe] Starting server...", flush=True)
+        print("[TorchServe] Starting server...", flush=True)
         check_interval = 1
         dots = 0
 
@@ -304,10 +308,14 @@ load_models=all
             # Progress indicator
             dots = (dots + 1) % 4
             progress = "." * (dots + 1)
-            print(f"\r[TorchServe] Waiting for server{progress.ljust(4)} ({elapsed}/{timeout}s)", end="", flush=True)
+            print(
+                f"\r[TorchServe] Waiting for server{progress.ljust(4)} ({elapsed}/{timeout}s)",
+                end="",
+                flush=True,
+            )
             time.sleep(check_interval)
 
-        print(f"\n[TorchServe] Timeout!", flush=True)
+        print("\n[TorchServe] Timeout!", flush=True)
         raise TimeoutError(f"TorchServe did not become ready within {timeout}s")
 
     def _register_model(self) -> None:
@@ -389,7 +397,9 @@ load_models=all
         import requests
 
         safe_name = self.config.model_name.replace("/", "_")
-        url = f"http://localhost:{self.ts_config.inference_port}/predictions/{safe_name}"
+        url = (
+            f"http://localhost:{self.ts_config.inference_port}/predictions/{safe_name}"
+        )
 
         # Prepare input
         if isinstance(inputs, str):
@@ -400,10 +410,12 @@ load_models=all
             data = {"data": inputs}
 
         # Add generation parameters
-        data.update({
-            "max_tokens": kwargs.get("max_tokens", 100),
-            "temperature": kwargs.get("temperature", 0.7),
-        })
+        data.update(
+            {
+                "max_tokens": kwargs.get("max_tokens", 100),
+                "temperature": kwargs.get("temperature", 0.7),
+            }
+        )
 
         try:
             response = requests.post(url, json=data, timeout=60)
@@ -424,6 +436,7 @@ load_models=all
         if self._is_running:
             try:
                 import requests
+
                 response = requests.get(
                     f"http://localhost:{self.ts_config.metrics_port}/metrics",
                     timeout=5,

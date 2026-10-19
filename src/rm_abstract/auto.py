@@ -17,10 +17,10 @@ Configuration Options:
     engine: vllm, triton, torchserve
 """
 
-import sys
-import os
 import logging
-from importlib.abc import MetaPathFinder, Loader
+import os
+import sys
+from importlib.abc import Loader, MetaPathFinder
 from importlib.machinery import ModuleSpec
 from types import ModuleType
 from typing import Optional
@@ -101,7 +101,9 @@ def use(
     disable_hooks()
     enable_hooks()
 
-    logger.info(f"RM Abstract configured: device={_config['device']}, engine={_config['engine']}, hook_vllm={_config['hook_vllm']}")
+    logger.info(
+        f"RM Abstract configured: device={_config['device']}, engine={_config['engine']}, hook_vllm={_config['hook_vllm']}"
+    )
 
 
 def get_config() -> dict:
@@ -119,6 +121,7 @@ class _VLLMCompatModule(ModuleType):
 
     def __getattr__(self, name):
         from rm_abstract.compat import vllm_compat
+
         return getattr(vllm_compat, name)
 
 
@@ -139,7 +142,10 @@ class _TransformersCompatModule(ModuleType):
                     sys.meta_path.remove(finder)
                     try:
                         import importlib
-                        self._original_transformers = importlib.import_module("transformers")
+
+                        self._original_transformers = importlib.import_module(
+                            "transformers"
+                        )
                     finally:
                         sys.meta_path.insert(0, finder)
                     break
@@ -148,6 +154,7 @@ class _TransformersCompatModule(ModuleType):
     def __getattr__(self, name):
         if name in ("AutoModelForCausalLM", "AutoTokenizer"):
             from rm_abstract.compat import transformers_compat
+
             return getattr(transformers_compat, name)
 
         original = self._get_original()

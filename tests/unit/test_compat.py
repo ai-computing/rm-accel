@@ -1,8 +1,7 @@
 """Tests for compatibility layer (legacy compat module)."""
 
 import os
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class TestCompatSamplingParams:
@@ -52,7 +51,7 @@ class TestCompatRequestOutput:
 
     def test_request_output_creation(self):
         """Test creating RequestOutput."""
-        from rm_abstract.compat.vllm_compat import RequestOutput, CompletionOutput
+        from rm_abstract.compat.vllm_compat import CompletionOutput, RequestOutput
 
         output = RequestOutput(
             request_id="0",
@@ -104,8 +103,11 @@ class TestCompatTransformers:
         from rm_abstract.compat import transformers_compat as tc
 
         # RM_DEVICE wins over host detection, so the result must not depend on the host.
-        with patch.dict(os.environ, {"RM_DEVICE": "cpu"}), patch.object(
-            tc, "_detect_device", side_effect=AssertionError("must not auto-detect")
+        with (
+            patch.dict(os.environ, {"RM_DEVICE": "cpu"}),
+            patch.object(
+                tc, "_detect_device", side_effect=AssertionError("must not auto-detect")
+            ),
         ):
             assert tc._resolve_device(tc._get_device()) == "cpu"
 
@@ -119,6 +121,7 @@ class TestCompatTransformers:
     def test_explicit_device(self):
         """Test explicit device selection."""
         from rm_abstract.compat.transformers_compat import _resolve_device
+
         assert _resolve_device("rbln") == "rbln"
         assert _resolve_device("nvidia:0") == "nvidia"
 
@@ -145,10 +148,10 @@ class TestCompatModuleExports:
         """Test compat __init__ exports."""
         from rm_abstract.compat import (
             LLM,
-            SamplingParams,
-            RequestOutput,
             AutoModelForCausalLM,
             AutoTokenizer,
+            RequestOutput,
+            SamplingParams,
         )
 
         assert LLM is not None

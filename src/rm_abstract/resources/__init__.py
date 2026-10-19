@@ -11,7 +11,7 @@ Structure:
 - cpu/: CPU fallback resource
 """
 
-from .base import Resource, ResourceInfo, ResourceCapability
+from .base import Resource, ResourceCapability, ResourceInfo
 
 __all__ = [
     "Resource",

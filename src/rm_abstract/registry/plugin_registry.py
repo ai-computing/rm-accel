@@ -5,10 +5,10 @@ Centralized registry for all plugins (resources, engines).
 Eliminates hardcoded backend/engine names throughout the codebase.
 """
 
+import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Type
-import logging
 
 logger = logging.getLogger(__name__)
 

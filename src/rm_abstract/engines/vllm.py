@@ -5,10 +5,10 @@ High-performance LLM serving using vLLM.
 Supports GPU (CUDA) and NPU (RBLN) backends.
 """
 
-from typing import Any, Dict, List, Optional, Union
 import logging
+from typing import Any, List, Union
 
-from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from .base import DeviceTarget, ServingConfig, ServingEngine, ServingEngineType
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class VLLMEngine(ServingEngine):
     def is_available(cls) -> bool:
         """Check if vLLM is available"""
         try:
-            import vllm
+            import vllm  # noqa: F401
 
             return True
         except ImportError:
@@ -67,12 +67,12 @@ class VLLMEngine(ServingEngine):
 
         # Check RBLN NPU
         try:
-            import vllm_rbln
+            import vllm_rbln  # noqa: F401
 
             devices.append(DeviceTarget.NPU_RBLN)
         except ImportError:
             try:
-                import rebel
+                import rebel  # noqa: F401
 
                 devices.append(DeviceTarget.NPU_RBLN)
             except ImportError:
@@ -103,12 +103,11 @@ class VLLMEngine(ServingEngine):
         # Handle RBLN NPU device
         if self.config.device == DeviceTarget.NPU_RBLN:
             try:
-                import vllm_rbln
+                import vllm_rbln  # noqa: F401
 
                 llm_kwargs["device"] = "rbln"
             except ImportError:
                 try:
-                    from vllm.config import DeviceConfig
 
                     llm_kwargs["device"] = "rbln"
                 except Exception:
