@@ -1,0 +1,30 @@
+# rm-abstract-node: ai-rm L1 node daemon (python -m rm_abstract.airm.daemon).
+# The AcceleratorProfile CRD comes from rm-core (k8s/acceleratorprofile.crd.yaml), installed by
+# the ai-rm umbrella chart / llm-d-setup. Site values go in ai-rm deploy/clusters/<name>/ overrides.
+enabled: true
+
+image:
+  repository: ghcr.io/ai-computing/rm-abstract-node  # rm-abstract[k8s] + vendor tools (nvidia-smi, furiosa-smi, rbln-stat); override per site
+  tag: ""              # default: chart appVersion
+  pullPolicy: IfNotPresent
+
+airm:
+  kvTransport: ""      # unused by this chart (L1 publishes devices only)
+  placement: ""        # unused by this chart
+  metricsPort: 9400    # airm_accelerators on /metrics; 0 disables
+
+provider: rm-abstract  # entry point name in airm.accelerator_providers ("sim" for a simulated cluster)
+intervalSeconds: 60    # seconds between discoveries
+removeAfter: 3         # remove a device's profile after this many discoveries without it
+
+# Vendor tools read the device nodes, which needs a privileged container.
+privileged: true
+
+serviceAccount:
+  create: true
+  name: ""
+
+nodeAffinity: {}       # default: every node; restrict with airm.ai-computing.io/<vendor>.<model> labels
+tolerations:
+  - operator: Exists   # run on tainted accelerator nodes too
+resources: {}
