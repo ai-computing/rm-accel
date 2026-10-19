@@ -4,15 +4,15 @@ FuriosaAI RNGD NPU Resource
 NPU resource implementation for FuriosaAI RNGD chips.
 """
 
-from typing import Any, Dict, Optional
-from pathlib import Path
-import os
 import logging
+import os
+from pathlib import Path
+from typing import Any, Dict, Optional
 
-from ..base import NPUResource, ResourceType, ResourceInfo, ResourceCapability
 from ...common.input_adapter import InputAdapter
+from ...common.model_converter import ConversionConfig, ModelConverter
 from ...common.output_adapter import OutputAdapter
-from ...common.model_converter import ModelConverter, ConversionConfig
+from ..base import NPUResource, ResourceCapability, ResourceInfo, ResourceType
 
 logger = logging.getLogger(__name__)
 
@@ -102,9 +102,7 @@ class FuriosaRNGD(NPUResource):
             logger.error(f"Failed to initialize FuriosaAI RNGD: {e}")
             raise
 
-    def prepare_model(
-        self, model: Any, config: Optional[Dict[str, Any]] = None
-    ) -> Any:
+    def prepare_model(self, model: Any, config: Optional[Dict[str, Any]] = None) -> Any:
         """
         Prepare model for Furiosa NPU.
 
@@ -124,11 +122,19 @@ class FuriosaRNGD(NPUResource):
         compile_config = {**self.compile_options, **config}
 
         # Generate cache key
-        cache_key = self._model_converter.get_cache_key(model, ConversionConfig(**{
-            k: v for k, v in compile_config.items()
-            if k in ["batch_size", "seq_length", "opset_version"]
-        }))
-        cache_path = os.path.join(self.cache_dir, f"{cache_key}.{self.compiled_model_extension}")
+        cache_key = self._model_converter.get_cache_key(
+            model,
+            ConversionConfig(
+                **{
+                    k: v
+                    for k, v in compile_config.items()
+                    if k in ["batch_size", "seq_length", "opset_version"]
+                }
+            ),
+        )
+        cache_path = os.path.join(
+            self.cache_dir, f"{cache_key}.{self.compiled_model_extension}"
+        )
 
         # Check cache
         if os.path.exists(cache_path):
@@ -219,15 +225,13 @@ class FuriosaRNGD(NPUResource):
     def _execute_forward(self, model: Any, inputs: Any, **kwargs) -> Any:
         """Execute single forward pass on NPU"""
         from furiosa import runtime
-        import numpy as np
 
         # Convert inputs to numpy
         if hasattr(inputs, "numpy"):
             inputs = inputs.numpy()
         elif isinstance(inputs, dict):
             inputs = {
-                k: v.numpy() if hasattr(v, "numpy") else v
-                for k, v in inputs.items()
+                k: v.numpy() if hasattr(v, "numpy") else v for k, v in inputs.items()
             }
 
         # Create runner if needed

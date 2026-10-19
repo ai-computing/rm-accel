@@ -15,10 +15,10 @@ Usage:
     output = llm.generate("Hello", SamplingParams())
 """
 
-import os
 import logging
-from typing import Any, Dict, List, Optional, Union
+import os
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ def _is_engine_available(engine: str) -> bool:
     if engine == "vllm":
         try:
             import builtins
+
             builtins.__import__("vllm", globals(), locals(), [], 0)
             return True
         except ImportError:
@@ -45,6 +46,7 @@ def _is_engine_available(engine: str) -> bool:
     elif engine == "triton":
         try:
             import subprocess
+
             result = subprocess.run(
                 ["docker", "--version"],
                 capture_output=True,
@@ -56,6 +58,7 @@ def _is_engine_available(engine: str) -> bool:
     elif engine == "torchserve":
         try:
             import subprocess
+
             result = subprocess.run(
                 ["torchserve", "--version"],
                 capture_output=True,
@@ -74,6 +77,7 @@ class SamplingParams:
 
     Works across all backends with automatic parameter translation.
     """
+
     n: int = 1
     best_of: Optional[int] = None
     presence_penalty: float = 0.0
@@ -110,6 +114,7 @@ class SamplingParams:
 @dataclass
 class CompletionOutput:
     """Single completion output."""
+
     index: int
     text: str
     token_ids: List[int] = field(default_factory=list)
@@ -120,6 +125,7 @@ class CompletionOutput:
 @dataclass
 class RequestOutput:
     """vLLM-compatible request output."""
+
     request_id: str
     prompt: str
     prompt_token_ids: List[int]
@@ -168,7 +174,7 @@ class LLM:
         tensor_parallel_size: int = 1,
         dtype: str = "auto",
         trust_remote_code: bool = False,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize LLM.
@@ -229,18 +235,21 @@ class LLM:
         # Auto-detection priority: NPU > GPU > CPU
         try:
             import rebel  # noqa: F401
+
             return "rbln"
         except ImportError:
             pass
 
         try:
             import furiosa_sdk  # noqa: F401
+
             return "furiosa"
         except ImportError:
             pass
 
         try:
             import torch
+
             if torch.cuda.is_available():
                 return "nvidia"
         except ImportError:
@@ -255,6 +264,7 @@ class LLM:
             # Directly use real vllm module
             # We access it through __builtins__ import to bypass any hooks
             import builtins
+
             real_import = builtins.__import__
             vllm_module = real_import("vllm", globals(), locals(), [], 0)
 
@@ -267,7 +277,7 @@ class LLM:
                 tensor_parallel_size=self.tensor_parallel_size,
                 dtype=self.dtype,
                 trust_remote_code=self.trust_remote_code,
-                **self.extra_kwargs
+                **self.extra_kwargs,
             )
             self._sampling_params_cls = VLLMSamplingParams
             logger.info(f"Initialized vLLM backend for model: {self.model_name}")
@@ -282,6 +292,7 @@ class LLM:
         try:
             # Try vllm-rbln first - use builtins import to bypass hooks
             import builtins
+
             real_import = builtins.__import__
             vllm_module = real_import("vllm", globals(), locals(), [], 0)
 
@@ -292,7 +303,7 @@ class LLM:
                 tokenizer=self.tokenizer_name,
                 device="rbln",
                 trust_remote_code=self.trust_remote_code,
-                **self.extra_kwargs
+                **self.extra_kwargs,
             )
             logger.info(f"Initialized vLLM-RBLN backend for model: {self.model_name}")
 
@@ -308,7 +319,9 @@ class LLM:
                     trust_remote_code=self.trust_remote_code,
                 )
                 self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                logger.info(f"Initialized optimum-rbln backend for model: {self.model_name}")
+                logger.info(
+                    f"Initialized optimum-rbln backend for model: {self.model_name}"
+                )
 
             except ImportError:
                 logger.warning("RBLN backend not available, falling back to CPU")
@@ -323,7 +336,7 @@ class LLM:
             self._backend_llm = FuriosaLLM.from_pretrained(
                 self.model_name,
                 trust_remote_code=self.trust_remote_code,
-                **self.extra_kwargs
+                **self.extra_kwargs,
             )
             logger.info(f"Initialized FuriosaAI backend for model: {self.model_name}")
 
@@ -335,8 +348,12 @@ class LLM:
         """Initialize Triton Inference Server backend."""
         self._backend = "triton"
         try:
-            from rm_abstract.engines.triton import TritonEngine, TritonConfig
-            from rm_abstract.engines.base import ServingConfig, ServingEngineType, DeviceTarget
+            from rm_abstract.engines.base import (
+                DeviceTarget,
+                ServingConfig,
+                ServingEngineType,
+            )
+            from rm_abstract.engines.triton import TritonEngine
 
             # Map device string to DeviceTarget
             device_map = {
@@ -368,8 +385,12 @@ class LLM:
         """Initialize TorchServe backend."""
         self._backend = "torchserve"
         try:
+            from rm_abstract.engines.base import (
+                DeviceTarget,
+                ServingConfig,
+                ServingEngineType,
+            )
             from rm_abstract.engines.torchserve import TorchServeEngine
-            from rm_abstract.engines.base import ServingConfig, ServingEngineType, DeviceTarget
 
             # Map device string to DeviceTarget
             device_map = {
@@ -393,7 +414,9 @@ class LLM:
             logger.info(f"Initialized TorchServe backend for model: {self.model_name}")
 
         except ImportError as e:
-            logger.warning(f"TorchServe backend not available ({e}), falling back to CPU")
+            logger.warning(
+                f"TorchServe backend not available ({e}), falling back to CPU"
+            )
             self._init_cpu_backend()
 
     def _init_cpu_backend(self):
@@ -406,6 +429,7 @@ class LLM:
 
             # Temporarily bypass hooks
             from rm_abstract.auto import disable_hooks, enable_hooks
+
             disable_hooks()
 
             try:
@@ -447,7 +471,7 @@ class LLM:
         self,
         prompts: Union[str, List[str]],
         sampling_params: Optional[SamplingParams] = None,
-        **kwargs
+        **kwargs,
     ) -> List[RequestOutput]:
         """
         Generate completions for the given prompts.
@@ -469,16 +493,15 @@ class LLM:
         # Route to appropriate generation method based on backend
         if self._backend in ("triton", "torchserve"):
             return self._generate_engine_style(prompts, sampling_params, **kwargs)
-        elif self._backend in ("vllm", "rbln") and hasattr(self._backend_llm, "generate"):
+        elif self._backend in ("vllm", "rbln") and hasattr(
+            self._backend_llm, "generate"
+        ):
             return self._generate_vllm_style(prompts, sampling_params, **kwargs)
         else:
             return self._generate_transformers_style(prompts, sampling_params, **kwargs)
 
     def _generate_vllm_style(
-        self,
-        prompts: List[str],
-        sampling_params: SamplingParams,
-        **kwargs
+        self, prompts: List[str], sampling_params: SamplingParams, **kwargs
     ) -> List[RequestOutput]:
         """Generate using vLLM-style API."""
         # Convert to vLLM SamplingParams if available
@@ -486,7 +509,9 @@ class LLM:
             vllm_params = self._sampling_params_cls(**sampling_params.to_dict())
             outputs = self._backend_llm.generate(prompts, vllm_params, **kwargs)
         else:
-            outputs = self._backend_llm.generate(prompts, sampling_params.to_dict(), **kwargs)
+            outputs = self._backend_llm.generate(
+                prompts, sampling_params.to_dict(), **kwargs
+            )
 
         # Convert to our RequestOutput format
         results = []
@@ -502,28 +527,29 @@ class LLM:
                     )
                     for j, o in enumerate(output.outputs)
                 ]
-                results.append(RequestOutput(
-                    request_id=getattr(output, "request_id", str(i)),
-                    prompt=prompts[i],
-                    prompt_token_ids=getattr(output, "prompt_token_ids", []),
-                    outputs=completions,
-                ))
+                results.append(
+                    RequestOutput(
+                        request_id=getattr(output, "request_id", str(i)),
+                        prompt=prompts[i],
+                        prompt_token_ids=getattr(output, "prompt_token_ids", []),
+                        outputs=completions,
+                    )
+                )
             else:
                 # Simple string output
-                results.append(RequestOutput(
-                    request_id=str(i),
-                    prompt=prompts[i],
-                    prompt_token_ids=[],
-                    outputs=[CompletionOutput(index=0, text=str(output))],
-                ))
+                results.append(
+                    RequestOutput(
+                        request_id=str(i),
+                        prompt=prompts[i],
+                        prompt_token_ids=[],
+                        outputs=[CompletionOutput(index=0, text=str(output))],
+                    )
+                )
 
         return results
 
     def _generate_transformers_style(
-        self,
-        prompts: List[str],
-        sampling_params: SamplingParams,
-        **kwargs
+        self, prompts: List[str], sampling_params: SamplingParams, **kwargs
     ) -> List[RequestOutput]:
         """Generate using transformers-style API."""
         import torch
@@ -541,39 +567,40 @@ class LLM:
                     top_k=sampling_params.top_k if sampling_params.top_k > 0 else None,
                     do_sample=sampling_params.temperature > 0,
                     num_return_sequences=sampling_params.n,
-                    **kwargs
+                    **kwargs,
                 )
 
             # Decode outputs
             completions = []
             for j, ids in enumerate(output_ids):
                 # Remove prompt tokens
-                new_ids = ids[inputs.input_ids.shape[1]:]
+                new_ids = ids[inputs.input_ids.shape[1] :]
                 text = self._tokenizer.decode(
                     new_ids,
                     skip_special_tokens=sampling_params.skip_special_tokens,
                 )
-                completions.append(CompletionOutput(
-                    index=j,
-                    text=text,
-                    token_ids=new_ids.tolist(),
-                    finish_reason="stop",
-                ))
+                completions.append(
+                    CompletionOutput(
+                        index=j,
+                        text=text,
+                        token_ids=new_ids.tolist(),
+                        finish_reason="stop",
+                    )
+                )
 
-            results.append(RequestOutput(
-                request_id=str(i),
-                prompt=prompt,
-                prompt_token_ids=inputs.input_ids[0].tolist(),
-                outputs=completions,
-            ))
+            results.append(
+                RequestOutput(
+                    request_id=str(i),
+                    prompt=prompt,
+                    prompt_token_ids=inputs.input_ids[0].tolist(),
+                    outputs=completions,
+                )
+            )
 
         return results
 
     def _generate_engine_style(
-        self,
-        prompts: List[str],
-        sampling_params: SamplingParams,
-        **kwargs
+        self, prompts: List[str], sampling_params: SamplingParams, **kwargs
     ) -> List[RequestOutput]:
         """Generate using ServingEngine (Triton/TorchServe) API."""
         if self._engine_instance is None:
@@ -587,7 +614,7 @@ class LLM:
                 temperature=sampling_params.temperature,
                 top_p=sampling_params.top_p,
                 max_tokens=sampling_params.max_tokens,
-                **kwargs
+                **kwargs,
             )
 
             # Convert to RequestOutput format
@@ -598,17 +625,21 @@ class LLM:
             else:
                 text = str(output)
 
-            results.append(RequestOutput(
-                request_id=str(i),
-                prompt=prompt,
-                prompt_token_ids=[],
-                outputs=[CompletionOutput(
-                    index=0,
-                    text=text,
-                    token_ids=[],
-                    finish_reason="stop",
-                )],
-            ))
+            results.append(
+                RequestOutput(
+                    request_id=str(i),
+                    prompt=prompt,
+                    prompt_token_ids=[],
+                    outputs=[
+                        CompletionOutput(
+                            index=0,
+                            text=text,
+                            token_ids=[],
+                            finish_reason="stop",
+                        )
+                    ],
+                )
+            )
 
         return results
 

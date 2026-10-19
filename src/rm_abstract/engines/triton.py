@@ -5,16 +5,16 @@ Model serving using NVIDIA Triton Inference Server.
 Supports automatic model conversion and Docker container management.
 """
 
-import os
 import atexit
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
 import logging
+import os
 import subprocess
 import time
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from .base import ServingEngine, ServingEngineType, ServingConfig, DeviceTarget
+from .base import DeviceTarget, ServingConfig, ServingEngine, ServingEngineType
 
 logger = logging.getLogger(__name__)
 
@@ -102,9 +102,9 @@ class TritonEngine(ServingEngine):
         """Check if Triton server is already running"""
         try:
             import requests
+
             response = requests.get(
-                f"http://localhost:{port}/v2/health/ready",
-                timeout=2
+                f"http://localhost:{port}/v2/health/ready", timeout=2
             )
             return response.status_code == 200
         except Exception:
@@ -146,7 +146,7 @@ class TritonEngine(ServingEngine):
         logger.info(f"Converting {model_name} to ONNX...")
         onnx_path = converter.to_onnx(
             model_name,
-            device="cuda" if self.config.device == DeviceTarget.GPU else "cpu"
+            device="cuda" if self.config.device == DeviceTarget.GPU else "cpu",
         )
 
         # Create model repository
@@ -165,6 +165,7 @@ class TritonEngine(ServingEngine):
 
         # Load tokenizer for inference
         from transformers import AutoTokenizer
+
         self._tokenizer = AutoTokenizer.from_pretrained(model_name)
         if self._tokenizer.pad_token is None:
             self._tokenizer.pad_token = self._tokenizer.eos_token
@@ -185,11 +186,17 @@ class TritonEngine(ServingEngine):
 
         # Build Docker run command
         cmd = [
-            "docker", "run", "-d",
-            "--name", self.triton_config.container_name,
-            "-p", f"{self.triton_config.http_port}:8000",
-            "-p", f"{self.triton_config.grpc_port}:8001",
-            "-p", f"{self.triton_config.metrics_port}:8002",
+            "docker",
+            "run",
+            "-d",
+            "--name",
+            self.triton_config.container_name,
+            "-p",
+            f"{self.triton_config.http_port}:8000",
+            "-p",
+            f"{self.triton_config.grpc_port}:8001",
+            "-p",
+            f"{self.triton_config.metrics_port}:8002",
             "--shm-size=1g",
         ]
 
@@ -199,13 +206,16 @@ class TritonEngine(ServingEngine):
 
         # Add model repository volume
         model_repo = self.triton_config.model_repository or "/models"
-        cmd.extend([
-            "-v", f"{model_repo}:/models",
-            self.triton_config.docker_image,
-            "tritonserver",
-            "--model-repository=/models",
-            "--strict-model-config=false",  # Allow auto-completion
-        ])
+        cmd.extend(
+            [
+                "-v",
+                f"{model_repo}:/models",
+                self.triton_config.docker_image,
+                "tritonserver",
+                "--model-repository=/models",
+                "--strict-model-config=false",  # Allow auto-completion
+            ]
+        )
 
         try:
             # Remove existing container if exists
@@ -268,13 +278,13 @@ class TritonEngine(ServingEngine):
 
     def _wait_for_ready(self, timeout: int = 60) -> None:
         """Wait for Triton to be ready"""
+
         import requests
-        import sys
 
         url = f"http://localhost:{self.triton_config.http_port}/v2/health/ready"
         start_time = time.time()
 
-        print(f"[Triton] Starting Docker container...", flush=True)
+        print("[Triton] Starting Docker container...", flush=True)
         check_interval = 2
         dots = 0
 
@@ -295,7 +305,7 @@ class TritonEngine(ServingEngine):
                         capture_output=True,
                         text=True,
                     )
-                    print(f"\n[Triton] Container failed!", flush=True)
+                    print("\n[Triton] Container failed!", flush=True)
                     raise RuntimeError(f"Triton container exited: {logs.stderr}")
 
             try:
@@ -310,10 +320,14 @@ class TritonEngine(ServingEngine):
             # Progress indicator
             dots = (dots + 1) % 4
             progress = "." * (dots + 1)
-            print(f"\r[Triton] Waiting for server{progress.ljust(4)} ({elapsed}/{timeout}s)", end="", flush=True)
+            print(
+                f"\r[Triton] Waiting for server{progress.ljust(4)} ({elapsed}/{timeout}s)",
+                end="",
+                flush=True,
+            )
             time.sleep(check_interval)
 
-        print(f"\n[Triton] Timeout!", flush=True)
+        print("\n[Triton] Timeout!", flush=True)
         raise TimeoutError(f"Triton server did not become ready within {timeout}s")
 
     def infer(self, inputs: Any, **kwargs) -> Any:
@@ -331,8 +345,8 @@ class TritonEngine(ServingEngine):
             raise RuntimeError("Triton server not running. Call load_model() first.")
 
         try:
-            import tritonclient.http as httpclient
             import numpy as np
+            import tritonclient.http as httpclient
         except ImportError:
             raise ImportError(
                 "tritonclient not installed. "
@@ -350,6 +364,7 @@ class TritonEngine(ServingEngine):
         if isinstance(inputs, str):
             if self._tokenizer is None:
                 from transformers import AutoTokenizer
+
                 self._tokenizer = AutoTokenizer.from_pretrained(self.config.model_name)
                 if self._tokenizer.pad_token is None:
                     self._tokenizer.pad_token = self._tokenizer.eos_token
@@ -409,8 +424,7 @@ class TritonEngine(ServingEngine):
 
         # Decode output
         generated_text = self._tokenizer.decode(
-            generated_ids[len(tokens["input_ids"][0]):],
-            skip_special_tokens=True
+            generated_ids[len(tokens["input_ids"][0]) :], skip_special_tokens=True
         )
 
         return {"generated_text": generated_text}
@@ -426,6 +440,7 @@ class TritonEngine(ServingEngine):
         if self._is_running:
             try:
                 import requests
+
                 response = requests.get(
                     f"http://localhost:{self.triton_config.metrics_port}/metrics",
                     timeout=5,

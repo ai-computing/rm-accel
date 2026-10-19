@@ -4,12 +4,12 @@ Plugin Discovery
 Auto-discovery and registration of available plugins.
 """
 
-from typing import List, Optional
 import logging
+from typing import List, Optional
 
 from .plugin_registry import (
-    PluginRegistry,
     PluginInfo,
+    PluginRegistry,
     PluginType,
     get_registry,
 )

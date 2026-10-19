@@ -5,10 +5,10 @@ Handles conversion of inference outputs to various formats.
 Eliminates duplicated output handling logic across backends.
 """
 
+import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
-import logging
+from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -119,9 +119,7 @@ class OutputAdapter:
 
         return OutputFormat.TEXT
 
-    def adapt(
-        self, outputs: Any, tokenizer: Optional[Any] = None
-    ) -> AdaptedOutput:
+    def adapt(self, outputs: Any, tokenizer: Optional[Any] = None) -> AdaptedOutput:
         """
         Adapt outputs to standardized format.
 

@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rm-abstract"
-version = "0.3.0"
-description = "LLM Heterogeneous Resource Orchestrator - GPU/NPU/PIM Meta-Serving Layer"
+version = "0.4.0"
+description = "Accelerator abstraction for heterogeneous AI infrastructure: GPU/NPU/CPU discovery, AcceleratorProfile publishing and a vLLM-compatible API (ai-rm L1)"
 readme = "README.md"
 license = {text = "BSD-3-Clause"}
 requires-python = ">=3.9"
 authors = [
-    {name = "RM Abstract Team", email = "contact@rmabstract.dev"}
+    {name = "ai-computing team, ETRI"}
 ]
-keywords = ["llm", "gpu", "npu", "pim", "inference", "serving", "orchestration", "heterogeneous"]
+keywords = ["llm", "gpu", "npu", "rngd", "atom", "accelerator", "kubernetes", "llm-d", "ai-rm", "heterogeneous"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -126,10 +126,10 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/gspark-etri/rm_abstract_layer"
-Documentation = "https://github.com/gspark-etri/rm_abstract_layer#readme"
-Repository = "https://github.com/gspark-etri/rm_abstract_layer.git"
-Issues = "https://github.com/gspark-etri/rm_abstract_layer/issues"
+Homepage = "https://github.com/ai-computing/rm_abstract_layer"
+Documentation = "https://github.com/ai-computing/rm_abstract_layer#readme"
+Repository = "https://github.com/ai-computing/rm_abstract_layer.git"
+Issues = "https://github.com/ai-computing/rm_abstract_layer/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -159,6 +159,8 @@ extend-exclude = '''
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
@@ -169,12 +171,15 @@ select = [
     "UP", # pyupgrade
 ]
 ignore = [
-    "E501",  # line too long (handled by black)
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
+    "E501",   # line too long (handled by black)
+    "B008",   # do not perform function calls in argument defaults
+    "C901",   # too complex
+    "UP006",  # typing.List -> list: style only, kept as-is for now
+    "UP035",  # deprecated typing imports: style only, kept as-is for now
+    "B904",   # raise ... from err: to be fixed module by module
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 
 [tool.mypy]

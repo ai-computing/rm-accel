@@ -2,10 +2,10 @@
 Configuration management module
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
-from pathlib import Path
 import os
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 
 @dataclass

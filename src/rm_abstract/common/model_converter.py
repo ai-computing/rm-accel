@@ -5,12 +5,12 @@ Unified model format conversion utilities.
 Handles ONNX conversion and other format transformations.
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
-from pathlib import Path
-import logging
 import hashlib
+import logging
 import os
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -136,9 +136,7 @@ class ModelConverter:
         logger.info(f"ONNX model saved to: {output_path}")
         return output_path
 
-    def _create_dummy_input(
-        self, model: Any, config: ConversionConfig
-    ) -> Any:
+    def _create_dummy_input(self, model: Any, config: ConversionConfig) -> Any:
         """
         Create dummy input for ONNX export.
 

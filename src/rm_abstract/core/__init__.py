@@ -1,7 +1,7 @@
 """Core module - Core abstraction interfaces"""
 
-from .controller import DeviceFlowController
 from .config import Config
+from .controller import DeviceFlowController
 
 __all__ = [
     "DeviceFlowController",

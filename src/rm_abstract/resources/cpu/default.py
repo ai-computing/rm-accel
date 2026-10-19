@@ -4,13 +4,13 @@ CPU Resource
 Fallback resource using PyTorch CPU inference.
 """
 
-from typing import Any, Dict, Optional
-import platform
-import os
 import logging
+import os
+import platform
+from typing import Any, Dict, Optional
 
-from ..base import Resource, ResourceType, ResourceInfo, ResourceCapability
 from ...common.input_adapter import InputAdapter
+from ..base import Resource, ResourceCapability, ResourceInfo, ResourceType
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class CPUResource(Resource):
     def is_available() -> bool:
         """CPU is always available if PyTorch is installed"""
         try:
-            import torch
+            import torch  # noqa: F401
 
             return True
         except ImportError:
@@ -57,9 +57,7 @@ class CPUResource(Resource):
         self._initialized = True
         logger.info("CPU resource initialized")
 
-    def prepare_model(
-        self, model: Any, config: Optional[Dict[str, Any]] = None
-    ) -> Any:
+    def prepare_model(self, model: Any, config: Optional[Dict[str, Any]] = None) -> Any:
         """
         Prepare model for CPU inference.
 
@@ -70,7 +68,6 @@ class CPUResource(Resource):
         Returns:
             Model on CPU in eval mode
         """
-        import torch
 
         if hasattr(model, "to"):
             model = model.to("cpu")
@@ -128,9 +125,7 @@ class CPUResource(Resource):
                     else:
                         return model(exec_inputs, **exec_kwargs)
 
-    def _prepare_execution(
-        self, inputs: Any, kwargs: Dict[str, Any]
-    ) -> tuple:
+    def _prepare_execution(self, inputs: Any, kwargs: Dict[str, Any]) -> tuple:
         """Prepare inputs for execution"""
         import torch
 

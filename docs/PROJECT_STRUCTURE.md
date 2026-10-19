@@ -8,12 +8,11 @@ rm_abstract_layer/
 │   ├── QUICKSTART.md              # Quick start guide
 │   ├── SERVING_ENGINES.md         # Serving engines guide
 │   ├── README_REQUIREMENTS.md     # Requirements installation
-│   ├── FINAL_TEST_REPORT.md       # Latest test results ✅
-│   ├── TEST_RESULTS.md            # Initial test findings
 │   ├── ARCHITECTURE.md            # System architecture
 │   ├── CONTRIBUTING.md            # Development guide
 │   ├── ADDING_RESOURCES.md        # Adding new hardware
-│   └── ADDING_ENGINES.md          # Adding new engines
+│   ├── ADDING_ENGINES.md          # Adding new engines
+│   └── archive/                   # 0.2–0.3 test reports and slides (not maintained)
 │
 ├── examples/                      # 🎯 Examples (cleaned up!)
 │   ├── 01_quick_start.py          # Simplest usage
@@ -33,6 +32,7 @@ rm_abstract_layer/
 │
 ├── src/rm_abstract/               # 🔧 Source code
 │   ├── __init__.py                # Main API exports
+│   ├── airm/                      # ai-rm protocol v0.1: AcceleratorProvider, node daemon
 │   ├── auto.py                    # Auto import hooking ⭐
 │   ├── llm.py                     # LLM proxy class
 │   ├── exceptions.py              # Exception classes
@@ -72,7 +72,11 @@ rm_abstract_layer/
 │   ├── integration/               # Integration tests
 │   └── conftest.py                # Pytest configuration
 │
-├── test_multi_engine.py           # Multi-engine test script
+├── deploy/helm/rm-abstract-node/  # Helm chart for the node daemon (DaemonSet)
+├── scripts/                       # setup scripts, run_examples.sh, manual/multi_engine_check.py
+├── tools/check_sensitive.py       # internal addresses / tokens / keys scan
+├── ai-rm.yaml                     # ai-rm component manifest
+├── CHANGELOG.md
 ├── pyproject.toml                 # Project metadata
 └── README.md                      # Main README
 ```
@@ -109,7 +113,7 @@ rm_abstract_layer/
 | `docs/QUICKSTART.md` | New users (5-min guide) |
 | `docs/SERVING_ENGINES.md` | All users (engine details) |
 | `docs/README_REQUIREMENTS.md` | All users (installation) |
-| `docs/FINAL_TEST_REPORT.md` | All users (test results) |
+| `docs/archive/FINAL_TEST_REPORT.md` | All users (test results) |
 | `docs/ARCHITECTURE.md` | Developers |
 | `docs/CONTRIBUTING.md` | Contributors |
 
@@ -136,7 +140,7 @@ rm_abstract_layer/
    - `QUICKSTART.md`
    - `SERVING_ENGINES.md`
    - `README_REQUIREMENTS.md`
-   - `FINAL_TEST_REPORT.md`
+   - `archive/FINAL_TEST_REPORT.md`
    - `PROJECT_STRUCTURE.md` (this file)
 
 ### ✅ Improved
@@ -163,13 +167,13 @@ rm_abstract_layer/
 
 ### For Testers
 
-1. **Test Report**: `docs/FINAL_TEST_REPORT.md`
-2. **Test Script**: `test_multi_engine.py`
+1. **Test Report**: `docs/archive/FINAL_TEST_REPORT.md`
+2. **Test Script**: `scripts/manual/multi_engine_check.py`
 3. **Engine Tests**: `examples/04_serving_engines.py`
 
 ## Next Steps
 
-See `docs/FINAL_TEST_REPORT.md` for:
+See `docs/archive/FINAL_TEST_REPORT.md` for:
 - Test results (all engines ✅)
 - Known issues
 - Recommendations
