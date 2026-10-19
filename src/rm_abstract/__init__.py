@@ -38,7 +38,7 @@ from .llm import LLM, CompletionOutput, RequestOutput, SamplingParams
 # Modular components
 from .registry import PluginRegistry, PluginType, discover_all, get_registry
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __all__ = [
     # Main LLM interface (recommended)
     "LLM",
