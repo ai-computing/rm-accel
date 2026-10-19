@@ -106,3 +106,6 @@ logs/
 *.log
 key_file.json
 
+
+# local agent settings
+.claude/settings.local.json

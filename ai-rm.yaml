@@ -1,4 +1,4 @@
-name: rm_abstract_layer
+name: rm-accel
 layer: l1-accel
 kind: library
 summary: GPU·NPU(RNGD, ATOM)·CPU 이종 가속기 통합 추상화 — 장치 탐지, 자원·엔진 플러그인, vLLM 호환 API
