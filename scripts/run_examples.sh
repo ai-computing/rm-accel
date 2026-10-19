@@ -6,7 +6,7 @@ echo "TESTING ALL EXAMPLES"
 echo "================================================================================"
 echo ""
 
-cd /home/user/rm_abstract_layer
+cd "$(dirname "$0")/.."
 
 total=0
 passed=0
