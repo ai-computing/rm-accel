@@ -12,13 +12,15 @@
   <a href="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml"><img src="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm layer L1"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="Protocol v0.1"></a>
+  <a href="https://github.com/ai-computing/rm_abstract_layer/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="Release v0.4.1"></a>
+  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.4.2-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.4.2"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="License: BSD-3-Clause"></a>
 </p>
 
 <p>
   <a href="#-quick-start"><b>Quick start</b></a> ·
-  <a href="#-device-discovery-for-ai-rm"><b>ai-rm integration</b></a> ·
+  <a href="#-ai-rm-integration"><b>ai-rm integration</b></a> ·
   <a href="#-vllm-compatible-api"><b>vLLM-compatible API</b></a> ·
   <a href="#-architecture"><b>Architecture</b></a> ·
   <a href="#-documentation"><b>Docs</b></a>
@@ -36,20 +38,24 @@ discovers GPUs and NPUs (FuriosaAI RNGD, Rebellions ATOM) on each node, describe
 It also provides a **vLLM-compatible Python API** that runs the same code on GPU or CPU with switchable serving
 engines (vLLM, Triton, TorchServe).
 
+Maturity: prototype (Alpha). Current release v0.4.1, Helm chart 0.4.2 — see the [changelog](CHANGELOG.md).
+
+## ✨ Highlights
+
 <table>
 <tr>
 <td width="33%" valign="top">
-<b>🔎 Discover devices</b><br>
+<b>Discover devices</b><br>
 Read-only vendor tools first (<code>nvidia-smi</code>, <code>furiosa-smi</code>, <code>rbln-stat</code>), SDK-based
 detection as fallback. Device's own index, model, memory and datasheet peak TFLOPS.
 </td>
 <td width="33%" valign="top">
-<b>☸️ Publish to Kubernetes</b><br>
+<b>Publish to Kubernetes</b><br>
 A node daemon (DaemonSet) applies one <code>AcceleratorProfile</code> per device, labels nodes
 <code>airm.ai-computing.io/&lt;vendor&gt;.&lt;model&gt;</code> and exports <code>airm_accelerators</code>.
 </td>
 <td width="33%" valign="top">
-<b>🔁 One API, many backends</b><br>
+<b>One API, many backends</b><br>
 Change <code>from vllm import LLM</code> to <code>from rm_abstract import LLM</code>; pick the device and engine by
 argument or environment variable.
 </td>
@@ -71,7 +77,7 @@ python -m rm_core.conformance airm.accelerator_providers rm-abstract  # contract
 Installing through ai-rm: `make setup COMPONENTS=rm_abstract_layer` in the
 [ai-rm](https://github.com/ai-computing/ai-rm) umbrella (steps come from [`ai-rm.yaml`](ai-rm.yaml)).
 
-## ☸️ Device discovery for ai-rm
+## 🔌 ai-rm integration
 
 ### `AcceleratorProvider` adapter
 
@@ -123,6 +129,24 @@ ai-rm umbrella. Set the image for your site with `image.repository` / `image.tag
 ```bash
 helm template rm-abstract-node deploy/helm/rm-abstract-node --set image.repository=<registry>/rm-abstract-node
 ```
+
+<details>
+<summary><b>Chart 0.4.2: container runtime and site extension points</b></summary>
+<br>
+
+| Value | Default | Meaning |
+|---|---|---|
+| `privileged` | `true` | Vendor tools read the device nodes |
+| `hostDev` | `true` | Mount the host's `/dev` live, so a device the driver re-creates (e.g. an ATOM released by a pod) stays in discovery |
+| `command` | `[]` | Override the daemon command (default `python -m rm_abstract.airm.daemon`) |
+| `extraEnv` | `[]` | `{name, value}` entries appended to the daemon's env |
+| `initContainers` | `[]` | Pod init containers, verbatim |
+| `extraVolumes` / `extraVolumeMounts` | `[]` | Pod volumes / daemon volume mounts, verbatim |
+
+The root filesystem is read-only with a writable `/tmp` (`rbln-stat` unpacks itself under `TMPDIR`). Until the
+`rm-abstract-node` image is published, the extension points let a site run the daemon from a stock Python image.
+See [`values.yaml`](deploy/helm/rm-abstract-node/values.yaml) and the [changelog](CHANGELOG.md).
+</details>
 
 ## 🔁 vLLM-compatible API
 
