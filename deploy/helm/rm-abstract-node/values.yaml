@@ -4,8 +4,8 @@
 enabled: true
 
 image:
-  repository: ""       # image with rm-abstract[k8s] and the vendor tools (nvidia-smi, furiosa-smi, rbln-stat)
-  tag: ""
+  repository: ghcr.io/ai-computing/rm-abstract-node  # rm-abstract[k8s] + vendor tools (nvidia-smi, furiosa-smi, rbln-stat); override per site
+  tag: ""              # default: chart appVersion
   pullPolicy: IfNotPresent
 
 airm:

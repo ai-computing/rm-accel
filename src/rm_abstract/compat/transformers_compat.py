@@ -31,8 +31,11 @@ def _resolve_device(device: str) -> str:
     """Resolve 'auto' device to actual device."""
     if device != "auto":
         return device.split(":")[0]
+    return _detect_device()
 
-    # Auto-detection priority: NPU > GPU > CPU
+
+def _detect_device() -> str:
+    """Detect the best available device on this host (NPU > GPU > CPU)."""
     try:
         import rebel  # noqa: F401
         return "rbln"
