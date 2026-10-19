@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>rm_abstract_layer</h1>
+<h1>rm-accel</h1>
 
 <h3>Accelerator abstraction for heterogeneous AI infrastructure</h3>
 
@@ -9,10 +9,10 @@
 </p>
 
 <p>
-  <a href="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml"><img src="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/ai-computing/rm-accel/actions/workflows/ci.yml"><img src="https://github.com/ai-computing/rm-accel/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm layer L1"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="Protocol v0.1"></a>
-  <a href="https://github.com/ai-computing/rm_abstract_layer/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="Release v0.4.1"></a>
+  <a href="https://github.com/ai-computing/rm-accel/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="Release v0.4.1"></a>
   <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.4.2-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.4.2"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="License: BSD-3-Clause"></a>
@@ -30,7 +30,10 @@
 
 ---
 
-**rm_abstract_layer** is the **L1 accelerator abstraction** of [ai-rm](https://github.com/ai-computing/ai-rm). It
+Formerly `rm_abstract_layer`. The Python package stays `rm_abstract`, and the node daemon keeps
+tagging its metrics `component="rm_abstract_layer"` so existing dashboards and queries keep working.
+
+**rm-accel** is the **L1 accelerator abstraction** of [ai-rm](https://github.com/ai-computing/ai-rm). It
 discovers GPUs and NPUs (FuriosaAI RNGD, Rebellions ATOM) on each node, describes them through the
 [rm-core](https://github.com/ai-computing/rm-core) `Accelerator` model and publishes them to Kubernetes as
 `AcceleratorProfile` objects and node labels, which placement (llm-d EPP) and observation (lmd-top) read.
@@ -65,7 +68,7 @@ argument or environment variable.
 ## 🚀 Quick start
 
 ```bash
-git clone https://github.com/ai-computing/rm_abstract_layer.git && cd rm_abstract_layer
+git clone https://github.com/ai-computing/rm-accel.git && cd rm-accel
 pip install -r requirements/requirements.txt
 pip install -e .
 
@@ -74,7 +77,7 @@ python -m rm_abstract.airm.daemon --provider sim --once --dry-run   # same, with
 python -m rm_core.conformance airm.accelerator_providers rm-abstract  # contract check (PASS / SKIP / FAIL)
 ```
 
-Installing through ai-rm: `make setup COMPONENTS=rm_abstract_layer` in the
+Installing through ai-rm: `make setup COMPONENTS=rm-accel` in the
 [ai-rm](https://github.com/ai-computing/ai-rm) umbrella (steps come from [`ai-rm.yaml`](ai-rm.yaml)).
 
 ## 🔌 ai-rm integration
@@ -257,7 +260,7 @@ Guides: [contributing](docs/CONTRIBUTING.md) · [adding a device](docs/ADDING_RE
 | **Use** | [Quick start](docs/QUICKSTART.md) · [Serving engines](docs/SERVING_ENGINES.md) · [Requirements](docs/README_REQUIREMENTS.md) |
 | **Understand** | [Architecture](docs/ARCHITECTURE.md) · [Project structure](docs/PROJECT_STRUCTURE.md) · [Changelog](CHANGELOG.md) |
 | **Extend** | [Contributing](docs/CONTRIBUTING.md) · [Adding resources](docs/ADDING_RESOURCES.md) · [Adding engines](docs/ADDING_ENGINES.md) |
-| **ai-rm** | [Umbrella](https://github.com/ai-computing/ai-rm) · [rm-core protocol](https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md) · [Component card](https://github.com/ai-computing/ai-rm/blob/master/docs/components/rm_abstract_layer.md) |
+| **ai-rm** | [Umbrella](https://github.com/ai-computing/ai-rm) · [rm-core protocol](https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md) · [Component card](https://github.com/ai-computing/ai-rm/blob/master/docs/components/rm-accel.md) |
 
 Older test reports and slides: [docs/archive](docs/archive/README.md).
 
