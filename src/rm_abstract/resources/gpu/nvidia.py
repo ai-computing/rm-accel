@@ -4,12 +4,12 @@ NVIDIA GPU Resource
 GPU resource implementation using vLLM for high-performance inference.
 """
 
-from typing import Any, Dict, Optional
 import logging
+from typing import Any, Dict, Optional
 
-from ..base import Resource, ResourceType, ResourceInfo, ResourceCapability
 from ...common.input_adapter import InputAdapter
 from ...common.output_adapter import OutputAdapter
+from ..base import Resource, ResourceCapability, ResourceInfo, ResourceType
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class NvidiaGPU(Resource):
                 return False
 
             # Check vLLM import
-            import vllm
+            import vllm  # noqa: F401
 
             return True
         except ImportError:
@@ -76,9 +76,7 @@ class NvidiaGPU(Resource):
             logger.error(f"Failed to initialize NVIDIA GPU: {e}")
             raise
 
-    def prepare_model(
-        self, model: Any, config: Optional[Dict[str, Any]] = None
-    ) -> Any:
+    def prepare_model(self, model: Any, config: Optional[Dict[str, Any]] = None) -> Any:
         """
         Prepare model using vLLM.
 

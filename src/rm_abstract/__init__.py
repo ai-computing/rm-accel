@@ -19,24 +19,24 @@ Architecture:
 - registry/: Centralized plugin registration system
 """
 
-from typing import Optional, Dict, Any
 import os
+from typing import Any, Dict, Optional
 
-from .core.controller import DeviceFlowController
+from .common import HardwareDetector, InputAdapter, ModelConverter, OutputAdapter
 from .core.config import Config
+from .core.controller import DeviceFlowController
 from .exceptions import (
-    RMAbstractError,
-    NotInitializedError,
     BackendNotAvailableError,
     InvalidDeviceError,
+    NotInitializedError,
+    RMAbstractError,
 )
 
 # Main LLM interface (recommended)
-from .llm import LLM, SamplingParams, RequestOutput, CompletionOutput
+from .llm import LLM, CompletionOutput, RequestOutput, SamplingParams
 
 # Modular components
-from .registry import PluginRegistry, PluginType, get_registry, discover_all
-from .common import InputAdapter, OutputAdapter, ModelConverter, HardwareDetector
+from .registry import PluginRegistry, PluginType, discover_all, get_registry
 
 __version__ = "0.3.0"
 __all__ = [
@@ -115,7 +115,9 @@ def init(
     _initialized = True
 
     if verbose:
-        print(f"[RM Abstract] Initialized with device: {_global_controller.device_name}")
+        print(
+            f"[RM Abstract] Initialized with device: {_global_controller.device_name}"
+        )
 
     return _global_controller
 
