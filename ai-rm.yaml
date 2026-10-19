@@ -14,7 +14,7 @@ deploy:
   target: k8s
   manifests: null
   chart: deploy/helm/rm-abstract-node
-  image: null
+  image: ghcr.io/ai-computing/rm-accel
 config:
   env_example: null
 interfaces:

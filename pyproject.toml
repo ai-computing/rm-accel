@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rm-abstract"
-version = "0.4.1"
+version = "0.4.2"
 description = "Accelerator abstraction for heterogeneous AI infrastructure: GPU/NPU/CPU discovery, AcceleratorProfile publishing and a vLLM-compatible API (ai-rm L1)"
 readme = "README.md"
 license = {text = "BSD-3-Clause"}
