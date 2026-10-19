@@ -1,0 +1,62 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "rm-abstract-node.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "rm-abstract-node.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "rm-abstract-node.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "rm-abstract-node.labels" . | nindent 8 }}
+      {{- if .Values.airm.metricsPort }}
+      annotations:
+        airm.ai-computing.io/scrape: "true"
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "rm-abstract-node.serviceAccountName" . }}
+      {{- with .Values.nodeAffinity }}
+      affinity:
+        nodeAffinity:
+          {{- toYaml . | nindent 10 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: daemon
+          image: "{{ required "image.repository is required" .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "-m", "rm_abstract.airm.daemon"]
+          env:
+            - name: AIRM_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: AIRM_PROVIDER
+              value: {{ .Values.provider | quote }}
+            - name: AIRM_INTERVAL_S
+              value: {{ .Values.intervalSeconds | quote }}
+            - name: AIRM_REMOVE_AFTER
+              value: {{ .Values.removeAfter | quote }}
+            - name: AIRM_METRICS_PORT
+              value: {{ .Values.airm.metricsPort | quote }}
+          {{- if .Values.airm.metricsPort }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.airm.metricsPort }}
+          {{- end }}
+          securityContext:
+            privileged: {{ .Values.privileged }}
+            readOnlyRootFilesystem: true
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

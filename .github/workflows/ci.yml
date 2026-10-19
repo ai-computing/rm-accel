@@ -63,6 +63,9 @@ jobs:
       - name: Run unit tests
         run: pytest tests/unit -v --tb=short
 
+      - name: ai-rm conformance (rm-core protocol v0.1)
+        run: python -m rm_core.conformance airm.accelerator_providers rm-abstract
+
       - name: Run tests with coverage
         run: pytest tests/ -v --cov=rm_abstract --cov-report=xml --cov-report=term
 
