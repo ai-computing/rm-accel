@@ -195,14 +195,17 @@ def _rbln_stat() -> list[_Device]:
         return []
     devices = []
     for e in entries:
-        if not str(e.get("npu", "")).isdigit():
+        # "npu" restarts at 0 in each device group; the device node (rbln<N>) is unique per host.
+        m = re.fullmatch(r"rbln(\d+)", str(e.get("device", "")))
+        index = m.group(1) if m else str(e.get("npu", ""))
+        if not index.isdigit():
             continue
         total = str((e.get("memory") or {}).get("total", ""))
         pci = e.get("pci") or {}
         devices.append(
             _Device(
                 vendor="rebellions",
-                index=int(e["npu"]),
+                index=int(index),
                 product=str(e.get("name", "")),
                 memory_bytes=int(total) if total.isdigit() and int(total) > 0 else None,
                 pci_bdf=str(pci.get("bus_id", "")),
