@@ -1,0 +1,72 @@
+name: Image
+
+# Node daemon image ghcr.io/ai-computing/rm-accel (Dockerfile).
+# Pull requests build and smoke-test it; master pushes :master, tags vX.Y.Z push :X.Y.Z and :X.Y.
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+    branches: [master]
+    paths: [Dockerfile, .dockerignore, pyproject.toml, 'src/**', .github/workflows/image.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE: ghcr.io/ai-computing/rm-accel
+
+jobs:
+  image:
+    name: Build and publish node daemon image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=branch
+            type=sha,format=short
+
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ${{ env.IMAGE }}:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test (sim provider, no cluster)
+        run: |
+          docker run --rm ${{ env.IMAGE }}:test --provider sim --once --dry-run --node ci-node > objects.json
+          python3 -c "import json; o = json.load(open('objects.json')); kinds = [i['kind'] for i in o['items']]; print(kinds); assert kinds.count('AcceleratorProfile') == 2"
+          docker run --rm --entrypoint sh ${{ env.IMAGE }}:test -c 'echo "$PATH" | grep -q /host/usr/bin'
+
+      - name: Log in to ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha

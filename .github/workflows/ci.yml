@@ -48,6 +48,19 @@ jobs:
           python-version: '3.11'
       - run: python tools/check_sensitive.py .
 
+  # Node daemon chart: default values and the simulated-cluster values must render
+  chart:
+    name: Helm chart lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.4
+      - run: helm lint deploy/helm/rm-abstract-node
+      - run: helm lint deploy/helm/rm-abstract-node --set provider=sim --set hostBin= --set hostDev=false
+      - run: helm template rm-abstract-node deploy/helm/rm-abstract-node > /dev/null
+
   # Unit tests (multiple Python versions)
   test:
     name: Test (Python ${{ matrix.python-version }})
