@@ -1,415 +1,265 @@
-# RM Abstract Layer
+<div align="center">
 
-> **GPU / NPU / CPU Heterogeneous Accelerator Unified LLM Inference Abstraction Layer**
+<h1>rm_abstract_layer</h1>
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+<h3>Accelerator abstraction for heterogeneous AI infrastructure</h3>
+
+<p>
+  <strong>English</strong> · <a href="README.ko.md">한국어</a>
+</p>
+
+<p>
+  <a href="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml"><img src="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm layer L1"></a>
+  <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="Protocol v0.1"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="License: BSD-3-Clause"></a>
+</p>
+
+<p>
+  <a href="#-quick-start"><b>Quick start</b></a> ·
+  <a href="#-device-discovery-for-ai-rm"><b>ai-rm integration</b></a> ·
+  <a href="#-vllm-compatible-api"><b>vLLM-compatible API</b></a> ·
+  <a href="#-architecture"><b>Architecture</b></a> ·
+  <a href="#-documentation"><b>Docs</b></a>
+</p>
+
+</div>
 
 ---
 
-## Overview
+**rm_abstract_layer** is the **L1 accelerator abstraction** of [ai-rm](https://github.com/ai-computing/ai-rm). It
+discovers GPUs and NPUs (FuriosaAI RNGD, Rebellions ATOM) on each node, describes them through the
+[rm-core](https://github.com/ai-computing/rm-core) `Accelerator` model and publishes them to Kubernetes as
+`AcceleratorProfile` objects and node labels, which placement (llm-d EPP) and observation (lmd-top) read.
 
-RM Abstract Layer is an abstraction layer that enables LLM inference on various hardware accelerators (GPU, CPU) with **minimal code modification**.
+It also provides a **vLLM-compatible Python API** that runs the same code on GPU or CPU with switchable serving
+engines (vLLM, Triton, TorchServe).
 
-### Key Features
+<table>
+<tr>
+<td width="33%" valign="top">
+<b>🔎 Discover devices</b><br>
+Read-only vendor tools first (<code>nvidia-smi</code>, <code>furiosa-smi</code>, <code>rbln-stat</code>), SDK-based
+detection as fallback. Device's own index, model, memory and datasheet peak TFLOPS.
+</td>
+<td width="33%" valign="top">
+<b>☸️ Publish to Kubernetes</b><br>
+A node daemon (DaemonSet) applies one <code>AcceleratorProfile</code> per device, labels nodes
+<code>airm.ai-computing.io/&lt;vendor&gt;.&lt;model&gt;</code> and exports <code>airm_accelerators</code>.
+</td>
+<td width="33%" valign="top">
+<b>🔁 One API, many backends</b><br>
+Change <code>from vllm import LLM</code> to <code>from rm_abstract import LLM</code>; pick the device and engine by
+argument or environment variable.
+</td>
+</tr>
+</table>
 
-- **Minimal Code Change**: Just change `from vllm import LLM` to `from rm_abstract import LLM`
-- **Device Transparency**: vLLM-compatible API works on GPU and CPU
-- **Runtime Switching**: Real-time switching between GPU and CPU
-- **Auto Server Management**: Triton/TorchServe auto-start with model conversion
-- **Plugin Architecture**: Easily add new resources and engines via plugin registry
-- **Multiple Serving Engines**: vLLM, Triton, TorchServe support
-- **Hardware Detection**: Automatic detection and priority-based selection (GPU > CPU)
-
----
-
-## ai-rm
-
-[ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다(`components/l1-accel/rm_abstract_layer`). [rm-core protocol v0.1](https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md)을 구현합니다.
-
-- **역할**: 장치 탐지와 장치 능력 모델(`resources/base.py`의 `ResourceInfo`, `ResourceCapability`), 벤더별 자원 플러그인(`resources/gpu`, `resources/npu/furiosa.py`, `resources/npu/rebellions.py`, `resources/cpu`), 서빙 엔진 플러그인(vLLM, Triton, TorchServe).
-- **adapter** (`rm_abstract.airm`): `AcceleratorProvider` `rm-abstract` (entry point `airm.accelerator_providers`).
-  - 장치별로 벤더 관리 도구(`nvidia-smi`, `furiosa-smi`, `rbln-stat`, 읽기 전용)를 먼저 쓰고, 도구가 없으면 기존 `HardwareDetector`로 탐지해 `rm_core.Accelerator`로 변환합니다. CPU는 보고하지 않으며 장치가 없으면 `[]`입니다.
-  - `id`는 `<노드>/<vendor>:<index>`이고 index는 장치 자체 번호(`npu3` → `furiosa:3`)입니다. 노드 이름은 `AIRM_NODE_NAME`, 없으면 hostname입니다.
-  - `peak_tflops`는 벤더 데이터시트 값이 있는 모델(RNGD, ATOM)만 채우고 `peak_source`에 출처를 적습니다. NVIDIA GPU는 비워 둡니다(미상).
-  - 생성자 인자: `node` (선택, 기본 `AIRM_NODE_NAME`/hostname).
-- **노드 데몬**: `python -m rm_abstract.airm.daemon` — 주기적으로 탐지해 장치마다 `AcceleratorProfile`을 apply하고(연속으로 사라진 장치의 프로파일은 삭제), 노드 레이블 `airm.ai-computing.io/<vendor>.<model>=<개수>`, `airm.ai-computing.io/managed=true`를 패치합니다. `/metrics`에 `airm_accelerators{vendor,model}`을 냅니다.
-  ```bash
-  python -m rm_abstract.airm.daemon --once --dry-run        # 만들 객체만 출력 (클러스터 접근 없음)
-  python -m rm_abstract.airm.daemon --provider sim --once --dry-run   # 장치 없이 시연
-  pip install -e ".[k8s]"                                   # 실제 apply에는 kubernetes 클라이언트 필요
-  ```
-  환경 변수: `AIRM_NODE_NAME`, `AIRM_PROVIDER`(기본 `rm-abstract`), `AIRM_INTERVAL_S`(기본 60), `AIRM_METRICS_PORT`(기본 9400, 0이면 끔), `AIRM_REMOVE_AFTER`(기본 3: 연속 3회 탐지되지 않은 장치만 삭제 — 도구 일시 실패로 프로파일이 깜박이지 않도록).
-- **k8s + llm-d**: Helm chart `deploy/helm/rm-abstract-node/` (DaemonSet + ServiceAccount/ClusterRole: `acceleratorprofiles` CRUD, `nodes` get/patch). AcceleratorProfile CRD는 rm-core(`k8s/acceleratorprofile.crd.yaml`)에 있고 ai-rm umbrella chart/llm-d-setup이 설치합니다. 이미지 기본값은 `ghcr.io/ai-computing/rm-abstract-node:<appVersion>`이고, 사이트 override(`image.repository`/`image.tag`)로 바꿉니다. 배치 정책(EPP)과 lmd-top은 이 프로파일·레이블을 읽습니다.
-- **설치·테스트**: `ai-rm.yaml` 참고 (`pip install -e .`, `pytest -m "not gpu and not slow" tests/unit`, `python -m rm_core.conformance airm.accelerator_providers rm-abstract`).
-- **지표**: `accelerators` (rm-core `METRICS`).
-- **관련 성과지표**: 이종 자원 수(장치 등록·탐지).
-- **`cluster.local.env` 변수**: 없음.
-
-## Quick Start
-
-### Installation
+## 🚀 Quick start
 
 ```bash
-# Basic installation (CPU with transformers)
+git clone https://github.com/ai-computing/rm_abstract_layer.git && cd rm_abstract_layer
 pip install -r requirements/requirements.txt
 pip install -e .
 
-# GPU support (vLLM)
-pip install -r requirements/requirements-gpu.txt
-pip install -e ".[gpu]"
-
-# Triton engine support (ONNX conversion)
-pip install -r requirements/requirements-triton.txt
-pip install -e ".[triton]"
-
-# TorchServe engine support
-pip install -r requirements/requirements-torchserve.txt
-pip install -e ".[torchserve]"
-
-# All serving engines
-pip install -r requirements/requirements-serving.txt
-pip install -e ".[serving]"
-
-# Full installation (everything)
-pip install -r requirements/requirements-all.txt
-pip install -e ".[all]"
+python -m rm_abstract.airm.daemon --once --dry-run                  # devices on this node, as k8s objects
+python -m rm_abstract.airm.daemon --provider sim --once --dry-run   # same, with simulated devices
+python -m rm_core.conformance airm.accelerator_providers rm-abstract  # contract check (PASS / SKIP / FAIL)
 ```
 
-### Basic Usage
+Installing through ai-rm: `make setup COMPONENTS=rm_abstract_layer` in the
+[ai-rm](https://github.com/ai-computing/ai-rm) umbrella (steps come from [`ai-rm.yaml`](ai-rm.yaml)).
+
+## ☸️ Device discovery for ai-rm
+
+### `AcceleratorProvider` adapter
+
+`rm_abstract.airm` implements the rm-core v0.1 `AcceleratorProvider` contract and registers it as
+`rm-abstract` in the `airm.accelerator_providers` entry-point group:
 
 ```python
-# Before (vLLM only - GPU required)
-# from vllm import LLM, SamplingParams
+from rm_core import registry
 
-# After (rm_abstract - works on GPU and CPU)
+provider = registry.load("airm.accelerator_providers", "rm-abstract")
+for acc in provider.discover():
+    print(acc.id, acc.vendor, acc.model, acc.memory_bytes, acc.peak_tflops)
+# node-a/furiosa:0  furiosa  RNGD  ...  {'bf16': 256.0, 'fp8': 512.0}
+```
+
+| Field | Value |
+|---|---|
+| `id` | `<node>/<vendor>:<index>`; index is the device's own number (`npu3` → `furiosa:3`) |
+| node name | `AIRM_NODE_NAME` (set from `spec.nodeName` in the DaemonSet), else the hostname |
+| `peak_tflops` | Only where the vendor datasheet states it (RNGD, ATOM), with `peak_source`; unknown otherwise |
+| CPUs | Not reported; a node without accelerators yields `[]` |
+
+### Node daemon
+
+`python -m rm_abstract.airm.daemon` discovers periodically and
+
+- applies one `AcceleratorProfile` (`airm.ai-computing.io/v1alpha1`) per device, deleting profiles of devices that
+  stayed missing for `AIRM_REMOVE_AFTER` consecutive rounds,
+- patches node labels `airm.ai-computing.io/<vendor>.<model>=<count>` and `airm.ai-computing.io/managed=true`,
+- serves `airm_accelerators{vendor,model}` on `/metrics`.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `AIRM_NODE_NAME` | hostname | Node name used in ids and labels |
+| `AIRM_PROVIDER` | `rm-abstract` | Provider entry point (`sim` for a demo) |
+| `AIRM_INTERVAL_S` | `60` | Discovery interval |
+| `AIRM_METRICS_PORT` | `9400` | `/metrics` port, `0` disables |
+| `AIRM_REMOVE_AFTER` | `3` | Missed rounds before a profile is deleted (avoids flapping on a transient tool failure) |
+
+Applying to a cluster needs the Kubernetes client: `pip install -e ".[k8s]"`.
+
+### Helm chart
+
+[`deploy/helm/rm-abstract-node`](deploy/helm/rm-abstract-node) installs the daemon as a DaemonSet with a
+ServiceAccount and ClusterRole (`acceleratorprofiles` CRUD, `nodes` get/patch). The `AcceleratorProfile` CRD
+ships with [rm-core](https://github.com/ai-computing/rm-core/tree/v0.1.1/k8s) and is installed by llm-d-setup / the
+ai-rm umbrella. Set the image for your site with `image.repository` / `image.tag`.
+
+```bash
+helm template rm-abstract-node deploy/helm/rm-abstract-node --set image.repository=<registry>/rm-abstract-node
+```
+
+## 🔁 vLLM-compatible API
+
+```python
+# from vllm import LLM, SamplingParams
 from rm_abstract import LLM, SamplingParams
 
-# Rest of your code remains the same!
-llm = LLM(model="gpt2")
+llm = LLM(model="gpt2")                                  # auto: GPU > CPU
+llm = LLM(model="gpt2", device="cpu")                    # or RM_DEVICE=cpu
+llm = LLM(model="gpt2", engine="triton")                 # or RM_ENGINE=triton
 outputs = llm.generate(["Hello, I am"], SamplingParams(max_tokens=50))
 print(outputs[0].outputs[0].text)
 ```
 
-### Device Selection
-
-```python
-from rm_abstract import LLM, SamplingParams
-
-# Auto-detect best device (GPU > CPU)
-llm = LLM(model="gpt2")
-
-# Explicit device selection
-llm = LLM(model="gpt2", device="nvidia")   # NVIDIA GPU
-llm = LLM(model="gpt2", device="cpu")      # CPU
-
-# Environment variable control
-# RM_DEVICE=nvidia python your_script.py
-# RM_DEVICE=cpu python your_script.py
-```
-
-### Engine Selection
-
-```python
-from rm_abstract import LLM, SamplingParams
-
-# vLLM engine (default)
-llm = LLM(model="gpt2", engine="vllm")
-
-# Triton Inference Server (auto-starts Docker, converts to ONNX)
-llm = LLM(model="gpt2", engine="triton")
-
-# TorchServe (auto-starts server, creates MAR package)
-llm = LLM(model="gpt2", engine="torchserve")
-
-# Environment variable control
-# RM_ENGINE=triton python your_script.py
-```
-
-### Classic API Usage
+<details>
+<summary><b>Runtime control, engines and errors</b></summary>
+<br>
 
 ```python
 import rm_abstract
 
-# Initialize (auto-select optimal device: GPU > CPU)
 rm_abstract.init(device="auto")
-
-# Check available resources
-resources = rm_abstract.get_available_resources()
-print(resources)
-# {'nvidia': True, 'cpu': True}
-
-# Get device info
-info = rm_abstract.get_device_info()
-print(f"Current device: {info['resource_type']}:{info['device_id']}")
-
-# Runtime device switching
+print(rm_abstract.get_available_resources())   # {'nvidia': True, 'cpu': True}
 rm_abstract.switch_device("cpu")
-rm_abstract.switch_device("nvidia")  # If available
 ```
 
----
+| Engine | Managed for you |
+|---|---|
+| vLLM (default) | — |
+| Triton | HuggingFace → ONNX conversion, model repository, Docker container start/stop |
+| TorchServe | MAR packaging, server start, model registration, cleanup |
 
-## Supported Environment
+```python
+from rm_abstract.exceptions import BackendNotAvailableError
 
-### Hardware Resources
+try:
+    llm = LLM(model="gpt2", device="nvidia")
+except BackendNotAvailableError:
+    llm = LLM(model="gpt2", device="cpu")
+```
 
-| Device | Status | Backend |
-|--------|--------|---------|
-| NVIDIA GPU | ✅ Supported | vLLM / Triton / TorchServe |
-| CPU | ✅ Supported | transformers / TorchServe |
-| Rebellions ATOM NPU | 🔧 Planned | vLLM-RBLN / Optimum-RBLN |
-| FuriosaAI RNGD NPU | 🔧 Planned | FuriosaAI SDK |
+Installation extras: `.[gpu]`, `.[triton]`, `.[torchserve]`, `.[serving]`, `.[all]` (see
+[requirements guide](docs/README_REQUIREMENTS.md)). More in [quick start](docs/QUICKSTART.md) and
+[serving engines](docs/SERVING_ENGINES.md).
+</details>
 
-### Serving Engines
+### Support matrix
 
-| Engine | Status | Auto Management | Description |
-|--------|--------|-----------------|-------------|
-| vLLM | ✅ Supported | - | High-performance LLM serving |
-| Triton | ✅ Supported | Docker auto-start, ONNX conversion | Multi-model serving |
-| TorchServe | ✅ Supported | Server auto-start, MAR packaging | PyTorch native serving |
+| Device | Discovery & `AcceleratorProfile` | Inference through `LLM` |
+|---|:-:|:-:|
+| NVIDIA GPU | ✅ | ✅ vLLM · Triton · TorchServe |
+| CPU | — *(not reported as an accelerator)* | ✅ transformers · TorchServe |
+| FuriosaAI RNGD | ✅ | 🧪 plugin present, not validated |
+| Rebellions ATOM | ✅ | 🧪 plugin present, not validated |
 
----
+## 🏗 Architecture
 
-## Architecture
+```mermaid
+flowchart LR
+    subgraph node["Node"]
+      tools["nvidia-smi · furiosa-smi · rbln-stat"] --> prov["rm_abstract.airm<br/>AcceleratorProvider"]
+      det["HardwareDetector<br/>(SDK fallback)"] --> prov
+      prov --> d["node daemon"]
+    end
+    d -- "AcceleratorProfile · node labels" --> k8s[("Kubernetes API")]
+    d -. "airm_accelerators" .-> prom[("Prometheus")]
+    k8s --> epp["llm-d EPP / placement"]
+    k8s --> top["lmd-top"]
+```
 
 ```text
 src/rm_abstract/
-├── __init__.py           # Main interface (init, switch_device, LLM, SamplingParams)
-├── llm.py                # LLM proxy class (vLLM-compatible API)
-├── exceptions.py         # Exception classes
-├── auto.py               # Auto import hooking (use() function)
-├── run.py                # CLI runner
-├── __main__.py           # Module entry point
-├── airm/                 # ai-rm protocol v0.1 adapter (AcceleratorProvider, node daemon)
-├── common/               # Shared utilities
-│   ├── input_adapter.py  # Unified input format handling
-│   ├── output_adapter.py # Unified output format conversion
-│   ├── model_converter.py # Model format conversion
-│   └── hardware_detector.py # Hardware detection
-├── compat/               # Compatibility modules
-│   ├── vllm_compat.py    # vLLM compatibility layer
-│   └── transformers_compat.py # Transformers compatibility layer
-├── resources/            # Hardware-specific implementations
-│   ├── base.py           # Resource ABC
-│   ├── gpu/nvidia.py     # NVIDIA GPU (vLLM)
-│   ├── npu/rebellions.py # Rebellions ATOM NPU
-│   ├── npu/furiosa.py    # FuriosaAI RNGD NPU
-│   └── cpu/default.py    # CPU fallback
-├── engines/              # Serving engines
-│   ├── base.py           # ServingEngine base class
-│   ├── vllm.py           # vLLM engine
-│   ├── triton.py         # Triton engine (auto-start, ONNX conversion)
-│   ├── torchserve.py     # TorchServe engine (auto-start, MAR packaging)
-│   └── model_converter.py # HuggingFace to ONNX/MAR conversion
-├── registry/             # Plugin system
-│   ├── plugin_registry.py # Centralized registry
-│   └── discovery.py      # Auto-discovery
-└── core/                 # Core modules
-    ├── config.py         # Configuration
-    └── controller.py     # DeviceFlowController
+├── airm/          # ai-rm protocol v0.1: AcceleratorProvider, node daemon
+├── resources/     # device plugins: gpu/nvidia, npu/furiosa, npu/rebellions, cpu
+├── engines/       # serving engines: vLLM, Triton, TorchServe, model conversion
+├── common/        # hardware detection, input/output adapters
+├── compat/        # vLLM / transformers compatibility layers
+├── registry/      # plugin registry and discovery
+├── core/          # configuration, DeviceFlowController
+└── llm.py         # vLLM-compatible LLM proxy
 ```
 
----
-
-## Auto Server Management
-
-### Triton Inference Server
-
-When using `engine="triton"`, rm_abstract will automatically:
-
-1. Convert HuggingFace model to ONNX format
-2. Create Triton model repository with proper config.pbtxt
-3. Start Docker container with Triton server
-4. Clean up on exit
-
-```python
-from rm_abstract import LLM, SamplingParams
-
-# Triton with auto-management (requires Docker)
-llm = LLM(model="gpt2", engine="triton", device="nvidia")
-outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
-```
-
-### TorchServe
-
-When using `engine="torchserve"`, rm_abstract will automatically:
-
-1. Convert HuggingFace model to MAR (Model Archive) format
-2. Create TorchServe configuration
-3. Start TorchServe server
-4. Register and load the model
-5. Clean up on exit
-
-```python
-from rm_abstract import LLM, SamplingParams
-
-# TorchServe with auto-management (requires torchserve installed)
-llm = LLM(model="gpt2", engine="torchserve", device="cpu")
-outputs = llm.generate(["Hello"], SamplingParams(max_tokens=50))
-```
-
----
-
-## Examples
-
-All 5 examples are tested and validated (✅ 100% pass rate):
-
-```text
-examples/
-├── 01_quick_start.py         # Simplest usage
-├── 02_device_selection.py    # Device control (CPU/GPU/NPU)
-├── 03_auto_import_hook.py    # Auto import hooking
-├── 04_serving_engines.py     # Test all serving engines
-└── 05_engine_comparison.py   # Performance comparison
-```
-
-### Run Examples
+## 🧪 Development
 
 ```bash
-# Quick start
-PYTHONPATH=./src python examples/01_quick_start.py
-
-# Device selection
-PYTHONPATH=./src python examples/02_device_selection.py
-
-# Auto import hook
-PYTHONPATH=./src python examples/03_auto_import_hook.py
-
-# Test all serving engines
-PYTHONPATH=./src python examples/04_serving_engines.py
-
-# Compare engine performance
-PYTHONPATH=./src python examples/05_engine_comparison.py
-
-# Run all examples with automated test
-bash test_all_examples.sh
+pip install -e ".[dev]"
+pytest -m "not gpu and not slow" tests/unit     # quick tests, no accelerator needed
+ruff check src tests && black --check src tests
+python tools/check_sensitive.py .               # internal addresses, tokens, keys
+bash scripts/run_examples.sh                    # run every example (needs models / devices)
 ```
 
----
+Guides: [contributing](docs/CONTRIBUTING.md) · [adding a device](docs/ADDING_RESOURCES.md) ·
+[adding an engine](docs/ADDING_ENGINES.md).
 
-## Testing
+## 🗺 Roadmap
 
-```bash
-# Run all tests
-pytest tests/ -v
+- [x] rm-core v0.1 `AcceleratorProvider`, node daemon, Helm chart
+- [ ] Published `rm-abstract-node` container image
+- [ ] Validated RNGD / ATOM inference through the `LLM` API
+- [ ] Engine-facing backend adapters for Optimus Prime (see the ai-rm [engine plan](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md))
+- [ ] Wider device model: partitions, interconnect topology, live utilization
 
-# Run specific test files
-pytest tests/test_core.py -v
-pytest tests/unit/test_llm.py -v
-pytest tests/unit/test_registry.py -v
-```
+## 📚 Documentation
 
----
+| | |
+|---|---|
+| **Use** | [Quick start](docs/QUICKSTART.md) · [Serving engines](docs/SERVING_ENGINES.md) · [Requirements](docs/README_REQUIREMENTS.md) |
+| **Understand** | [Architecture](docs/ARCHITECTURE.md) · [Project structure](docs/PROJECT_STRUCTURE.md) · [Changelog](CHANGELOG.md) |
+| **Extend** | [Contributing](docs/CONTRIBUTING.md) · [Adding resources](docs/ADDING_RESOURCES.md) · [Adding engines](docs/ADDING_ENGINES.md) |
+| **ai-rm** | [Umbrella](https://github.com/ai-computing/ai-rm) · [rm-core protocol](https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md) · [Component card](https://github.com/ai-computing/ai-rm/blob/master/docs/components/rm_abstract_layer.md) |
 
-## Error Handling
+Older test reports and slides: [docs/archive](docs/archive/README.md).
 
-```python
-from rm_abstract.exceptions import (
-    RMAbstractError,           # Base exception
-    NotInitializedError,       # Not initialized
-    BackendNotAvailableError,  # Backend unavailable
-    InvalidDeviceError,        # Invalid device spec
-)
+## 📄 License
 
-try:
-    from rm_abstract import LLM
-    llm = LLM(model="gpt2", device="nvidia")
-except BackendNotAvailableError as e:
-    print(f"GPU not available: {e}")
-    llm = LLM(model="gpt2", device="cpu")  # Fallback to CPU
-```
+BSD-3-Clause. NPU backends need the vendors' own SDKs (Rebellions RBLN SDK, FuriosaAI SDK) under their
+license terms; this project does not redistribute them.
 
----
+<details>
+<summary><b>Third-party licenses</b></summary>
+<br>
 
-## Device Options
-
-```python
-from rm_abstract import LLM
-
-# Auto-select (GPU > CPU priority)
-llm = LLM(model="gpt2", device="auto")
-
-# Specific GPU
-llm = LLM(model="gpt2", device="nvidia")
-llm = LLM(model="gpt2", device="gpu")  # alias
-llm = LLM(model="gpt2", device="cuda")  # alias
-
-# CPU
-llm = LLM(model="gpt2", device="cpu")
-
-# NPU (Planned - not yet supported)
-# llm = LLM(model="gpt2", device="rbln")     # Rebellions NPU
-# llm = LLM(model="gpt2", device="furiosa")  # FuriosaAI NPU
-```
-
----
-
-## Documentation
-
-### Getting Started
-| Document | Description |
-|----------|-------------|
-| [docs/QUICKSTART.md](docs/QUICKSTART.md) | 5-minute quick start guide |
-| [docs/SERVING_ENGINES.md](docs/SERVING_ENGINES.md) | Complete guide for all serving engines |
-| [docs/README_REQUIREMENTS.md](docs/README_REQUIREMENTS.md) | Installation and dependencies guide |
-
-### Technical Documentation
-| Document | Description |
-|----------|-------------|
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture and design |
-| [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) | Project layout and organization |
-| [docs/FINAL_TEST_REPORT.md](docs/FINAL_TEST_REPORT.md) | Test results and validation |
-| [CLEANUP_SUMMARY.md](CLEANUP_SUMMARY.md) | Project cleanup summary |
-
-### Development
-| Document | Description |
-|----------|-------------|
-| [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Development and contribution guide |
-| [docs/ADDING_RESOURCES.md](docs/ADDING_RESOURCES.md) | Guide for adding new hardware resources |
-| [docs/ADDING_ENGINES.md](docs/ADDING_ENGINES.md) | Guide for adding new serving engines |
-
-### Presentation
-| Document | Description |
-|----------|-------------|
-| [docs/PRESENTATION.md](docs/PRESENTATION.md) | Project presentation slides (Korean) |
-
----
-
-## License
-
-BSD-3-Clause License
-
-### Third-Party Licenses
-
-This project integrates with various third-party libraries and SDKs:
-
-#### Open Source Dependencies (Permissive Licenses)
-
-| Package | License | Usage |
-|---------|---------|-------|
-| [PyTorch](https://github.com/pytorch/pytorch) | BSD-3-Clause | Deep learning framework |
-| [vLLM](https://github.com/vllm-project/vllm) | Apache-2.0 | High-performance LLM serving |
-| [Triton Inference Server](https://github.com/triton-inference-server/server) | BSD-3-Clause | Multi-model serving |
-| [TorchServe](https://github.com/pytorch/serve) | Apache-2.0 | PyTorch model serving |
-| [HuggingFace Transformers](https://github.com/huggingface/transformers) | Apache-2.0 | Model hub and inference |
-| [vllm-rbln](https://github.com/rebellions-sw/vllm-rbln) | Apache-2.0 | vLLM plugin for RBLN NPU |
-| [optimum-rbln](https://github.com/rebellions-sw/optimum-rbln) | Apache-2.0 | HuggingFace integration for RBLN |
-| [FuriosaAI SDK](https://github.com/furiosa-ai/furiosa-sdk) | Apache-2.0 | FuriosaAI Python SDK |
-
-#### Proprietary NPU SDKs
-
-The following NPU backends require proprietary SDKs with separate license agreements:
+| Package | License |
+|---|---|
+| [PyTorch](https://github.com/pytorch/pytorch) | BSD-3-Clause |
+| [vLLM](https://github.com/vllm-project/vllm) | Apache-2.0 |
+| [Triton Inference Server](https://github.com/triton-inference-server/server) | BSD-3-Clause |
+| [TorchServe](https://github.com/pytorch/serve) | Apache-2.0 |
+| [HuggingFace Transformers](https://github.com/huggingface/transformers) | Apache-2.0 |
+| [vllm-rbln](https://github.com/rebellions-sw/vllm-rbln) · [optimum-rbln](https://github.com/rebellions-sw/optimum-rbln) | Apache-2.0 |
+| [FuriosaAI SDK](https://github.com/furiosa-ai/furiosa-sdk) | Apache-2.0 |
 
 | NPU | SDK | License | Access |
-|-----|-----|---------|--------|
-| **Rebellions ATOM** | RBLN SDK (rebel-compiler, drivers, runtime) | Proprietary | [Request Access](https://rebellions.ai/request-form-rbln-sdk/) |
-| **FuriosaAI RNGD** | FuriosaAI SDK (kernel driver, firmware, runtime) | Proprietary (EULA) | [Early Access Program](https://furiosa.ai/) |
+|---|---|---|---|
+| Rebellions ATOM | RBLN SDK (compiler, driver, runtime) | Proprietary | [Request access](https://rebellions.ai/request-form-rbln-sdk/) |
+| FuriosaAI RNGD | FuriosaAI SDK (driver, firmware, runtime) | Proprietary (EULA) | [furiosa.ai](https://furiosa.ai/) |
+</details>
 
-> **Note**: Users are responsible for complying with the respective SDK license terms when using NPU backends. This project only provides abstraction interfaces and does not redistribute any proprietary SDK components.
-
----
-
-## Contributing
-
-Contributions are welcome! See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.
+<div align="center"><sub>Part of <a href="https://github.com/ai-computing/ai-rm">ai-rm</a> · ai-computing team · ETRI</sub></div>
