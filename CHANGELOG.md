@@ -1,5 +1,20 @@
 # Changelog
 
+## Chart 0.4.2 — 2026-10-19
+
+Found while running the daemon on the live cluster (ai-rm end-to-end run).
+
+### Fixed
+- Writable `/tmp` under the read-only root: `rbln-stat` (PyInstaller) unpacks itself under `TMPDIR`
+  and failed with "Could not create temporary directory", so no ATOM was published.
+- `hostDev` (default on) mounts the host's `/dev` live. A privileged container sees `/dev` as it was at
+  start; an ATOM that the driver re-created after a pod released it dropped out of discovery.
+
+### Added
+- Site extension points, all empty by default: `command`, `extraEnv`, `initContainers`,
+  `extraVolumes`, `extraVolumeMounts` (run the daemon from a stock Python image until the
+  `rm-abstract-node` image is published).
+
 ## 0.4.1 — 2026-10-19
 
 ### Fixed
