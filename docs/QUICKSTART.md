@@ -243,8 +243,8 @@ from vllm import LLM
 
 ## Get Help
 
-- **Issues**: https://github.com/ai-computing/rm_abstract_layer/issues
-- **Discussions**: https://github.com/ai-computing/rm_abstract_layer/discussions
+- **Issues**: https://github.com/ai-computing/rm-accel/issues
+- **Discussions**: https://github.com/ai-computing/rm-accel/discussions
 
 ## Verified Environments
 
