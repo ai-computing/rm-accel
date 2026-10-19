@@ -12,13 +12,15 @@
   <a href="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml"><img src="https://github.com/ai-computing/rm_abstract_layer/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm L1 계층"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="프로토콜 v0.1"></a>
+  <a href="https://github.com/ai-computing/rm_abstract_layer/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="릴리스 v0.4.1"></a>
+  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.4.2-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.4.2"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="라이선스: BSD-3-Clause"></a>
 </p>
 
 <p>
   <a href="#-빠른-시작"><b>빠른 시작</b></a> ·
-  <a href="#️-ai-rm-장치-탐지"><b>ai-rm 연동</b></a> ·
+  <a href="#-ai-rm-연동"><b>ai-rm 연동</b></a> ·
   <a href="#-vllm-호환-api"><b>vLLM 호환 API</b></a> ·
   <a href="#-구조"><b>구조</b></a> ·
   <a href="#-문서"><b>문서</b></a>
@@ -36,20 +38,24 @@ GPU와 NPU(FuriosaAI RNGD, Rebellions ATOM)를 탐지해 [rm-core](https://githu
 같은 코드를 GPU나 CPU에서 실행하고 서빙 엔진(vLLM, Triton, TorchServe)을 바꿔 쓸 수 있는 **vLLM 호환 Python API**도
 제공합니다.
 
+성숙도: 프로토타입(Alpha). 현재 릴리스 v0.4.1, Helm chart 0.4.2 — [변경 이력](CHANGELOG.md)을 참고하세요.
+
+## ✨ 주요 특징
+
 <table>
 <tr>
 <td width="33%" valign="top">
-<b>🔎 장치 탐지</b><br>
+<b>장치 탐지</b><br>
 읽기 전용 벤더 도구(<code>nvidia-smi</code>, <code>furiosa-smi</code>, <code>rbln-stat</code>)를 먼저 쓰고, 없으면 SDK
 기반으로 탐지합니다. 장치 자체 번호, 모델, 메모리, 데이터시트 최대 TFLOPS.
 </td>
 <td width="33%" valign="top">
-<b>☸️ Kubernetes 게시</b><br>
+<b>Kubernetes 게시</b><br>
 노드 데몬(DaemonSet)이 장치마다 <code>AcceleratorProfile</code>을 apply하고, 노드에
 <code>airm.ai-computing.io/&lt;vendor&gt;.&lt;model&gt;</code> 레이블을 달고 <code>airm_accelerators</code>를 냅니다.
 </td>
 <td width="33%" valign="top">
-<b>🔁 하나의 API, 여러 백엔드</b><br>
+<b>하나의 API, 여러 백엔드</b><br>
 <code>from vllm import LLM</code>을 <code>from rm_abstract import LLM</code>으로 바꾸고, 장치와 엔진은 인자나 환경
 변수로 고릅니다.
 </td>
@@ -71,7 +77,7 @@ python -m rm_core.conformance airm.accelerator_providers rm-abstract  # 계약 �
 ai-rm으로 설치할 때는 [ai-rm](https://github.com/ai-computing/ai-rm) 저장소에서 `make setup COMPONENTS=rm_abstract_layer`를
 실행합니다(절차는 [`ai-rm.yaml`](ai-rm.yaml)에 있습니다).
 
-## ☸️ ai-rm 장치 탐지
+## 🔌 ai-rm 연동
 
 ### `AcceleratorProvider` 어댑터
 
@@ -123,6 +129,24 @@ ClusterRole(`acceleratorprofiles` CRUD, `nodes` get/patch)을 만듭니다. `Acc
 ```bash
 helm template rm-abstract-node deploy/helm/rm-abstract-node --set image.repository=<registry>/rm-abstract-node
 ```
+
+<details>
+<summary><b>Chart 0.4.2: 컨테이너 실행 환경과 사이트 확장 지점</b></summary>
+<br>
+
+| 값 | 기본값 | 의미 |
+|---|---|---|
+| `privileged` | `true` | 벤더 도구가 장치 노드를 읽기 위해 필요 |
+| `hostDev` | `true` | 호스트 `/dev`를 실시간으로 마운트해, 드라이버가 다시 만든 장치(예: pod가 놓아준 ATOM)도 계속 탐지되게 함 |
+| `command` | `[]` | 데몬 명령 재정의 (기본 `python -m rm_abstract.airm.daemon`) |
+| `extraEnv` | `[]` | 데몬 env에 덧붙일 `{name, value}` 항목 |
+| `initContainers` | `[]` | pod init container, 그대로 반영 |
+| `extraVolumes` / `extraVolumeMounts` | `[]` | pod volume / 데몬 volumeMount, 그대로 반영 |
+
+루트 파일시스템은 읽기 전용이고 `/tmp`만 쓰기 가능합니다(`rbln-stat`이 `TMPDIR` 아래에 스스로 압축을 풉니다).
+`rm-abstract-node` 이미지가 배포되기 전까지는 확장 지점을 써서 일반 Python 이미지로 데몬을 실행할 수 있습니다.
+[`values.yaml`](deploy/helm/rm-abstract-node/values.yaml)과 [변경 이력](CHANGELOG.md)을 참고하세요.
+</details>
 
 ## 🔁 vLLM 호환 API
 
@@ -238,6 +262,26 @@ bash scripts/run_examples.sh                    # 예제 전체 실행 (모델·
 ## 📄 라이선스
 
 BSD-3-Clause. NPU 백엔드는 각 벤더 SDK(Rebellions RBLN SDK, FuriosaAI SDK)가 필요하며 해당 라이선스를 따릅니다. 이
-프로젝트는 SDK를 재배포하지 않습니다. 서드파티 라이선스 목록은 [영문 README](README.md#-license)에 있습니다.
+프로젝트는 SDK를 재배포하지 않습니다.
+
+<details>
+<summary><b>서드파티 라이선스</b></summary>
+<br>
+
+| 패키지 | 라이선스 |
+|---|---|
+| [PyTorch](https://github.com/pytorch/pytorch) | BSD-3-Clause |
+| [vLLM](https://github.com/vllm-project/vllm) | Apache-2.0 |
+| [Triton Inference Server](https://github.com/triton-inference-server/server) | BSD-3-Clause |
+| [TorchServe](https://github.com/pytorch/serve) | Apache-2.0 |
+| [HuggingFace Transformers](https://github.com/huggingface/transformers) | Apache-2.0 |
+| [vllm-rbln](https://github.com/rebellions-sw/vllm-rbln) · [optimum-rbln](https://github.com/rebellions-sw/optimum-rbln) | Apache-2.0 |
+| [FuriosaAI SDK](https://github.com/furiosa-ai/furiosa-sdk) | Apache-2.0 |
+
+| NPU | SDK | 라이선스 | 접근 |
+|---|---|---|---|
+| Rebellions ATOM | RBLN SDK (컴파일러, 드라이버, 런타임) | 독점 | [접근 요청](https://rebellions.ai/request-form-rbln-sdk/) |
+| FuriosaAI RNGD | FuriosaAI SDK (드라이버, 펌웨어, 런타임) | 독점 (EULA) | [furiosa.ai](https://furiosa.ai/) |
+</details>
 
 <div align="center"><sub><a href="https://github.com/ai-computing/ai-rm">ai-rm</a> 구성요소 · ai-computing 팀 · ETRI</sub></div>
