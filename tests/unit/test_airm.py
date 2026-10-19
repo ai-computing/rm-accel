@@ -16,22 +16,25 @@ from rm_abstract.common.hardware_detector import (  # noqa: E402
     HardwareVendor,
 )
 
+# Shape of rbln-stat 3.0 on a 4-card host: "npu" restarts per device group, "device" is unique.
 RBLN_STAT = {
     "devices": [
         {
-            "npu": 0,
+            "npu": npu,
             "name": "RBLN-CA22",
+            "device": f"rbln{i}",
             "fw_ver": "3.0.0",
-            "pci": {"bus_id": "0000:83:00.0", "link_speed": "32.0GT/s"},
+            "pci": {"bus_id": bdf, "link_speed": speed},
             "memory": {"used": "0", "total": "16877879296"},
-        },
-        {
-            "npu": 1,
-            "name": "RBLN-CA22",
-            "fw_ver": "3.0.0",
-            "pci": {"bus_id": "0000:84:00.0", "link_speed": "16.0GT/s"},
-            "memory": {"used": "0", "total": "16877879296"},
-        },
+        }
+        for i, (npu, bdf, speed) in enumerate(
+            [
+                (0, "0000:83:00.0", "32.0GT/s"),
+                (1, "0000:84:00.0", "16.0GT/s"),
+                (0, "0000:c3:00.0", "32.0GT/s"),
+                (0, "0000:c4:00.0", "32.0GT/s"),
+            ]
+        )
     ]
 }
 FURIOSA_SMI = [
@@ -79,13 +82,20 @@ class TestRmAbstractProvider:
         assert [a.id for a in accs] == [
             "test-node/rebellions:0",
             "test-node/rebellions:1",
+            "test-node/rebellions:2",
+            "test-node/rebellions:3",
         ]
         a = accs[0]
         assert (a.vendor, a.model, a.memory_kind) == ("rebellions", "ATOM", "gddr")
         assert a.memory_bytes == 16877879296
         assert a.peak_tflops and a.peak_source
         assert a.extra["product"] == "RBLN-CA22"
-        assert [x.interconnect for x in accs] == [["pcie5"], ["pcie4"]]
+        assert [x.interconnect for x in accs] == [
+            ["pcie5"],
+            ["pcie4"],
+            ["pcie5"],
+            ["pcie5"],
+        ]
 
     def test_furiosa_keeps_device_index(self, no_hardware):
         no_hardware.setattr(

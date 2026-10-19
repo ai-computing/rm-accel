@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 — 2026-10-19
+
+### Fixed
+- Rebellions: take the device index from `rbln<N>`, not `npu`. `rbln-stat` restarts `npu` at 0 in each
+  device group, so a 4-card host was reported as 2 ATOM (ids collided).
+
 ## 0.4.0 — 2026-10-19
 
 Repositioned as the **L1 accelerator abstraction** of [ai-rm](https://github.com/ai-computing/ai-rm).
