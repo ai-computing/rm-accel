@@ -75,12 +75,21 @@ spec:
             # read-only root: rbln-stat (PyInstaller) unpacks itself under $TMPDIR
             - name: tmp
               mountPath: /tmp
+            {{- if .Values.hostDev }}
+            - name: dev
+              mountPath: /dev
+            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
       volumes:
         - name: tmp
           emptyDir: {}
+        {{- if .Values.hostDev }}
+        - name: dev
+          hostPath:
+            path: /dev
+        {{- end }}
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
