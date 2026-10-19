@@ -101,9 +101,20 @@ class TestCompatTransformers:
 
     def test_device_from_env(self):
         """Test device selection from environment."""
-        with patch.dict(os.environ, {"RM_DEVICE": "cpu"}):
-            from rm_abstract.compat.transformers_compat import _resolve_device
-            assert _resolve_device("auto") == "cpu"
+        from rm_abstract.compat import transformers_compat as tc
+
+        # RM_DEVICE wins over host detection, so the result must not depend on the host.
+        with patch.dict(os.environ, {"RM_DEVICE": "cpu"}), patch.object(
+            tc, "_detect_device", side_effect=AssertionError("must not auto-detect")
+        ):
+            assert tc._resolve_device(tc._get_device()) == "cpu"
+
+    def test_auto_device_uses_detection(self):
+        """Test 'auto' delegates to host detection."""
+        from rm_abstract.compat import transformers_compat as tc
+
+        with patch.object(tc, "_detect_device", return_value="furiosa"):
+            assert tc._resolve_device("auto") == "furiosa"
 
     def test_explicit_device(self):
         """Test explicit device selection."""

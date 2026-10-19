@@ -25,7 +25,7 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
 
 ## ai-rm
 
-[ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다(`components/l1-accel/rm_abstract_layer`). [rm-core protocol v0.1](https://github.com/ai-computing/rm-core/blob/v0.1.0/PROTOCOL.md)을 구현합니다.
+[ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다(`components/l1-accel/rm_abstract_layer`). [rm-core protocol v0.1](https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md)을 구현합니다.
 
 - **역할**: 장치 탐지와 장치 능력 모델(`resources/base.py`의 `ResourceInfo`, `ResourceCapability`), 벤더별 자원 플러그인(`resources/gpu`, `resources/npu/furiosa.py`, `resources/npu/rebellions.py`, `resources/cpu`), 서빙 엔진 플러그인(vLLM, Triton, TorchServe).
 - **adapter** (`rm_abstract.airm`): `AcceleratorProvider` `rm-abstract` (entry point `airm.accelerator_providers`).
@@ -40,7 +40,7 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
   pip install -e ".[k8s]"                                   # 실제 apply에는 kubernetes 클라이언트 필요
   ```
   환경 변수: `AIRM_NODE_NAME`, `AIRM_PROVIDER`(기본 `rm-abstract`), `AIRM_INTERVAL_S`(기본 60), `AIRM_METRICS_PORT`(기본 9400, 0이면 끔), `AIRM_REMOVE_AFTER`(기본 3: 연속 3회 탐지되지 않은 장치만 삭제 — 도구 일시 실패로 프로파일이 깜박이지 않도록).
-- **k8s + llm-d**: Helm chart `deploy/helm/rm-abstract-node/` (DaemonSet + ServiceAccount/ClusterRole: `acceleratorprofiles` CRUD, `nodes` get/patch). AcceleratorProfile CRD는 rm-core(`k8s/acceleratorprofile.crd.yaml`)에 있고 ai-rm umbrella chart/llm-d-setup이 설치합니다. 이미지(`image.repository`)는 사이트 override로 지정합니다. 배치 정책(EPP)과 lmd-top은 이 프로파일·레이블을 읽습니다.
+- **k8s + llm-d**: Helm chart `deploy/helm/rm-abstract-node/` (DaemonSet + ServiceAccount/ClusterRole: `acceleratorprofiles` CRUD, `nodes` get/patch). AcceleratorProfile CRD는 rm-core(`k8s/acceleratorprofile.crd.yaml`)에 있고 ai-rm umbrella chart/llm-d-setup이 설치합니다. 이미지 기본값은 `ghcr.io/ai-computing/rm-abstract-node:<appVersion>`이고, 사이트 override(`image.repository`/`image.tag`)로 바꿉니다. 배치 정책(EPP)과 lmd-top은 이 프로파일·레이블을 읽습니다.
 - **설치·테스트**: `ai-rm.yaml` 참고 (`pip install -e .`, `pytest -m "not gpu and not slow" tests/unit`, `python -m rm_core.conformance airm.accelerator_providers rm-abstract`).
 - **지표**: `accelerators` (rm-core `METRICS`).
 - **관련 성과지표**: 이종 자원 수(장치 등록·탐지).
