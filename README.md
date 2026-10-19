@@ -25,13 +25,26 @@ RM Abstract Layer is an abstraction layer that enables LLM inference on various 
 
 ## ai-rm
 
-[ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다(`components/l1-accel/rm_abstract_layer`).
+[ai-rm](https://github.com/ai-computing/ai-rm)의 **L1 가속기 추상화** 구성요소입니다(`components/l1-accel/rm_abstract_layer`). [rm-core protocol v0.1](https://github.com/ai-computing/rm-core/blob/v0.1.0/PROTOCOL.md)을 구현합니다.
 
 - **역할**: 장치 탐지와 장치 능력 모델(`resources/base.py`의 `ResourceInfo`, `ResourceCapability`), 벤더별 자원 플러그인(`resources/gpu`, `resources/npu/furiosa.py`, `resources/npu/rebellions.py`, `resources/cpu`), 서빙 엔진 플러그인(vLLM, Triton, TorchServe).
-- **인터페이스**: ai-rm의 `Accelerator` 계약을 제공합니다([interfaces.md](https://github.com/ai-computing/ai-rm/blob/master/docs/interfaces.md)). 다음 단계로 정밀도별 peak 연산, 메모리 종류(HBM/DRAM/통합메모리), 인터커넥트, 전력 정보를 능력 모델에 추가하고 GB10 장치를 넣을 예정입니다.
-- **k8s + llm-d**: 아직 직접 배포되는 구성요소는 아닙니다. llm-d 모델 서버와 배치 정책(EPP)이 장치 능력을 읽는 출처가 되는 것이 목표입니다.
-- **설치·테스트**: `ai-rm.yaml` 참고 (`pip install -e .`, `pytest -m "not gpu and not slow" tests/unit`).
+- **adapter** (`rm_abstract.airm`): `AcceleratorProvider` `rm-abstract` (entry point `airm.accelerator_providers`).
+  - 장치별로 벤더 관리 도구(`nvidia-smi`, `furiosa-smi`, `rbln-stat`, 읽기 전용)를 먼저 쓰고, 도구가 없으면 기존 `HardwareDetector`로 탐지해 `rm_core.Accelerator`로 변환합니다. CPU는 보고하지 않으며 장치가 없으면 `[]`입니다.
+  - `id`는 `<노드>/<vendor>:<index>`이고 index는 장치 자체 번호(`npu3` → `furiosa:3`)입니다. 노드 이름은 `AIRM_NODE_NAME`, 없으면 hostname입니다.
+  - `peak_tflops`는 벤더 데이터시트 값이 있는 모델(RNGD, ATOM)만 채우고 `peak_source`에 출처를 적습니다. NVIDIA GPU는 비워 둡니다(미상).
+  - 생성자 인자: `node` (선택, 기본 `AIRM_NODE_NAME`/hostname).
+- **노드 데몬**: `python -m rm_abstract.airm.daemon` — 주기적으로 탐지해 장치마다 `AcceleratorProfile`을 apply하고(연속으로 사라진 장치의 프로파일은 삭제), 노드 레이블 `airm.ai-computing.io/<vendor>.<model>=<개수>`, `airm.ai-computing.io/managed=true`를 패치합니다. `/metrics`에 `airm_accelerators{vendor,model}`을 냅니다.
+  ```bash
+  python -m rm_abstract.airm.daemon --once --dry-run        # 만들 객체만 출력 (클러스터 접근 없음)
+  python -m rm_abstract.airm.daemon --provider sim --once --dry-run   # 장치 없이 시연
+  pip install -e ".[k8s]"                                   # 실제 apply에는 kubernetes 클라이언트 필요
+  ```
+  환경 변수: `AIRM_NODE_NAME`, `AIRM_PROVIDER`(기본 `rm-abstract`), `AIRM_INTERVAL_S`(기본 60), `AIRM_METRICS_PORT`(기본 9400, 0이면 끔), `AIRM_REMOVE_AFTER`(기본 3: 연속 3회 탐지되지 않은 장치만 삭제 — 도구 일시 실패로 프로파일이 깜박이지 않도록).
+- **k8s + llm-d**: Helm chart `deploy/helm/rm-abstract-node/` (DaemonSet + ServiceAccount/ClusterRole: `acceleratorprofiles` CRUD, `nodes` get/patch). AcceleratorProfile CRD는 rm-core(`k8s/acceleratorprofile.crd.yaml`)에 있고 ai-rm umbrella chart/llm-d-setup이 설치합니다. 이미지(`image.repository`)는 사이트 override로 지정합니다. 배치 정책(EPP)과 lmd-top은 이 프로파일·레이블을 읽습니다.
+- **설치·테스트**: `ai-rm.yaml` 참고 (`pip install -e .`, `pytest -m "not gpu and not slow" tests/unit`, `python -m rm_core.conformance airm.accelerator_providers rm-abstract`).
+- **지표**: `accelerators` (rm-core `METRICS`).
 - **관련 성과지표**: 이종 자원 수(장치 등록·탐지).
+- **`cluster.local.env` 변수**: 없음.
 
 ## Quick Start
 
@@ -168,6 +181,7 @@ src/rm_abstract/
 ├── auto.py               # Auto import hooking (use() function)
 ├── run.py                # CLI runner
 ├── __main__.py           # Module entry point
+├── airm/                 # ai-rm protocol v0.1 adapter (AcceleratorProvider, node daemon)
 ├── common/               # Shared utilities
 │   ├── input_adapter.py  # Unified input format handling
 │   ├── output_adapter.py # Unified output format conversion

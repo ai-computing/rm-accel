@@ -29,9 +29,19 @@ classifiers = [
 dependencies = [
     "torch>=2.0.0",
     "numpy>=1.20.0,<3.0.0",
+    "rm-core @ git+https://github.com/ai-computing/rm-core@v0.1.0",
 ]
 
+# ai-rm protocol v0.1 adapters (rm_abstract.airm)
+[project.entry-points."airm.accelerator_providers"]
+rm-abstract = "rm_abstract.airm:RmAbstractProvider"
+
 [project.optional-dependencies]
+# ai-rm node daemon (python -m rm_abstract.airm.daemon) applying to Kubernetes
+k8s = [
+    "kubernetes>=24.2.0",
+]
+
 # GPU backend
 gpu = [
     "vllm>=0.2.0",
