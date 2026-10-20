@@ -1,0 +1,133 @@
+{
+  "KMD_version": "3.0.0",
+  "devices": [
+    {
+      "npu": 0,
+      "name": "RBLN-CA22",
+      "sid": "0000000000000000",
+      "uuid": "00000000-0000-0000-0000-000000000000",
+      "device": "rbln2",
+      "status": "normal",
+      "fw_ver": "3.0.0",
+      "pci": {
+        "dev": "0x1220",
+        "bus_id": "0000:c3:00.0",
+        "numa_node": "1",
+        "link_speed": "32.0GT/s",
+        "link_width": "16"
+      },
+      "temperature": "34C",
+      "card_power": "19067334uW",
+      "pstate": "P14",
+      "memory": {
+        "used": "0",
+        "total": "16877879296"
+      },
+      "util": "0.0",
+      "board_info": "0005000c",
+      "location": 5
+    },
+    {
+      "npu": 0,
+      "name": "RBLN-CA22",
+      "sid": "0000000000000000",
+      "uuid": "00000000-0000-0000-0000-000000000001",
+      "device": "rbln3",
+      "status": "normal",
+      "fw_ver": "3.0.0",
+      "pci": {
+        "dev": "0x1220",
+        "bus_id": "0000:c4:00.0",
+        "numa_node": "1",
+        "link_speed": "32.0GT/s",
+        "link_width": "16"
+      },
+      "temperature": "34C",
+      "card_power": "19067334uW",
+      "pstate": "P14",
+      "memory": {
+        "used": "0",
+        "total": "16877879296"
+      },
+      "util": "0.0",
+      "board_info": "0005000c",
+      "location": 5
+    },
+    {
+      "npu": 1,
+      "name": "RBLN-CA22",
+      "sid": "0000000000000000",
+      "uuid": "00000000-0000-0000-0000-000000000002",
+      "device": "rbln1",
+      "status": "normal",
+      "fw_ver": "3.0.0",
+      "pci": {
+        "dev": "0x1220",
+        "bus_id": "0000:84:00.0",
+        "numa_node": "1",
+        "link_speed": "32.0GT/s",
+        "link_width": "16"
+      },
+      "temperature": "34C",
+      "card_power": "19067334uW",
+      "pstate": "P14",
+      "memory": {
+        "used": "0",
+        "total": "16877879296"
+      },
+      "util": "0.0",
+      "board_info": "0005000c",
+      "location": 5
+    },
+    {
+      "npu": 0,
+      "name": "RBLN-CA22",
+      "sid": "0000000000000000",
+      "uuid": "00000000-0000-0000-0000-000000000003",
+      "device": "rbln0",
+      "status": "normal",
+      "fw_ver": "3.0.0",
+      "pci": {
+        "dev": "0x1220",
+        "bus_id": "0000:83:00.0",
+        "numa_node": "1",
+        "link_speed": "32.0GT/s",
+        "link_width": "16"
+      },
+      "temperature": "34C",
+      "card_power": "19067334uW",
+      "pstate": "P14",
+      "memory": {
+        "used": "0",
+        "total": "16877879296"
+      },
+      "util": "0.0",
+      "board_info": "0005000c",
+      "location": 5
+    }
+  ],
+  "contexts": [
+    {
+      "ctx_id": "1",
+      "npu": 1,
+      "process": "python3",
+      "pid": "4242",
+      "priority": "normal",
+      "ptid": "4242",
+      "memalloc": "1.2GiB",
+      "status": "run",
+      "util_info": "0.0"
+    },
+    {
+      "ctx_id": "2",
+      "npu": 0,
+      "process": "python3",
+      "pid": "4343",
+      "priority": "normal",
+      "ptid": "4343",
+      "memalloc": "1.0GiB",
+      "status": "run",
+      "util_info": "0.0"
+    }
+  ]
+}

@@ -26,6 +26,13 @@ hostDev: true
 # host directory is mounted read-only at /host/usr/bin, which is on the image's PATH. "" disables
 # (e.g. the sim provider, or an image that carries its own tools).
 hostBin: /usr/bin
+# Per-card occupancy: which processes hold each card, from furiosa-smi ps / the rbln ctx_info and
+# /proc/<pid>/fd, classified by /proc/<pid>/cgroup (pod or host). A card held by a process outside
+# Kubernetes is published busy (spec.extra healthy "false"), so rm-controller does not place on it.
+occupancy: true
+# The host's PID namespace, needed to see those processes. With hostPID false the daemon reports no
+# occupancy at all (never "free" for a card it cannot see).
+hostPID: true
 
 serviceAccount:
   create: true

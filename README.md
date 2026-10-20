@@ -13,7 +13,7 @@
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm layer L1"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="Protocol v0.1"></a>
   <a href="https://github.com/ai-computing/rm-accel/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="Release v0.4.1"></a>
-  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.5.0-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.5.0"></a>
+  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.6.0-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.6.0"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="License: BSD-3-Clause"></a>
 </p>
@@ -41,7 +41,7 @@ discovers GPUs and NPUs (FuriosaAI RNGD, Rebellions ATOM) on each node, describe
 It also provides a **vLLM-compatible Python API** that runs the same code on GPU or CPU with switchable serving
 engines (vLLM, Triton, TorchServe).
 
-Maturity: prototype (Alpha). Current release v0.4.1, Helm chart 0.4.2 — see the [changelog](CHANGELOG.md).
+Maturity: prototype (Alpha). Current release v0.5.0, Helm chart 0.6.0 — see the [changelog](CHANGELOG.md).
 
 ## ✨ Highlights
 
@@ -112,6 +112,27 @@ for acc in provider.discover():
 - patches node labels `airm.ai-computing.io/<vendor>.<model>=<count>` and `airm.ai-computing.io/managed=true`,
 - serves `airm_accelerators{vendor,model}` on `/metrics`.
 
+#### Card occupancy
+
+A device plugin only counts the cards it gave to pods. A process started on the host, outside Kubernetes, can hold a
+card the plugin still reports free, and a pod placed there fails with `EBUSY`. So each round the provider also finds
+who holds every card, read-only:
+
+- holders from `furiosa-smi ps --format json` (RNGD), the Rebellions driver's `/sys/class/rebellions/rbln<N>/ctx_info`
+  (what `rbln-stat` shows) and `rbln-stat --json` contexts, and open compute device nodes in `/proc/<pid>/fd`;
+- each holder is a pod (`managed: k8s`, `kubepods` in `/proc/<pid>/cgroup`) or a host process (`managed: host`).
+
+| `spec.extra` key | Value |
+|---|---|
+| `inUse` | `"true"` / `"false"` |
+| `holders` | JSON list `[{"pid": 37839, "command": "python3", "managed": "host"}]`; executable basename only, no arguments or users |
+| `health`, `healthy` | `"busy"`, `"false"` when a host process holds the card. rm-controller skips cards with `healthy: false`, so it never places on them. A card held only by pods stays available: the device plugin accounts for it |
+
+The node also gets `airm.ai-computing.io/host-held=<n>`, and `/metrics` adds `rm_accel_accelerators_in_use` and
+`rm_accel_accelerators_host_held` (`{vendor,model}`). Seeing host processes needs the host PID namespace (chart value
+`hostPID`, default on). Without it the daemon logs a warning and publishes no occupancy keys, rather than calling
+every card free.
+
 | Variable | Default | Meaning |
 |---|---|---|
 | `AIRM_NODE_NAME` | hostname | Node name used in ids and labels |
@@ -119,6 +140,7 @@ for acc in provider.discover():
 | `AIRM_INTERVAL_S` | `60` | Discovery interval |
 | `AIRM_METRICS_PORT` | `9400` | `/metrics` port, `0` disables |
 | `AIRM_REMOVE_AFTER` | `3` | Missed rounds before a profile is deleted (avoids flapping on a transient tool failure) |
+| `AIRM_OCCUPANCY` | `1` | Report card occupancy (`0` disables) |
 
 Applying to a cluster needs the Kubernetes client: `pip install -e ".[k8s]"`.
 
@@ -137,7 +159,7 @@ docker build -t rm-accel:dev . && docker run --rm rm-accel:dev --provider sim --
 ```
 
 <details>
-<summary><b>Chart 0.5.0: image, container runtime and site extension points</b></summary>
+<summary><b>Chart 0.6.0: image, container runtime and site extension points</b></summary>
 <br>
 
 | Value | Default | Meaning |
@@ -145,6 +167,8 @@ docker build -t rm-accel:dev . && docker run --rm rm-accel:dev --provider sim --
 | `privileged` | `true` | Vendor tools read the device nodes |
 | `hostDev` | `true` | Mount the host's `/dev` live, so a device the driver re-creates (e.g. an ATOM released by a pod) stays in discovery |
 | `hostBin` | `/usr/bin` | Host directory with the vendor tools, mounted read-only at `/host/usr/bin` (on the image's `PATH`); `""` disables |
+| `hostPID` | `true` | Host PID namespace, to see processes holding a card (card occupancy) |
+| `occupancy` | `true` | Report card occupancy (`AIRM_OCCUPANCY`) |
 | `command` | `[]` | Override the daemon command (default `python -m rm_abstract.airm.daemon`) |
 | `extraEnv` | `[]` | `{name, value}` entries appended to the daemon's env |
 | `initContainers` | `[]` | Pod init containers, verbatim |
