@@ -682,7 +682,7 @@ pip install -e .
 python examples/01_quick_start.py
 ```
 
-**Contact**: github.com/ai-computing
+**Contact**: [github.com/ai-computing](https://github.com/ai-computing)
 
 ---
 
