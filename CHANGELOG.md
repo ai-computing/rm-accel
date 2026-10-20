@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.5.0 / Chart 0.6.0 — 2026-10-20
+
+Found in the ai-rm end-to-end run (ai-rm#32): two training processes started on a node outside Kubernetes held both
+of its RNGD cards, the device plugin and the AcceleratorProfiles reported them free, and a decode pod placed there
+failed with `EBUSY` (#9).
+
+### Added
+- Card occupancy (`rm_abstract.airm.occupancy`): per card, the holders from `furiosa-smi ps --format json`, the
+  Rebellions driver's `ctx_info` / `rbln-stat --json` contexts and `/proc/<pid>/fd`, each classified by
+  `/proc/<pid>/cgroup` as `k8s` (pod) or `host`. Published in `spec.extra` as `inUse` and `holders` (pid, executable
+  basename, managed). A card held by a host process also gets `health: busy` and `healthy: "false"`, which
+  rm-controller already skips. `AIRM_OCCUPANCY=0` turns it off; without the host PID namespace no occupancy is
+  published (with a warning).
+- Node label `airm.ai-computing.io/host-held=<n>`; `/metrics` series `rm_accel_accelerators_in_use` and
+  `rm_accel_accelerators_host_held`.
+- Chart values `hostPID` (default `true`) and `occupancy` (default `true`).
+
 ## 0.4.2 / Chart 0.5.0 — 2026-10-19
 
 ### Added

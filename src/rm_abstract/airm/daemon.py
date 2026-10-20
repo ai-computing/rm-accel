@@ -7,6 +7,11 @@ left the node (missing for AIRM_REMOVE_AFTER discoveries in a row), and patches 
 node labels (rm_core.k8s.node_labels). It also serves the ``airm_accelerators{vendor,model}``
 gauge on /metrics.
 
+When the provider reports occupancy (``extra.inUse``), the node also gets the label
+``airm.ai-computing.io/host-held=<n>`` (cards held by processes outside Kubernetes) and /metrics
+adds ``rm_accel_accelerators_in_use`` and ``rm_accel_accelerators_host_held`` (rm-accel's own
+series: not in the rm-core shared metric set).
+
     python -m rm_abstract.airm.daemon --once --dry-run      # print the objects, touch nothing
     python -m rm_abstract.airm.daemon                       # in-cluster (ServiceAccount)
 
@@ -37,6 +42,7 @@ from rm_core.accelerator import VENDORS
 from rm_core.k8s import GROUP, LABEL_PREFIX, VERSION, accelerator_profile, node_labels
 from rm_core.metrics import prometheus_name
 
+from .occupancy import host_held
 from .provider import node_name
 
 logger = logging.getLogger("rm_abstract.airm.daemon")
@@ -44,14 +50,18 @@ logger = logging.getLogger("rm_abstract.airm.daemon")
 PROVIDER_GROUP = "airm.accelerator_providers"
 PLURAL = "acceleratorprofiles"
 COMPONENT = "rm_abstract_layer"
+HOST_HELD_LABEL = LABEL_PREFIX + "host-held"
 
 
 def build_objects(node: str, accelerators: list[Accelerator]) -> dict[str, object]:
     """The AcceleratorProfiles and node labels this node should have."""
+    labels = node_labels(accelerators)
+    if any("inUse" in a.extra for a in accelerators):
+        labels[HOST_HELD_LABEL] = str(sum(host_held(a.extra) for a in accelerators))
     return {
         "node": node,
         "profiles": [accelerator_profile(a) for a in accelerators],
-        "labels": node_labels(accelerators),
+        "labels": labels,
     }
 
 
@@ -70,11 +80,13 @@ def as_manifest(objects: dict[str, object]) -> dict[str, object]:
 
 
 def _is_summary_label(key: str) -> bool:
-    """airm.ai-computing.io/<vendor>.<model> or .../managed, i.e. labels this daemon owns."""
+    """airm.ai-computing.io/<vendor>.<model>, .../managed or .../host-held: labels this daemon owns."""
     if not key.startswith(LABEL_PREFIX):
         return False
     name = key[len(LABEL_PREFIX) :]
-    return name == "managed" or ("." in name and name.split(".", 1)[0] in VENDORS)
+    return name in ("managed", "host-held") or (
+        "." in name and name.split(".", 1)[0] in VENDORS
+    )
 
 
 class KubePublisher:
@@ -172,24 +184,44 @@ class _Retention:
 
 
 class _Metrics:
-    """Serves airm_accelerators{component,vendor,model} from the last discovery."""
+    """Serves airm_accelerators{component,vendor,model} (and, with occupancy,
+    rm_accel_accelerators_in_use / _host_held) from the last discovery."""
 
     def __init__(self):
         self._text = ""
         self._lock = threading.Lock()
 
     def update(self, accelerators: list[Accelerator]) -> None:
-        name = prometheus_name("accelerators")
-        lines = [
-            f"# HELP {name} accelerators on this node",
-            f"# TYPE {name} gauge",
-        ]
-        for (vendor, model), n in sorted(
-            Counter((a.vendor, a.model) for a in accelerators).items()
-        ):
-            lines.append(
-                f'{name}{{component="{COMPONENT}",vendor="{vendor}",model="{model}"}} {n}'
+        lines = []
+        gauges = [
+            (
+                prometheus_name("accelerators"),
+                "accelerators on this node",
+                lambda a: True,
             )
+        ]
+        if any("inUse" in a.extra for a in accelerators):
+            gauges += [
+                (
+                    "rm_accel_accelerators_in_use",
+                    "accelerators held by at least one process",
+                    lambda a: a.extra.get("inUse") == "true",
+                ),
+                (
+                    "rm_accel_accelerators_host_held",
+                    "accelerators held by a process outside Kubernetes",
+                    lambda a: host_held(a.extra),
+                ),
+            ]
+        kinds = sorted({(a.vendor, a.model) for a in accelerators})
+        for name, help_text, pick in gauges:
+            lines += [f"# HELP {name} {help_text}", f"# TYPE {name} gauge"]
+            counts = Counter((a.vendor, a.model) for a in accelerators if pick(a))
+            for vendor, model in kinds:
+                lines.append(
+                    f'{name}{{component="{COMPONENT}",vendor="{vendor}",model="{model}"}} '
+                    f"{counts[(vendor, model)]}"
+                )
         with self._lock:
             self._text = "\n".join(lines) + "\n"
 

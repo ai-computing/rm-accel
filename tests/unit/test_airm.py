@@ -52,6 +52,9 @@ def fake_tools(outputs):
 @pytest.fixture
 def no_hardware(monkeypatch):
     monkeypatch.setenv("AIRM_NODE_NAME", "test-node")
+    monkeypatch.setenv(
+        "AIRM_OCCUPANCY", "0"
+    )  # occupancy has its own tests (test_occupancy.py)
     monkeypatch.setattr(provider, "_run", fake_tools({}))
     monkeypatch.setattr(
         provider.HardwareDetector, "get_by_vendor", lambda self, vendor: []

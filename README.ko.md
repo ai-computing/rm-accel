@@ -13,7 +13,7 @@
   <a href="https://github.com/ai-computing/ai-rm"><img src="https://img.shields.io/badge/ai--rm-L1%20accelerator%20abstraction-7c5cff" alt="ai-rm L1 계층"></a>
   <a href="https://github.com/ai-computing/rm-core/blob/v0.1.1/PROTOCOL.md"><img src="https://img.shields.io/badge/protocol-v0.1-7c5cff" alt="프로토콜 v0.1"></a>
   <a href="https://github.com/ai-computing/rm-accel/releases/tag/v0.4.1"><img src="https://img.shields.io/badge/release-v0.4.1-22d3ee" alt="릴리스 v0.4.1"></a>
-  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.5.0-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.5.0"></a>
+  <a href="deploy/helm/rm-abstract-node"><img src="https://img.shields.io/badge/chart-0.6.0-0f1689?logo=helm&amp;logoColor=white" alt="Helm chart 0.6.0"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&amp;logoColor=white" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-64748b" alt="라이선스: BSD-3-Clause"></a>
 </p>
@@ -41,7 +41,7 @@ GPU와 NPU(FuriosaAI RNGD, Rebellions ATOM)를 탐지해 [rm-core](https://githu
 같은 코드를 GPU나 CPU에서 실행하고 서빙 엔진(vLLM, Triton, TorchServe)을 바꿔 쓸 수 있는 **vLLM 호환 Python API**도
 제공합니다.
 
-성숙도: 프로토타입(Alpha). 현재 릴리스 v0.4.1, Helm chart 0.4.2 — [변경 이력](CHANGELOG.md)을 참고하세요.
+성숙도: 프로토타입(Alpha). 현재 릴리스 v0.5.0, Helm chart 0.6.0 — [변경 이력](CHANGELOG.md)을 참고하세요.
 
 ## ✨ 주요 특징
 
@@ -112,6 +112,27 @@ for acc in provider.discover():
 - 노드 레이블 `airm.ai-computing.io/<vendor>.<model>=<개수>`, `airm.ai-computing.io/managed=true`를 패치합니다.
 - `/metrics`에 `airm_accelerators{vendor,model}`을 냅니다.
 
+#### 카드 점유
+
+device plugin은 자신이 pod에 내준 카드만 셉니다. Kubernetes 밖에서 호스트에 직접 띄운 프로세스가 카드를 잡고 있어도
+plugin은 그 카드를 비어 있다고 보고하고, 거기 배치된 pod는 `EBUSY`로 실패합니다. 그래서 provider는 매 회차 각 카드를
+누가 잡고 있는지도 읽기 전용으로 확인합니다.
+
+- 점유 프로세스: `furiosa-smi ps --format json`(RNGD), Rebellions 드라이버의 `/sys/class/rebellions/rbln<N>/ctx_info`
+  (`rbln-stat`이 보여 주는 값)와 `rbln-stat --json` contexts, `/proc/<pid>/fd`에 열린 연산 장치 노드
+- 각 프로세스는 pod(`managed: k8s`, `/proc/<pid>/cgroup`에 `kubepods`)이거나 호스트 프로세스(`managed: host`)입니다.
+
+| `spec.extra` 키 | 값 |
+|---|---|
+| `inUse` | `"true"` / `"false"` |
+| `holders` | JSON 목록 `[{"pid": 37839, "command": "python3", "managed": "host"}]`; 실행 파일 이름만, 인자나 사용자는 넣지 않음 |
+| `health`, `healthy` | 호스트 프로세스가 잡은 카드는 `"busy"`, `"false"`. rm-controller는 `healthy: false`인 카드를 건너뛰므로 거기에 배치하지 않습니다. pod만 잡은 카드는 그대로 쓸 수 있습니다(device plugin이 이미 셈) |
+
+노드에는 `airm.ai-computing.io/host-held=<개수>` 레이블이 붙고, `/metrics`에 `rm_accel_accelerators_in_use`와
+`rm_accel_accelerators_host_held`(`{vendor,model}`)가 추가됩니다. 호스트 프로세스를 보려면 호스트 PID 네임스페이스가
+필요합니다(chart 값 `hostPID`, 기본 켜짐). 없으면 데몬은 경고를 남기고 점유 키를 싣지 않습니다. 모든 카드를 비었다고
+보고하지는 않습니다.
+
 | 변수 | 기본값 | 의미 |
 |---|---|---|
 | `AIRM_NODE_NAME` | hostname | id와 레이블에 쓰는 노드 이름 |
@@ -119,6 +140,7 @@ for acc in provider.discover():
 | `AIRM_INTERVAL_S` | `60` | 탐지 주기 |
 | `AIRM_METRICS_PORT` | `9400` | `/metrics` 포트, `0`이면 끔 |
 | `AIRM_REMOVE_AFTER` | `3` | 프로파일 삭제 전 연속 미탐지 횟수 (도구 일시 실패로 깜박이지 않도록) |
+| `AIRM_OCCUPANCY` | `1` | 카드 점유 보고 (`0`이면 끔) |
 
 클러스터에 apply하려면 Kubernetes 클라이언트가 필요합니다: `pip install -e ".[k8s]"`.
 
@@ -137,7 +159,7 @@ docker build -t rm-accel:dev . && docker run --rm rm-accel:dev --provider sim --
 ```
 
 <details>
-<summary><b>Chart 0.5.0: 이미지, 컨테이너 실행 환경과 사이트 확장 지점</b></summary>
+<summary><b>Chart 0.6.0: 이미지, 컨테이너 실행 환경과 사이트 확장 지점</b></summary>
 <br>
 
 | 값 | 기본값 | 의미 |
@@ -145,6 +167,8 @@ docker build -t rm-accel:dev . && docker run --rm rm-accel:dev --provider sim --
 | `privileged` | `true` | 벤더 도구가 장치 노드를 읽기 위해 필요 |
 | `hostDev` | `true` | 호스트 `/dev`를 실시간으로 마운트해, 드라이버가 다시 만든 장치(예: pod가 놓아준 ATOM)도 계속 탐지되게 함 |
 | `hostBin` | `/usr/bin` | 벤더 도구가 있는 호스트 디렉터리, `/host/usr/bin`에 읽기 전용으로 마운트(이미지 `PATH`에 포함); `""`이면 끔 |
+| `hostPID` | `true` | 카드를 잡은 프로세스를 보기 위한 호스트 PID 네임스페이스 (카드 점유) |
+| `occupancy` | `true` | 카드 점유 보고 (`AIRM_OCCUPANCY`) |
 | `command` | `[]` | 데몬 명령 재정의 (기본 `python -m rm_abstract.airm.daemon`) |
 | `extraEnv` | `[]` | 데몬 env에 덧붙일 `{name, value}` 항목 |
 | `initContainers` | `[]` | pod init container, 그대로 반영 |
