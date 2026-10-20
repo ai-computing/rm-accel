@@ -11,6 +11,10 @@ Device discovery per vendor, in order of preference:
 Each record is converted to an ``rm_core.Accelerator`` with id ``<node>/<vendor>:<index>``.
 The node name comes from ``AIRM_NODE_NAME`` (set from ``spec.nodeName`` in the DaemonSet),
 falling back to the hostname. CPUs are not reported: a node without accelerators yields ``[]``.
+
+Per-card occupancy (``occupancy.py``) is added to each accelerator's ``extra``: ``inUse``,
+``holders`` and, for a card held by a process outside Kubernetes, ``health: busy`` /
+``healthy: "false"``. ``AIRM_OCCUPANCY=0`` turns it off.
 """
 
 from __future__ import annotations
@@ -22,12 +26,13 @@ import re
 import shutil
 import socket
 import subprocess
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from rm_core import Accelerator
 
 from ..common.hardware_detector import HardwareDetector, HardwareInfo
+from . import occupancy
 
 logger = logging.getLogger(__name__)
 
@@ -301,6 +306,7 @@ class RmAbstractProvider:
 
     Args:
         node: Node name used in accelerator ids. Default: AIRM_NODE_NAME, else hostname.
+        occupancy: Report per-card holders (``extra``). Default: AIRM_OCCUPANCY, else on.
 
     Example:
         from rm_core import registry
@@ -315,9 +321,17 @@ class RmAbstractProvider:
     _TOOLS = {"nvidia": _nvidia_smi, "furiosa": _furiosa_smi, "rebellions": _rbln_stat}
     _VENDORS = ("nvidia", "amd", "furiosa", "rebellions")
 
-    def __init__(self, node: str | None = None):
+    def __init__(self, node: str | None = None, occupancy: bool | None = None):
         self.node = node or node_name()
+        if occupancy is None:
+            occupancy = os.environ.get("AIRM_OCCUPANCY", "1").lower() not in (
+                "0",
+                "false",
+                "no",
+            )
+        self.occupancy = occupancy
         self._detector = HardwareDetector()
+        self._warned = False
 
     def _devices(self, vendor: str) -> list[_Device]:
         probe = self._TOOLS.get(vendor)
@@ -351,4 +365,28 @@ class RmAbstractProvider:
                     continue
                 if acc is not None:
                     found.setdefault(acc.id, acc)
-        return [found[k] for k in sorted(found)]
+        accelerators = [found[k] for k in sorted(found)]
+        if self.occupancy and accelerators:
+            accelerators = self._with_occupancy(accelerators)
+        return accelerators
+
+    def _with_occupancy(self, accelerators: list[Accelerator]) -> list[Accelerator]:
+        """Add inUse/holders (and busy for host-held cards) to each accelerator's extra."""
+        try:
+            held = occupancy.holders(_run)
+        except Exception as e:  # occupancy must never break discovery
+            logger.warning(f"occupancy not reported: {e}")
+            return accelerators
+        if held is None:
+            if not self._warned:
+                logger.warning(
+                    "host processes are not visible (run with hostPID): occupancy not reported"
+                )
+                self._warned = True
+            return accelerators
+        out = []
+        for acc in accelerators:
+            index = int(acc.id.rsplit(":", 1)[1])
+            extra = occupancy.occupancy_extra(held.get((acc.vendor, index), []))
+            out.append(replace(acc, extra={**acc.extra, **extra}))
+        return out

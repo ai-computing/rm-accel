@@ -20,6 +20,8 @@ spec:
       {{- end }}
     spec:
       serviceAccountName: {{ include "rm-abstract-node.serviceAccountName" . }}
+      # host processes holding a card (furiosa-smi ps, /proc/<pid>/fd and cgroup) are only visible here
+      hostPID: {{ .Values.hostPID }}
       {{- with .Values.nodeAffinity }}
       affinity:
         nodeAffinity:
@@ -44,6 +46,8 @@ spec:
           command: ["python", "-m", "rm_abstract.airm.daemon"]  # the image's entrypoint
           {{- end }}
           env:
+            - name: AIRM_OCCUPANCY
+              value: {{ .Values.occupancy | ternary "1" "0" | quote }}
             - name: AIRM_NODE_NAME
               valueFrom:
                 fieldRef:
